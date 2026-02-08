@@ -7,9 +7,6 @@ const PORT = process.env.PORT || 3200;
 // example of multi-page architecture (one 'use' statement for the products route, which handles multiple subpages)
 app.use(require('./routes/products'));
 
-// serve static files
-app.use('/', express.static("./public"));
-
 // root (landing page)
 app.use('/', require('./routes/root'));
 
