@@ -1,0 +1,3 @@
+/*
+Logic of data extraction from Trello API
+*/

@@ -1,18 +1,25 @@
 import express from 'express';
 import path from 'path';
+import { fileURLToPath } from 'url';
 
-import products from './routes/products.mjs'
-import root from './routes/root.mjs'
+import routes from './routes/index.mjs'
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
 const PORT = process.env.PORT || 3200;
 
-/* example of multi-page architecture
-(one 'use' statement for the products route, which handles multiple subpages)
-*/
-app.use(products);
-app.use(root);
+app.set('view engine', 'pug');
+app.set('views', './views');
 
+// static files
+app.use(express.static(path.join(__dirname, 'public')));
+
+// views
+app.use('/', routes);
+
+// catch everything else via 404
 app.use((req, res) => {
     res.status(404)
     if (req.accepts('html')) {
