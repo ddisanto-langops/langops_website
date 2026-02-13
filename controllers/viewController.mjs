@@ -1,4 +1,4 @@
-import * as trelloService from '../services/trello.mjs';
+import * as trelloService from '../services/trello.mjs'; //TODO: actually get the data
 
 export const viewHome = async (req, res) => {
     try {
@@ -7,14 +7,13 @@ export const viewHome = async (req, res) => {
         });
 
     } catch (error) {
-        res.status(500).send("Error loading homepage");
+        res.status(500).send(error.message);
     }
-}
+};
 
 // change below here once we actually have a data source
 export const viewDashboard = async (req, res) => {
     try { 
-        // Render the Pug file and inject the data
         res.render('dashboard', { 
             pageTitle: 'Dashboard'
         });
