@@ -1,6 +1,6 @@
 import { Routes, Route } from 'react-router-dom'
 import Dashboard from './pages/dashboard'
-import TableDisplay from './pages/tableDisplay'
+import { TableDisplay } from './pages/table'
 
 export default function App() {
   return (
