@@ -2,9 +2,10 @@ import { useState, useEffect } from "react";
 import { SearchBox } from "./searchbox";
 
 const exampleData = [
-  { id: 1, title: "RV202503_ES", targetLang: 'es', productStatus: 'Completed', crowdinUrl: 'https://crowdin.com/somefile', due: '1/21/2026', lastActivity: "12/5/2025", published: false, translationProg: 20, approvalProg: 15 },
-  { id:2, title: "PT202603_FR", targetLang: 'fr', productStatus: 'incomplete', crowdinUrl: 'https://crowdin.com/somefile', due: '1/21/2026', lastActivity: "12/5/2025", published: false, translationProg: 70, approvalProg: 50 },
-  { id: 3, title: "TB_SomeTitle_IT", targetLang: "it", productStatus: 'Completed', crowdinUrl: 'https://crowdin.com/somefile', due: '1/21/2026', lastActivity: "12/5/2025", published: false, translationProg: 30, approvalProg: 10 },
+  { id: 1, title: "RV202503_ES", targetLang: 'Spanish', productStatus: 'completed', crowdinUrl: null, due: '1/21/2026', lastActivity: "12/5/2025", published: true, translationProg: 20, approvalProg: 15 },
+  { id:2, title: "PT202603_FR", targetLang: 'French', productStatus: 'incomplete', crowdinUrl: 'https://crowdin.com/somefile', due: '1/21/2026', lastActivity: "12/5/2025", published: false, translationProg: 70, approvalProg: 50 },
+  { id: 3, title: "TB_SomeTitle_IT", targetLang: "Italian", productStatus: 'completed', crowdinUrl: 'https://crowdin.com/somefile', due: '1/21/2026', lastActivity: "12/5/2025", published: false, translationProg: 30, approvalProg: 10 },
+  { id: 4, title: "MB_2026-02-27_title_DE", targetLang: 'German', productStatus: 'incomplete', crowdinUrl: 'https://crowdin.com/somefile', due: '2/28/2026', lastActivity: "2/27/2026", published: false, translationProg: 20, approvalProg: 15 }
 ]
 
 export function Table({ onRowClick }) {
@@ -67,10 +68,10 @@ export function Table({ onRowClick }) {
         <tbody>
             {sortedRows.map(row => (
             <tr key={row.id} onClick={() => onRowClick(row)}>
-                <td>{row.title}</td>
-                <td>{row.targetLang}</td>
-                <td>{row.productStatus}</td>
-                <td>{row.due}</td>
+                <td className="table-data">{row.title}</td>
+                <td className="table-data">{row.targetLang}</td>
+                <td className="table-data">{row.productStatus}</td>
+                <td className="table-data">{row.due}</td>
             </tr>
             ))}
         </tbody>

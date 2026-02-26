@@ -7,7 +7,7 @@ export function TableDisplay() {
   const [selectedRow, setSelectedRow] = useState(null)
 
   return (
-  <>
+  <div id='main-container'>
     <h1>Products</h1>
     <div className='table-layout-container'>
       <div className='table-container'>
@@ -17,6 +17,6 @@ export function TableDisplay() {
         <TableDetail row={selectedRow} />
       </div>
     </div>
-  </>
+  </div>
   )
 }

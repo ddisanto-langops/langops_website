@@ -1,6 +1,6 @@
 export function SearchBox({category, setCategory, query, setQuery}) {
     return (
-        <div>
+        <div id="search-div">
             <p>Filter</p>
             <select
                 id='main-dropdown' 
@@ -13,6 +13,7 @@ export function SearchBox({category, setCategory, query, setQuery}) {
                 <option value={'due'}>Due</option>
             </select>
             <input
+                id="main-search"
                 type="text"
                 placeholder="Search..."
                 value={query}
