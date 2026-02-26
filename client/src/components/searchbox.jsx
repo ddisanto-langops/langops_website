@@ -1,6 +1,7 @@
 export function SearchBox({category, setCategory, query, setQuery}) {
     return (
         <div>
+            <p>Filter</p>
             <select
                 id='main-dropdown' 
                 value={category}

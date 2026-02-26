@@ -1,13 +1,13 @@
 import { useState, useEffect } from "react";
 import { SearchBox } from "./searchbox";
 
-const fakeData = [
-  { id: 1, title: "RV202503_ES", targetLang: 'es', productStatus: 'Completed', crowdinUrl: 'https://crowdin.com/somefile', due: '1/21/2026', lastActivity: "12/5/2025", published: false, translationProg: 50, approvalProg: 10 },
-  { id:2, title: "PT202603_FR", targetLang: 'fr', productStatus: 'incomplete', crowdinUrl: 'https://crowdin.com/somefile', due: '1/21/2026', lastActivity: "12/5/2025", published: false, translationProg: 50, approvalProg: 10 },
-  { id: 3, title: "TB_SomeTitle_IT", targetLang: "it", productStatus: 'Completed', crowdinUrl: 'https://crowdin.com/somefile', due: '1/21/2026', lastActivity: "12/5/2025", published: false, translationProg: 50, approvalProg: 10 },
+const exampleData = [
+  { id: 1, title: "RV202503_ES", targetLang: 'es', productStatus: 'Completed', crowdinUrl: 'https://crowdin.com/somefile', due: '1/21/2026', lastActivity: "12/5/2025", published: false, translationProg: 20, approvalProg: 15 },
+  { id:2, title: "PT202603_FR", targetLang: 'fr', productStatus: 'incomplete', crowdinUrl: 'https://crowdin.com/somefile', due: '1/21/2026', lastActivity: "12/5/2025", published: false, translationProg: 70, approvalProg: 50 },
+  { id: 3, title: "TB_SomeTitle_IT", targetLang: "it", productStatus: 'Completed', crowdinUrl: 'https://crowdin.com/somefile', due: '1/21/2026', lastActivity: "12/5/2025", published: false, translationProg: 30, approvalProg: 10 },
 ]
 
-export function Table() {
+export function Table({ onRowClick }) {
     const [rows, setRows] = useState([])
     const [category, setCategory] = useState('title')
     const [query, setQuery] = useState('')
@@ -15,8 +15,13 @@ export function Table() {
     const [sortDirection, setSortDirection] = useState('asc')
     
     useEffect(() => {
-    setRows(fakeData)
+    setRows(exampleData)
   }, [])
+
+  function SortIndicator({sortKey, column, sortDirection}) {
+        if (sortKey != column) return null
+        return <span>{sortDirection === 'asc' ? '↑' : '↓'}</span>
+    }
 
 
     const filteredRows = rows.filter((row) => {
@@ -31,11 +36,6 @@ export function Table() {
             setSortKey(key)
             setSortDirection('asc')
         }
-    }
-
-    function SortIndicator({sortKey, column, sortDirection}) {
-        if (sortKey != column) return null
-        return <span>{sortDirection === 'asc' ? '↑' : '↓'}</span>
     }
 
     const sortedRows = [...filteredRows].sort((a, b) => {
@@ -66,7 +66,7 @@ export function Table() {
         </thead>
         <tbody>
             {sortedRows.map(row => (
-            <tr key={row.id}>
+            <tr key={row.id} onClick={() => onRowClick(row)}>
                 <td>{row.title}</td>
                 <td>{row.targetLang}</td>
                 <td>{row.productStatus}</td>

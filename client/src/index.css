@@ -1,3 +1,18 @@
 h1 {
     color: blueviolet;
 }
+
+.table-layout-container {
+    display: flex;
+    margin: 40px;
+}
+
+.table-container {
+    margin: 20px;
+}
+
+.table-detail-container {
+    margin: 20px;
+    border: 2px solid black;
+    padding: 10px;
+}
