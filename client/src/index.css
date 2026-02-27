@@ -11,6 +11,11 @@
     justify-self: center;
 }
 
+#dashboard-page-title {
+    color: white;
+    justify-self: center;
+}
+
 .table-layout-container {
     display: flex;
     margin: 40px;

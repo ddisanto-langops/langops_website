@@ -1,9 +1,9 @@
 import { useState } from "react";
-import { createColumnHelper } from '@tanstack/react-table'
 import {
   useReactTable,
   getCoreRowModel,
   getSortedRowModel,
+  createColumnHelper,
   getFilteredRowModel,
   flexRender
 } from '@tanstack/react-table'
