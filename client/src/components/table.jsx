@@ -1,5 +1,30 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { SearchBox } from "./searchbox";
+import { createColumnHelper } from '@tanstack/react-table'
+import {
+  useReactTable,
+  getCoreRowModel,
+  getSortedRowModel,
+  getFilteredRowModel,
+  flexRender
+} from '@tanstack/react-table'
+
+const columnHelper = createColumnHelper()
+
+const columns = [
+  columnHelper.accessor('title', {
+    header: 'Title',
+  }),
+  columnHelper.accessor('targetLang', {
+    header: 'Language',
+  }),
+  columnHelper.accessor('productStatus', {
+    header: 'Status',
+  }),
+  columnHelper.accessor('due', {
+    header: 'Due',
+  }),
+]
 
 const exampleData = [
   { id: 1, title: "RV202503_ES", targetLang: 'Spanish', productStatus: 'completed', crowdinUrl: null, due: '1/21/2026', lastActivity: "12/5/2025", published: true, translationProg: 20, approvalProg: 15 },
@@ -9,74 +34,59 @@ const exampleData = [
 ]
 
 export function Table({ onRowClick }) {
-    const [rows, setRows] = useState([])
-    const [category, setCategory] = useState('title')
-    const [query, setQuery] = useState('')
-    const [sortKey, setSortKey] = useState(null)
-    const [sortDirection, setSortDirection] = useState('asc')
-    
-    useEffect(() => {
-    setRows(exampleData)
-  }, [])
+  const [data] = useState(exampleData)
+  const [sorting, setSorting] = useState([])
+  const [columnFilters, setColumnFilters] = useState([])
 
-  function SortIndicator({sortKey, column, sortDirection}) {
-        if (sortKey != column) return null
-        return <span>{sortDirection === 'asc' ? '↑' : '↓'}</span>
-    }
-
-
-    const filteredRows = rows.filter((row) => {
-        const value = row[category]?.toString().toLowerCase() ?? "";
-        return value.includes(query.toLowerCase());
-    })
-
-    const handleSort = (key) => {
-        if (sortKey === key) {
-            setSortDirection(prev => prev === 'asc' ? 'desc' : 'asc')
-        } else {
-            setSortKey(key)
-            setSortDirection('asc')
-        }
-    }
-
-    const sortedRows = [...filteredRows].sort((a, b) => {
-        if (sortKey === null) return 0  // no sort applied yet
-        const aVal = a[sortKey]?.toString().toLowerCase() ?? ""
-        const bVal = b[sortKey]?.toString().toLowerCase() ?? ""
-        if (aVal < bVal) return sortDirection === 'asc' ? -1 : 1
-        if (aVal > bVal) return sortDirection === 'asc' ? 1 : -1
-        return 0
-        })
+  const table = useReactTable({
+    data,
+    columns,
+    state: { sorting, columnFilters },
+    onSortingChange: setSorting,
+    onColumnFiltersChange: setColumnFilters,
+    getCoreRowModel: getCoreRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
+  })
 
   return (
-    <div>
-        <SearchBox 
-            category={category}
-            setCategory={setCategory}
-            query={query}
-            setQuery={setQuery}
-        />
-        <table>
-        <thead>
-            <tr>
-            <th onClick={() => {handleSort('title')}}>Title <SortIndicator sortKey={sortKey} column="title" sortDirection={sortDirection} /></th>
-            <th onClick={() => {handleSort('targetLang')}}>Target Language <SortIndicator sortKey={sortKey} column="targetLang" sortDirection={sortDirection} /></th>
-            <th onClick={() => {handleSort('productStatus')}}>Status <SortIndicator sortKey={sortKey} column="productStatus" sortDirection={sortDirection} /></th>
-            <th onClick={() => {handleSort('due')}}>Due <SortIndicator sortKey={sortKey} column="due" sortDirection={sortDirection} /></th>
-            </tr>
-        </thead>
-        <tbody>
-            {sortedRows.map(row => (
-            <tr key={row.id} onClick={() => onRowClick(row)}>
-                <td className="table-data">{row.title}</td>
-                <td className="table-data">{row.targetLang}</td>
-                <td className="table-data">{row.productStatus}</td>
-                <td className="table-data">{row.due}</td>
-            </tr>
+  <table>
+    <thead>
+        {table.getHeaderGroups().map(headerGroup => (
+            <tr key={headerGroup.id}>
+            {headerGroup.headers.map(header => (
+                <th key={header.id}>
+                <div
+                    onClick={header.column.getToggleSortingHandler()}
+                    style={{ cursor: 'pointer' }}
+                >
+                    {flexRender(header.column.columnDef.header, header.getContext())}
+                    {header.column.getIsSorted() === 'asc' ? ' ↑'
+                    : header.column.getIsSorted() === 'desc' ? ' ↓' : ''}
+                </div>
+                <input
+                    placeholder="Filter..."
+                    value={header.column.getFilterValue() ?? ''}
+                    onChange={e => header.column.setFilterValue(e.target.value)}
+                />
+                </th>
             ))}
-        </tbody>
-        </table>
-    </div>
-  )
+            </tr>
+        ))}
+    </thead>
+   
 
+    <tbody>
+      {table.getRowModel().rows.map(row => (
+        <tr key={row.id} onClick={() => onRowClick(row.original)}>
+          {row.getVisibleCells().map(cell => (
+            <td key={cell.id}>
+              {flexRender(cell.column.columnDef.cell, cell.getContext())}
+            </td>
+          ))}
+        </tr>
+      ))}
+    </tbody>
+  </table>
+)
 }
