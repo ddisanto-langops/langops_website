@@ -8,9 +8,11 @@
     - [ ] Data must be 2025 and onward  
     - [ X ] Must be able to filter data by language  
     - [ X ] Table must show a condensed view and be expandable on click  
-- [ ] There must be a page for total words translated per language  
+- [ ] There must be a dashbaord-style page for total words translated per language  
     - [ ] This page must be filterable by product type
+    
 
 ## Dev
 - [ ] Rewrite the backend API to use Javascript async capabilities
-    - [ ] API must conform to the following schema: { id: 1, title: "RV202503_ES", productCode: "RV", targetLang: "Spanish", productStatus: "Completed", crowdinUrl: "https://crowdin.com/somefile", due: "1/21/2026", lastActivity: "12/5/2025", published: false, translationProg: 20, approvalProg: 15 }
+    - [ ] API must conform to the following schema: {title: "RV202503_ES", productCode: "RV", targetLang: "Spanish", productStatus: ["completed", "incomplete"], crowdinUrl: "https://crowdin.com/somefile", due: "1/21/2026", lastActivity: "12/5/2025", published: false, translationProg: 20, approvalProg: 15 }
+    - [ ] Any values may be null except title

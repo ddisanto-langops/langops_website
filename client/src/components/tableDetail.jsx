@@ -12,7 +12,7 @@ export function TableDetail({ row }) {
       <p>Translation Progress: {row.translationProg}%</p>
       <p>Approval Progress: {row.approvalProg}%</p>
       <p>Published: {row.published ? '✅': '❌'} </p>
-      <a id="detail-crowdin-link" href={row.crowdinUrl}>Crowdin Link</a>
+      <a id="detail-crowdin-link" href={row.crowdinUrl}>{row.crowdinUrl ? 'Crowdin Link': ''}</a>
     </div>
   )
 }
