@@ -38,6 +38,7 @@ export function Table({ onRowClick }) {
   const [sorting, setSorting] = useState([])
   const [columnFilters, setColumnFilters] = useState([])
 
+  // eslint-disable-next-line react-hooks/incompatible-library
   const table = useReactTable({
     data,
     columns,
@@ -65,6 +66,7 @@ export function Table({ onRowClick }) {
                     : header.column.getIsSorted() === 'desc' ? ' ↓' : ''}
                 </div>
                 <input
+                    className="table-filter"
                     placeholder="Filter..."
                     value={header.column.getFilterValue() ?? ''}
                     onChange={e => header.column.setFilterValue(e.target.value)}
