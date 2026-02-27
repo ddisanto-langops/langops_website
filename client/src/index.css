@@ -6,8 +6,9 @@
     color: rgb(32, 170, 235);
 }
 
-h1 {
-    color: rgb(32, 170, 235);
+#products-page-title {
+    color: rgb(255, 255, 255);
+    justify-self: center;
 }
 
 .table-layout-container {
@@ -25,7 +26,7 @@ h1 {
     margin: 20px;
     border: 2px solid black;
     padding: 10px;
-    box-shadow: 0 0 5px 2px #64737c;
+    box-shadow: 3px 0 8px 2px #000000;
     border-radius: 8px;
 }
 

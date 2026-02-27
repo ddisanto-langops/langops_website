@@ -8,7 +8,7 @@ export function TableDisplay() {
 
   return (
   <div id='main-container'>
-    <h1>Products</h1>
+    <h1 id='products-page-title'>Products</h1>
     <div className='table-layout-container'>
       <div className='table-container'>
         <Table onRowClick={setSelectedRow} />
