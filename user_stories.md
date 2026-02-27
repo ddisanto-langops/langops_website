@@ -3,7 +3,7 @@
 ## Business Logic
 - [ ] Allow access only to users identified via Cloudflare  
 - [ X ] Needs at least one main data table
-    - [ ] Searching target languages needs to use friendly names
+    - [ X ] Searching target languages needs to use friendly names
     - [ ] Must provide the same data as the LangOps Dashboard API service  
     - [ ] Data must be 2025 and onward  
     - [ X ] Must be able to filter data by language  

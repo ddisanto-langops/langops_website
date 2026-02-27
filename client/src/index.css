@@ -17,31 +17,25 @@ h1 {
 
 .table-container {
     margin: 20px;
+    color: white;
 }
 
 .table-detail-container {
+    color: white;
     margin: 20px;
     border: 2px solid black;
     padding: 10px;
-    box-shadow: 0 0 5px 5px #417a7a;
+    box-shadow: 0 0 5px 2px #64737c;
     border-radius: 8px;
 }
 
 #detail-crowdin-link {
-    color: rgb(119, 0, 255);
+    color: rgb(106, 168, 209);
 }
 
 .table-data {
     padding: 10px;
     color: rgb(20, 245, 215);
-}
-
-#search-div {
-    margin: 20px;
-    border: 2px solid black;
-    padding: 10px;
-    box-shadow: 0 0 5px 5px #417a7a;
-    border-radius: 8px;
 }
 
 .table-filter {

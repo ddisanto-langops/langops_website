@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { SearchBox } from "./searchbox";
 import { createColumnHelper } from '@tanstack/react-table'
 import {
   useReactTable,
@@ -55,29 +54,27 @@ export function Table({ onRowClick }) {
     <thead>
         {table.getHeaderGroups().map(headerGroup => (
             <tr key={headerGroup.id}>
-            {headerGroup.headers.map(header => (
+              {headerGroup.headers.map(header => (
                 <th key={header.id}>
-                <div
+                  <div
                     onClick={header.column.getToggleSortingHandler()}
                     style={{ cursor: 'pointer' }}
                 >
                     {flexRender(header.column.columnDef.header, header.getContext())}
                     {header.column.getIsSorted() === 'asc' ? ' ↑'
                     : header.column.getIsSorted() === 'desc' ? ' ↓' : ''}
-                </div>
+                  </div>
                 <input
-                    className="table-filter"
-                    placeholder="Filter..."
-                    value={header.column.getFilterValue() ?? ''}
-                    onChange={e => header.column.setFilterValue(e.target.value)}
+                  className="table-filter"
+                  placeholder="Filter..."
+                  value={header.column.getFilterValue() ?? ''}
+                  onChange={e => header.column.setFilterValue(e.target.value)}
                 />
                 </th>
             ))}
             </tr>
         ))}
     </thead>
-   
-
     <tbody>
       {table.getRowModel().rows.map(row => (
         <tr key={row.id} onClick={() => onRowClick(row.original)}>
@@ -90,5 +87,4 @@ export function Table({ onRowClick }) {
       ))}
     </tbody>
   </table>
-)
-}
+)}
