@@ -1,3 +1,4 @@
+import { exampleData } from "./exampleData"
 import { useState } from "react";
 import {
   useReactTable,
@@ -23,13 +24,6 @@ const columns = [
   columnHelper.accessor('due', {
     header: 'Due',
   }),
-]
-
-const exampleData = [
-  {title: "RV202503_ES", targetLang: 'Spanish', productStatus: 'completed', crowdinUrl: null, due: '1/21/2026', lastActivity: "12/5/2025", published: true, translationProg: 20, approvalProg: 15 },
-  {title: "PT202603_FR", targetLang: 'French', productStatus: 'incomplete', crowdinUrl: 'https://crowdin.com/somefile', due: '1/21/2026', lastActivity: "12/5/2025", published: false, translationProg: 70, approvalProg: 50 },
-  {title: "TB_SomeTitle_IT", targetLang: "Italian", productStatus: 'completed', crowdinUrl: 'https://crowdin.com/somefile', due: null, lastActivity: null, published: false, translationProg: 30, approvalProg: 10 },
-  {title: "MB_2026-02-27_title_DE", targetLang: 'German', productStatus: 'incomplete', crowdinUrl: 'https://crowdin.com/somefile', due: '2/28/2026', lastActivity: "2/27/2026", published: false, translationProg: 20, approvalProg: 15 }
 ]
 
 export function Table({ onRowClick }) {
