@@ -13,6 +13,19 @@
     
 
 ## Dev
-- [ ] Rewrite the backend API to use Javascript async capabilities
-    - [ ] API must conform to the following schema: {title: "RV202503_ES", productCode: "RV", targetLang: "Spanish", productStatus: ["completed", "incomplete"], crowdinUrl: "https://crowdin.com/somefile", due: "1/21/2026", lastActivity: "12/5/2025", published: false, translationProg: 20, approvalProg: 15 }
-    - [ ] Any values may be null except title
+- [ X ] The backend API must use Node.js to take advantage of async capabilities
+- [ ] API must conform to the following schema, types and ennums:
+    - [ ] title: string (any)
+    - [ ] productCode: string (any)
+    - [ ] targetLang: string (friendly name)
+    - [ ] productStatus: string, one of: completed, in progress || null (if unknown)
+    - [ ] crowdinUrl: string || null
+    - [ ] due: string (date format) || null
+    - [ ] lastActivity: string (date format) || null
+    - [ ] published: boolean
+    - [ ] translationProg: integer || null
+    - [ ] approvalProg: integer || null
+    - [ ] mediaInfo: dict
+        - [ ] mediaType: string = text || audio || video
+        - [ ] wordCount: int || null
+        - [ ] duration: int (time in minutes) || null
