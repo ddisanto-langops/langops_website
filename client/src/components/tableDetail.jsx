@@ -6,11 +6,11 @@ export function TableDetail({ row }) {
     <div>
       <h2>{row.title}</h2>
       <p>Language: {row.targetLang}</p>
-      <p>Status: {row.productStatus}</p>
-      <p>Due: {row.due}</p>
-      <p>Last Activity: {row.lastActivity}</p>
-      <p>Translation Progress: {row.translationProg}%</p>
-      <p>Approval Progress: {row.approvalProg}%</p>
+      <p>Status: {row.productStatus || '❓'}</p>
+      <p>Due: {row.due || '❓'}</p>
+      <p>Last Activity: {row.lastActivity || '❓'}</p>
+      <p>Translation Progress: {row.translationProg ? `${row.translationProg}%` : '❓'}</p>
+      <p>Approval Progress: {row.approvalProg ? `${row.approvalProg}%` : '❓'}</p>
       <p>Published: {row.published ? '✅': '❌'} </p>
       <a id="detail-crowdin-link" href={row.crowdinUrl}>{row.crowdinUrl ? 'Crowdin Link': ''}</a>
     </div>

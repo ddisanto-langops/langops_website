@@ -20,7 +20,7 @@
     - [ ] productCode: string
     - [ ] targetLang: string
         - [ ] this must be a "friendly name" e.g. "Spanish" not "es"
-    - [ ] productStatus: string = completed || pending || null
+    - [ ] productStatus: string = completed || pending || unknown
     - [ ] crowdinUrl: string || null
     - [ ] due: string (date format) || null
     - [ ] lastActivity: string (date format) || null
