@@ -15,7 +15,7 @@
 
 ## Dev
 - [x] The backend API must use Node.js to take advantage of async capabilities
-- [ ] JSON returned from API must conform to the following schema, types and ennums:
+- [ ] JSON returned from API must conform to the following schema, types and enums:
     - [ ] title: string
     - [ ] productCode: string
     - [ ] targetLang: string
