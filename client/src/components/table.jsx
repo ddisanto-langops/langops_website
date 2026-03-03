@@ -1,4 +1,5 @@
-import { exampleData } from "./exampleData"
+import { fetchProducts } from "../../services/api"
+import { useQuery } from "@tanstack/react-query"
 import { useState } from "react";
 import {
   useReactTable,
@@ -27,7 +28,11 @@ const columns = [
 ]
 
 export function Table({ onRowClick }) {
-  const [data] = useState(exampleData)
+  const { data = [], isLoading, isError } = useQuery({
+    queryKey: ['products'],
+    queryFn: fetchProducts
+  })
+  
   const [sorting, setSorting] = useState([])
   const [columnFilters, setColumnFilters] = useState([])
 
