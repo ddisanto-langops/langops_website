@@ -26,6 +26,24 @@
     color: white;
 }
 
+.table-data {
+    padding: 10px;
+    color: rgb(20, 245, 215);
+}
+
+.table-filter {
+    color: white;
+    font-size: 1rem;
+}
+
+.table-row {
+    color: white;
+}
+
+.table-row:hover {
+    color: coral;
+}
+
 .table-detail-container {
     color: white;
     margin: 20px;
@@ -39,12 +57,3 @@
     color: rgb(106, 168, 209);
 }
 
-.table-data {
-    padding: 10px;
-    color: rgb(20, 245, 215);
-}
-
-.table-filter {
-    color: white;
-    font-size: 1rem;
-}

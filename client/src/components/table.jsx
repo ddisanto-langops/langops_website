@@ -77,7 +77,7 @@ export function Table({ onRowClick }) {
     </thead>
     <tbody>
       {table.getRowModel().rows.map(row => (
-        <tr style={{ cursor: 'pointer' }} key={row.id} onClick={() => onRowClick(row.original)}>
+        <tr className="table-row" style={{ cursor: 'pointer' }} key={row.id} onClick={() => onRowClick(row.original)}>
           {row.getVisibleCells().map(cell => (
             <td key={cell.id}>
               {flexRender(cell.column.columnDef.cell, cell.getContext())}
