@@ -1,5 +1,6 @@
 /* eslint-disable no-unused-vars */
 import { fetchProducts } from "../../services/api"
+import { ClickFilter } from "./clickFilter";
 import { useQuery } from "@tanstack/react-query"
 import { useState } from "react";
 import {
@@ -26,6 +27,11 @@ const columns = [
   columnHelper.accessor('due', {
     header: 'Due',
   }),
+  columnHelper.accessor(row => row.mediaInfo?.mediaType, {
+  id: 'mediaType',
+  header: 'Media Type',
+  enableHiding: true,
+  })
 ]
 
 export function Table({ onRowClick }) {
@@ -36,25 +42,37 @@ export function Table({ onRowClick }) {
   
   const [sorting, setSorting] = useState([])
   const [columnFilters, setColumnFilters] = useState([])
+  const [activeTab, setActiveTab] = useState(null)
+  const [columnVisibility, setColumnVisibility] = useState({ mediaType: false })
 
   // eslint-disable-next-line react-hooks/incompatible-library
   const table = useReactTable({
     data,
     columns,
-    state: { sorting, columnFilters },
+    state: { sorting, columnFilters, columnVisibility },
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
+    onColumnVisibilityChange: setColumnVisibility,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
   })
 
+  const handleTabClick = (value) => {
+  setActiveTab(value)
+  table.getColumn('mediaType').setFilterValue(value)
+}
+
   return (
+  <>
+  <ClickFilter onTabClick={handleTabClick}/>
   <table>
-    <thead>
+    <thead id="product-table-head">
         {table.getHeaderGroups().map(headerGroup => (
             <tr key={headerGroup.id}>
-              {headerGroup.headers.map(header => (
+              {headerGroup.headers.map(header => {
+                if (header.column.id === 'mediaType') return null
+                return (
                 <th key={header.id}>
                   <div
                     title="Click to sort"
@@ -72,7 +90,7 @@ export function Table({ onRowClick }) {
                   onChange={e => header.column.setFilterValue(e.target.value)}
                 />
                 </th>
-            ))}
+            )})}
             </tr>
         ))}
     </thead>
@@ -88,4 +106,5 @@ export function Table({ onRowClick }) {
       ))}
     </tbody>
   </table>
+  </>
 )}

@@ -28,6 +28,6 @@
     - [ ] translationProg: integer || null
     - [ ] approvalProg: integer || null
     - [ ] mediaInfo: dict
-        - [ ] mediaType: string = text || audio || video
+        - [ ] mediaType: string = audio_video || literature || website || interpretation || pcog.church
         - [ ] wordCount: int || null
         - [ ] duration: int (time in minutes) || null
