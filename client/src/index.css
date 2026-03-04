@@ -28,7 +28,7 @@
 
 .table-data {
     padding: 10px;
-    color: rgb(20, 245, 215);
+    margin: 10px;
 }
 
 .table-filter {
@@ -38,6 +38,7 @@
 
 .table-row {
     color: white;
+    margin-right: 10px;
 }
 
 .table-row:hover {
@@ -46,11 +47,23 @@
 
 .table-detail-container {
     color: white;
+    box-sizing: border-box;
     margin: 20px;
     border: 2px solid black;
     padding: 10px;
     box-shadow: 3px 0 8px 2px #000000;
     border-radius: 8px;
+    min-height: 400px;
+    max-height: fit-content;
+    max-width: 100%;
+    position: sticky;
+    top: 20px;
+    overflow: auto;
+    
+}
+
+h2 {
+    overflow-wrap: break-word;
 }
 
 #detail-crowdin-link {

@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import { fetchProducts } from "../../services/api"
 import { useQuery } from "@tanstack/react-query"
 import { useState } from "react";
@@ -79,7 +80,7 @@ export function Table({ onRowClick }) {
       {table.getRowModel().rows.map(row => (
         <tr className="table-row" style={{ cursor: 'pointer' }} key={row.id} onClick={() => onRowClick(row.original)}>
           {row.getVisibleCells().map(cell => (
-            <td key={cell.id}>
+            <td className="table-data" key={cell.id}>
               {flexRender(cell.column.columnDef.cell, cell.getContext())}
             </td>
           ))}
