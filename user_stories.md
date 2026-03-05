@@ -16,10 +16,10 @@
 ## Dev
 - [x] The backend API must use Node.js to take advantage of async capabilities
 - [ ] JSON returned from API must conform to the following schema, types and enums:
-    - [ ] title: string
-    - [ ] productCode: string
-    - [ ] targetLang: string
-        - [ ] this must be a "friendly name" e.g. "Spanish" not "es"
+    - [x] title: string
+    - [x] productCode: string
+    - [x] targetLang: string
+        - [x] this must be a "friendly name" e.g. "Spanish" not "es"
     - [ ] productStatus: string = completed || pending || unknown
     - [ ] crowdinUrl: string || null
     - [ ] due: string (date format) || null

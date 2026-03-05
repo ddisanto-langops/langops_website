@@ -1,3 +1,90 @@
+export const exampleCard = {
+  "id": "62d5cd6d94f25a13f0e48849",
+  "agent": {
+    "name": null,
+    "conversationId": null
+  },
+  "badges": {
+    "fogbugz": "",
+    "checkItems": 0,
+    "checkItemsChecked": 0,
+    "checkItemsEarliestDue": null,
+    "comments": 0,
+    "attachments": 0,
+    "description": false,
+    "due": null,
+    "dueComplete": false,
+    "start": null,
+    "lastUpdatedByAi": false,
+    "attachmentsByType": {
+      "trello": {
+        "board": 0,
+        "card": 0
+      }
+    },
+    "externalSource": null,
+    "location": false,
+    "votes": 0,
+    "maliciousAttachments": 0,
+    "viewingMemberVoted": false,
+    "subscribed": false
+  },
+  "checkItemStates": [],
+  "closed": false,
+  "dueComplete": false,
+  "dateLastActivity": "2025-05-31T00:31:44.117Z",
+  "desc": "",
+  "descData": {
+    "emoji": {}
+  },
+  "due": null,
+  "dueReminder": null,
+  "email": null,
+  "idBoard": "5176af831f22073e1e0012e3",
+  "idChecklists": [],
+  "idList": "6688680c9a436b6d6f969af9",
+  "idMembers": [],
+  "idMembersVoted": [],
+  "idShort": 13756,
+  "idAttachmentCover": null,
+  "labels": [
+    {
+      "id": "668ea91e9d95af525d18f039",
+      "idBoard": "5176af831f22073e1e0012e3",
+      "idOrganization": "515c52a01071a6096b000680",
+      "name": "ITALIAN",
+      "nodeId": "ari:cloud:trello::label/workspace/515c52a01071a6096b000680/668ea91e9d95af525d18f039",
+      "color": "purple_dark",
+      "uses": 104
+    }
+  ],
+  "idLabels": [
+    "668ea91e9d95af525d18f039"
+  ],
+  "manualCoverAttachment": false,
+  "name": "TB_Israel-Trying-to-Fill-US-Size-Void-With-Germany-STAFF1176_EN-ES",
+  "nodeId": "ari:cloud:trello::card/workspace/515c52a01071a6096b000680/62d5cd6d94f25a13f0e48849",
+  "pinned": false,
+  "pos": 1343488,
+  "shortLink": "cWZzOTaV",
+  "shortUrl": "https://trello.com/c/cWZzOTaV",
+  "start": null,
+  "subscribed": false,
+  "url": "https://trello.com/c/cWZzOTaV/13756-t-atkit-chapter-seven-stolen-election-fake-insurrection",
+  "cover": {
+    "idAttachment": null,
+    "color": null,
+    "idUploadedBackground": null,
+    "size": "normal",
+    "brightness": "dark",
+    "yPosition": 0.5,
+    "idPlugin": null
+  },
+  "isTemplate": false,
+  "cardRole": null,
+  "mirrorSourceId": null
+}
+
 export const exampleData = [
   {
     "title": "ANN_Global_Report_JD_1200_2024-05-12_EN-ES",

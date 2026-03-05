@@ -1,5 +1,6 @@
 import fetch from 'node-fetch'
-import { customFields } from './constants.mjs';
+import { customFields, languageCodes } from './constants.mjs';
+import { exampleCard } from './exampleData.mjs';
 
 export async function getAllCards() { 
     const boardId = process.env.TrelloBoardId;
@@ -10,7 +11,7 @@ export async function getAllCards() {
         const response = await fetch(`https://api.trello.com/1/boards/${boardId}/cards?key=${key}&token=${token}`, {
             method: 'GET',
         })
-        return JSON.stringify(response)
+        return response.json()
 
     } catch (error) {
         console.log(`getAllCards: ${error.message}`)
@@ -19,13 +20,19 @@ export async function getAllCards() {
 }
 
 export function extractProducts(cards) {
-    let published = false;
-    let crowdinProjectId = null;
-    let crowdinFileId = null;
+
+    const productCodePattern = '^([A-Z-]*)([0-9]*[A-Z]*)(?=_)'
+    const targetLangPattern = '(?<=_)([AENSFINLRDTOPH]{2})(?:[-])([AENSFINLRDTOPH]{2})(?![A-Za-z-])'
     let productData = []
 
     try {
+
         for (let card of cards) {
+            const title = card.name;
+            const productCode = title.match(productCodePattern)?.[1];
+            const targetLang = languageCodes[title.match(targetLangPattern)?.[2]];
+            
+            /*
             for (item of card['customFieldItems']) {
             
                 // Check if has "published" field and if it's checked off
@@ -43,19 +50,22 @@ export function extractProducts(cards) {
                     crowdinFileId = item['value']['text']
                 }
             }
-        
+            */
             productData.push({
                 // TODO: finish building this JSON structure to match desired schema
-                'published': published,
-                'crowdinProectjId': crowdinProjectId,
-                'crowdinFileId': crowdinFileId
+                "title": title,
+                "productCode": productCode,
+                "targetLang": targetLang
+                
             }) 
+        
     }
+    
 
     return productData
 
     } catch (error) {
-        console.log(`getCustomFields: ${error.message}`)
+        console.log(`extractProducts: ${error.message}`)
     }
 
     
@@ -64,14 +74,9 @@ export function extractProducts(cards) {
 }
 
 
-export function filterCards(cards) {
-    const pattern = '^([A-Z-]*)([0-9]*[A-Z]*)(?=_)'
-}
-
-
-
-
 // TESTING
-const cards = await getAllCards()
+//const cards = await getAllCards()
 
-console.log(cards[400])
+const result = extractProducts([exampleCard]);
+console.log(result)
+

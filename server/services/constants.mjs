@@ -34,3 +34,15 @@ export const trelloLangIds = [
     "675064f4fc67adcbbdfc2e47", // Finnish
     "683a26393a0502e6f5dc33d6" // Hebrew
 ]
+
+export const languageCodes = {
+    'FR': 'French',
+    'DE': 'German',
+    'ES': 'Spanish',
+    'PT': 'Portuguese',
+    'NL': 'Dutch',
+    'IT': 'Italian',
+    'AF': 'Afrikaans',
+    'FI': 'FINNISH',
+    'HE': 'Hebrew'
+}
