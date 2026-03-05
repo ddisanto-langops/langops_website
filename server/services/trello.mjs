@@ -31,6 +31,9 @@ export function extractProducts(cards) {
             const title = card.name;
             const productCode = title.match(productCodePattern)?.[1];
             const targetLang = languageCodes[title.match(targetLangPattern)?.[2]];
+            // TODO: Finish writing product data extraction
+
+            //TODO: add custom fields to product object
             
             /*
             for (item of card['customFieldItems']) {
