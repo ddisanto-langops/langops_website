@@ -33,8 +33,7 @@ export function extractProducts(cards) {
             const targetLang = languageCodes[title.match(targetLangPattern)?.[2]];
             // TODO: Finish writing product data extraction
 
-            //TODO: add custom fields to product object
-            
+            //TODO: add custom fields to product object and verify code below            
             /*
             for (item of card['customFieldItems']) {
             
