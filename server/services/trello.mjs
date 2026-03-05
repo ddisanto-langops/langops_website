@@ -10,42 +10,55 @@ export async function getAllCards() {
         const response = await fetch(`https://api.trello.com/1/boards/${boardId}/cards?key=${key}&token=${token}`, {
             method: 'GET',
         })
-        return response.text()
+        return JSON.stringify(response)
 
     } catch (error) {
-        console.log(error.message)
+        console.log(`getAllCards: ${error.message}`)
     }
     
 }
 
-export function getCustomFields(cards) {
+export function extractProducts(cards) {
     let published = false;
     let crowdinProjectId = null;
     let crowdinFileId = null;
-    let customFieldData = []
+    let productData = []
 
-    for (let card in cards) {
-        for (item in card['customFieldItems']) {
+    try {
+        for (let card of cards) {
+            for (item of card['customFieldItems']) {
             
-            // Check if has "published" field and if it's checked off
-            if (item === customFields.published && item['value']['checked'] === 'true') {
-                published = true
-            }
+                // Check if has "published" field and if it's checked off
+                if (item === customFields.published && item['value']['checked'] === 'true') {
+                    published = true
+                }
 
-            // Check if has Crowdin project ID
-            if (item['idCustomField'] === customFields.crowdinProj && item['value']['text']) {
-                crowdinProjectId = item['value']['text']
-            }
+                // Check if has Crowdin project ID
+                if (item['idCustomField'] === customFields.crowdinProj && item['value']['text']) {
+                    crowdinProjectId = item['value']['text']
+                }
 
-            // Check if has Crowdin file ID
-            if (item['idCustomField'] === customFields.crowdinFile && item['value']['text']) {
-                crowdinFileId = item['value']['text']
+                // Check if has Crowdin file ID
+                if (item['idCustomField'] === customFields.crowdinFile && item['value']['text']) {
+                    crowdinFileId = item['value']['text']
+                }
             }
-        }
-        customFieldData.push({'published': published, 'crowdinProectjId': crowdinProjectId, 'crowdinFileId': crowdinFileId}) 
+        
+            productData.push({
+                // TODO: finish building this JSON structure to match desired schema
+                'published': published,
+                'crowdinProectjId': crowdinProjectId,
+                'crowdinFileId': crowdinFileId
+            }) 
     }
 
-    return customFieldData
+    return productData
+
+    } catch (error) {
+        console.log(`getCustomFields: ${error.message}`)
+    }
+
+    
     
     
 }
@@ -60,5 +73,5 @@ export function filterCards(cards) {
 
 // TESTING
 const cards = await getAllCards()
-const fields = getCustomFields(cards)
-console.log(fields)
+
+console.log(cards[400])

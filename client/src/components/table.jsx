@@ -12,6 +12,12 @@ import {
   flexRender
 } from '@tanstack/react-table'
 
+const includesMediaType = (row, columnId, filterValue) => {
+  if (!filterValue || filterValue.length === 0) return true
+  const cellValue = row.getValue(columnId)
+  return filterValue.some(val => cellValue?.includes(val))
+}
+
 const columnHelper = createColumnHelper()
 
 const columns = [
@@ -29,8 +35,8 @@ const columns = [
   }),
   columnHelper.accessor(row => row.mediaInfo?.mediaType, {
   id: 'mediaType',
-  header: 'Media Type',
   enableHiding: true,
+  filterFn: includesMediaType,
   })
 ]
 
@@ -59,8 +65,8 @@ export function Table({ onRowClick }) {
   })
 
   const handleTabClick = (value) => {
-  setActiveTab(value)
-  table.getColumn('mediaType').setFilterValue(value)
+    setActiveTab(value)
+    table.getColumn('mediaType').setFilterValue(value)
 }
 
   return (
