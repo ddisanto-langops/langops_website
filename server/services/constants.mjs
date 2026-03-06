@@ -14,6 +14,7 @@ export const productCodes = [
     'LIT-S',
     'LSS',
     'MB',
+    'POD',
     'PT',
     'PTVID',
     'RV',
@@ -22,6 +23,13 @@ export const productCodes = [
     'TB',
     'TW'
 ]
+
+export const productGroups = {
+    literature: ['CWL', 'LIT', 'LIT-S'],
+    interpretation: ['ANN', 'BS', 'SER', 'SMT'],
+    website: ['LIT-S', 'PT', 'TB', 'MB', 'KOD', 'POD'],
+    audio_video: ['KOD', 'TW', 'POD', 'WW', 'OTHER']
+}
 
 export const trelloLangIds = [
     "65a69ef7128bbe9b3123689c", // French

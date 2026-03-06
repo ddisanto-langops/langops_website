@@ -20,14 +20,14 @@
     - [x] productCode: string
     - [x] targetLang: string
         - [x] this must be a "friendly name" e.g. "Spanish" not "es"
-    - [ ] productStatus: string = completed || pending || unknown
+    - [x] productStatus: string = completed || pending || unknown
     - [x] crowdinUrl: string || null
     - [x] TrelloUrl: string
     - [x] due: string (date format) || null
     - [x] lastActivity: string (date format) || null
-    - [ ] published: boolean
-    - [ ] translationProg: integer || null
-    - [ ] approvalProg: integer || null
+    - [x] published: boolean
+    - [x] translationProg: integer || null
+    - [x] approvalProg: integer || null
     - [ ] mediaInfo: dict
         - [ ] mediaType: array[string] = audio_video || literature || website || interpretation || pcog.church
         - [ ] wordCount: int || null
