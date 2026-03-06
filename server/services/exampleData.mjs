@@ -1,88 +1,100 @@
 export const exampleCard = {
-  "id": "62d5cd6d94f25a13f0e48849",
-  "agent": {
-    "name": null,
-    "conversationId": null
+  id: '69aa2a43b715b9334ac55c30',
+  agent: { name: null, conversationId: null },
+  badges: {
+    attachments: 2,
+    fogbugz: '',
+    checkItems: 14,
+    checkItemsChecked: 0,
+    checkItemsEarliestDue: null,
+    comments: 0,
+    description: true,
+    due: '2026-03-06T10:00:00.000Z',
+    dueComplete: false,
+    lastUpdatedByAi: false,
+    start: null,
+    externalSource: null,
+    attachmentsByType: { trello: [Object] },
+    location: false,
+    votes: 0,
+    maliciousAttachments: 0,
+    viewingMemberVoted: false,
+    subscribed: false
   },
-  "badges": {
-    "fogbugz": "",
-    "checkItems": 0,
-    "checkItemsChecked": 0,
-    "checkItemsEarliestDue": null,
-    "comments": 0,
-    "attachments": 0,
-    "description": false,
-    "due": null,
-    "dueComplete": false,
-    "start": null,
-    "lastUpdatedByAi": false,
-    "attachmentsByType": {
-      "trello": {
-        "board": 0,
-        "card": 0
-      }
-    },
-    "externalSource": null,
-    "location": false,
-    "votes": 0,
-    "maliciousAttachments": 0,
-    "viewingMemberVoted": false,
-    "subscribed": false
-  },
-  "checkItemStates": [],
-  "closed": false,
-  "dueComplete": false,
-  "dateLastActivity": "2025-05-31T00:31:44.117Z",
-  "desc": "",
-  "descData": {
-    "emoji": {}
-  },
-  "due": null,
-  "dueReminder": null,
-  "email": null,
-  "idBoard": "5176af831f22073e1e0012e3",
-  "idChecklists": [],
-  "idList": "6688680c9a436b6d6f969af9",
-  "idMembers": [],
-  "idMembersVoted": [],
-  "idShort": 13756,
-  "idAttachmentCover": null,
-  "labels": [
+  checkItemStates: [],
+  closed: false,
+  dueComplete: false,
+  dateLastActivity: '2026-03-06T01:52:07.189Z',
+  desc: 'TYPE: MB\n' +
+    '\n' +
+    '**Filename:**\n' +
+    '\n' +
+    'MB [Month] [dd] - STAFF[word count]\n' +
+    '\n' +
+    '**PATH:**\n' +
+    '\n' +
+    '[MT] → [MTPE] → [TTA]',
+  descData: { emoji: {} },
+  due: '2026-03-06T10:00:00.000Z',
+  dueReminder: null,
+  email: null,
+  idBoard: '5176af831f22073e1e0012e3',
+  idChecklists: [
+    '69aa2a43b715b9334ac55d89',
+    '69aa2a43b715b9334ac55d93',
+    '69aa2a43b715b9334ac55d97',
+    '69aa2a43b715b9334ac55d99',
+    '69aa2a43b715b9334ac55d9f',
+    '69aa2a43b715b9334ac55dad'
+  ],
+  idList: '696e3b7a725288d21573840f',
+  idMembers: [],
+  idMembersVoted: [],
+  idShort: 22538,
+  idAttachmentCover: null,
+  labels: [
     {
-      "id": "668ea91e9d95af525d18f039",
-      "idBoard": "5176af831f22073e1e0012e3",
-      "idOrganization": "515c52a01071a6096b000680",
-      "name": "ITALIAN",
-      "nodeId": "ari:cloud:trello::label/workspace/515c52a01071a6096b000680/668ea91e9d95af525d18f039",
-      "color": "purple_dark",
-      "uses": 104
+      id: '65ba0fca608afe05de600231',
+      idBoard: '5176af831f22073e1e0012e3',
+      idOrganization: '515c52a01071a6096b000680',
+      name: 'WEB ARTICLE',
+      nodeId: 'ari:cloud:trello::label/workspace/515c52a01071a6096b000680/65ba0fca608afe05de600231',
+      color: 'lime',
+      uses: 2985
+    },
+    {
+      id: '65a69ef7128bbe9b3123689c',
+      idBoard: '5176af831f22073e1e0012e3',
+      idOrganization: '515c52a01071a6096b000680',
+      name: 'FRENCH',
+      nodeId: 'ari:cloud:trello::label/workspace/515c52a01071a6096b000680/65a69ef7128bbe9b3123689c',
+      color: 'purple_light',
+      uses: 2573
     }
   ],
-  "idLabels": [
-    "668ea91e9d95af525d18f039"
-  ],
-  "manualCoverAttachment": false,
-  "name": "TB_Israel-Trying-to-Fill-US-Size-Void-With-Germany-STAFF1176_EN-ES",
-  "nodeId": "ari:cloud:trello::card/workspace/515c52a01071a6096b000680/62d5cd6d94f25a13f0e48849",
-  "pinned": false,
-  "pos": 1343488,
-  "shortLink": "cWZzOTaV",
-  "shortUrl": "https://trello.com/c/cWZzOTaV",
-  "start": null,
-  "subscribed": false,
-  "url": "https://trello.com/c/cWZzOTaV/13756-t-atkit-chapter-seven-stolen-election-fake-insurrection",
-  "cover": {
-    "idAttachment": null,
-    "color": null,
-    "idUploadedBackground": null,
-    "size": "normal",
-    "brightness": "dark",
-    "yPosition": 0.5,
-    "idPlugin": null
+  idLabels: [ '65ba0fca608afe05de600231', '65a69ef7128bbe9b3123689c' ],
+  manualCoverAttachment: true,
+  name: 'MB_TEST_20260305_EN-FR',
+  nodeId: 'ari:cloud:trello::card/workspace/515c52a01071a6096b000680/69aa2a43b715b9334ac55c30',
+  pinned: false,
+  pos: 140737488486400,
+  shortLink: '1FQ2Lgxj',
+  shortUrl: 'https://trello.com/c/1FQ2Lgxj',
+  start: null,
+  subscribed: false,
+  url: 'https://trello.com/c/1FQ2Lgxj/22538-mbtest20260305en-fr',
+  cover: {
+    idAttachment: null,
+    color: 'purple',
+    idUploadedBackground: null,
+    size: 'normal',
+    brightness: 'light',
+    yPosition: 0.5,
+    idPlugin: null
   },
-  "isTemplate": false,
-  "cardRole": null,
-  "mirrorSourceId": null
+  isTemplate: false,
+  cardRole: null,
+  mirrorSourceId: null
 }
 
 export const exampleData = [

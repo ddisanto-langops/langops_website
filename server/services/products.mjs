@@ -2,10 +2,13 @@ import fetch from 'node-fetch'
 import { customFields, languageCodes, productCodes } from './constants.mjs';
 import { exampleCard } from './exampleData.mjs';
 
+const boardId = process.env.TrelloBoardId;
+const key = process.env.TrelloKey;
+const token = process.env.TrelloToken;
+
+
 export async function getAllCards() { 
-    const boardId = process.env.TrelloBoardId;
-    const key = process.env.TrelloKey;
-    const token = process.env.TrelloToken;
+    
 
     try {
         const response = await fetch(`https://api.trello.com/1/boards/${boardId}/cards?key=${key}&token=${token}`, {
@@ -16,16 +19,27 @@ export async function getAllCards() {
     } catch (error) {
         console.log(`getAllCards: ${error.message}`)
     }
-    
 }
 
 
+export async function getExpandedCard(cardId) {
+    try {
+        const response = await fetch(`https://api.trello.com/1/cards/${cardId}?key=${key}&token=${token}`,{
+            method: 'GET'
+        })
+        return response.json()
+    } catch (error) {
+        console.log(`getExpandedCards: ${error.message}`)
+    }
+}
+
+// TODO: Divide into separate concerns
 export function extractProducts(cards) {
 
-    const productCodePattern = '^([A-Z-]*)([0-9]*[A-Z]*)(?=_)'
-    const targetLangPattern = '(?<=_)([AENSFINLRDTOPH]{2})(?:[-])([AENSFINLRDTOPH]{2})(?![A-Za-z-])'
+    const productCodePattern = '^([A-Z-]*)([0-9]*[A-Z]*)(?=_)';
+    const targetLangPattern = '(?<=_)([AENSFINLRDTOPH]{2})(?:[-])([AENSFINLRDTOPH]{2})(?![A-Za-z-])';
 
-    let productData = []
+    let productData = [];
 
     try {
 
@@ -37,7 +51,19 @@ export function extractProducts(cards) {
             if (!productCode || !productCodes.includes(productCode)) continue;
             
             const targetLang = languageCodes[title.match(targetLangPattern)?.[2]];
-            
+            const trelloUrl = card.url;
+            const due = card.due;
+            const lastActivity = card.dateLastActivity;
+
+            // NEEDS detail version of card below this line
+            let crowdinUrl = null;
+            for (let item of card.actions) {
+                if (item?.data?.attachment?.name === "Crowdin") {
+                    crowdinUrl = item.data.attachment.url
+                }
+            }
+
+            let published = null;
             
             // TODO: Finish writing product data extraction
 
@@ -69,7 +95,11 @@ export function extractProducts(cards) {
                 // TODO: finish building this JSON structure to match desired schema
                 "title": title,
                 "productCode": productCode,
-                "targetLang": targetLang
+                "targetLang": targetLang,
+                "trelloUrl": trelloUrl,
+                "crowdinUrl": crowdinUrl,
+                "due": due,
+                "lastActivity": lastActivity
                 
             }) 
         
@@ -89,8 +119,14 @@ export function extractProducts(cards) {
 
 
 // TESTING
-//const cards = await getAllCards()
-
-const result = extractProducts([exampleCard]);
+/*
+const cards = await getAllCards()
+for (let card of cards) {
+    if (card.name === 'MB_TEST_20260305_EN-FR') {
+        console.log(card)
+    }
+}
+*/
+const result = await getExpandedCard('69aa2a43b715b9334ac55c30');
 console.log(result)
 
