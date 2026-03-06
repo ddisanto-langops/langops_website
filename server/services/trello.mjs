@@ -1,5 +1,5 @@
 import fetch from 'node-fetch'
-import { customFields, languageCodes } from './constants.mjs';
+import { customFields, languageCodes, productCodes } from './constants.mjs';
 import { exampleCard } from './exampleData.mjs';
 
 export async function getAllCards() { 
@@ -19,19 +19,31 @@ export async function getAllCards() {
     
 }
 
+
 export function extractProducts(cards) {
 
     const productCodePattern = '^([A-Z-]*)([0-9]*[A-Z]*)(?=_)'
     const targetLangPattern = '(?<=_)([AENSFINLRDTOPH]{2})(?:[-])([AENSFINLRDTOPH]{2})(?![A-Za-z-])'
+
     let productData = []
 
     try {
 
         for (let card of cards) {
             const title = card.name;
+            
+            // skip cards that aren't a valid product as defined in constants
             const productCode = title.match(productCodePattern)?.[1];
+            if (!productCode || !productCodes.includes(productCode)) continue;
+            
             const targetLang = languageCodes[title.match(targetLangPattern)?.[2]];
+            
+            
             // TODO: Finish writing product data extraction
+
+
+            
+
 
             //TODO: add custom fields to product object and verify code below            
             /*
