@@ -235,8 +235,10 @@ export async function getProductData(trelloData) {
 }
 
 // TESTING
+/*
 const cards =  await getAllCards()
 const trelloProducts = await getTrelloProducts(cards)
 const products = await getProductData(trelloProducts)
 
 console.log(products)
+*/

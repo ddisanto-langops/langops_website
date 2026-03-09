@@ -15,6 +15,8 @@
 
 ## Dev
 - [x] The backend API must use Node.js to take advantage of async capabilities
+
+### JSON Schema (transient data)
 - [ ] JSON returned from API must conform to the following schema, types and enums:
     - [x] title: string
     - [x] productCode: string
@@ -29,6 +31,21 @@
     - [x] translationProg: integer || null
     - [x] approvalProg: integer || null
     - [ ] mediaInfo: dict
+        - [x] mediaType: array[string] = audio_video || literature || website || interpretation || pcog.church
+        - [x] wordCount: int || null
+        - [ ] duration: int (time in minutes) || null
+
+### JSON Schema (permanent data)
+- [ ] The JSON used to store product information long-term must conform to the following schema, types and enums:
+    - [ ] title: string
+    - [ ] productCode: string
+    - [ ] targetLang: string
+    - [ ] mediaInfo: dict
         - [ ] mediaType: array[string] = audio_video || literature || website || interpretation || pcog.church
         - [ ] wordCount: int || null
         - [ ] duration: int (time in minutes) || null
+    - [ ] dateCompleted
+    - [ ] dateCreated
+    - [ ] dateArchived
+    
+
