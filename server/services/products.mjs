@@ -173,7 +173,7 @@ function getProductStatus(product) {
 }
 
 function getMediaInfo(product) {
-    const wordcountPattern = '-[A-Z]{2,}([0-9]*)_';
+    const wordcountPattern = '(?<=-)(?:[A-Z+]*)([0-9]{1,})(?=_)';
     const title = product.title;
     
     // Extract word count from regex match

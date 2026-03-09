@@ -8,7 +8,7 @@
     - [ ] Data must be 2025 and onward  
     - [x] Must be able to filter data by language  
     - [x] Table must show a condensed view and be expandable on click 
-    - [ ] Table must implement an on-click filter for each tab in the spreadsheet
+    - [x] Table must implement an on-click filter for each tab in the spreadsheet
 - [ ] There must be a dashbaord-style page for total words translated per language  
     - [ ] This page must also be filterable by product type
     
