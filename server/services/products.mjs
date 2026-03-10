@@ -1,12 +1,11 @@
 import fetch from 'node-fetch'
 import { TranslationStatus } from '@crowdin/crowdin-api-client';
 import { customFields, languageCodes, productCodes, productGroups } from './constants.mjs';
+import pool from '../database/databaseConfig.mjs';
 
 const trelloBoardId = process.env.TrelloBoardId;
 const trelloKey = process.env.TrelloKey;
 const trelloToken = process.env.TrelloToken;
-
-
 
 // lookup
 // Pre-process the groups into a Map of arrays
@@ -234,11 +233,82 @@ export async function getProductData(trelloData) {
     }
 }
 
-// TESTING
-/*
-const cards =  await getAllCards()
-const trelloProducts = await getTrelloProducts(cards)
-const products = await getProductData(trelloProducts)
+export async function upsertProducts(products) {
 
-console.log(products)
-*/
+  for (const product of products) {
+
+    // Upsert into products table (full transient state)
+    await pool.query(`
+      INSERT INTO products (
+        title, productCode, targetLang, productStatus,
+        crowdinUrl, trelloUrl, due, lastActivity,
+        published, translationProg, approvalProg,
+        mediaType, wordCount
+      ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)
+      ON CONFLICT (title) DO UPDATE SET
+        productCode     = EXCLUDED.productCode,
+        targetLang      = EXCLUDED.targetLang,
+        productStatus   = EXCLUDED.productStatus,
+        crowdinUrl      = EXCLUDED.crowdinUrl,
+        trelloUrl       = EXCLUDED.trelloUrl,
+        due             = EXCLUDED.due,
+        lastActivity    = EXCLUDED.lastActivity,
+        published       = EXCLUDED.published,
+        translationProg = EXCLUDED.translationProg,
+        approvalProg    = EXCLUDED.approvalProg,
+        mediaType       = EXCLUDED.mediaType,
+        wordCount       = EXCLUDED.wordCount
+    `, [
+      product.title,
+      product.productCode,
+      product.targetLang,
+      product.productStatus,
+      product.crowdinUrl ?? null,
+      product.trelloUrl,
+      product.due ?? null,
+      product.lastActivity ?? null,
+      product.published,
+      product.translationProg ?? null,
+      product.approvalProg ?? null,
+      product.mediaInfo?.mediaType ?? null,
+      product.mediaInfo?.wordCount ?? null
+    ])
+
+    // If completed, upsert into completions table
+    if (product.productStatus === 'completed') {
+      await pool.query(`
+        INSERT INTO completions (
+          title, productCode, targetLang,
+          mediaType, wordCount, duration, datePublished
+        ) VALUES ($1,$2,$3,$4,$5,$6,$7)
+        ON CONFLICT (title) DO UPDATE SET
+          wordCount     = EXCLUDED.wordCount,
+          datePublished = EXCLUDED.datePublished,
+          mediaType     = EXCLUDED.mediaType
+      `, [
+        product.title,
+        product.productCode,
+        product.targetLang,
+        product.mediaInfo?.mediaType ?? null,
+        product.mediaInfo?.wordCount ?? null,
+        product.lastActivity ?? null
+      ])
+    }
+  }
+}
+
+export async function archiveProducts(activeTitles) {
+  // Remove from products table
+  await pool.query(`
+    DELETE FROM products
+    WHERE title != ALL($1)
+  `, [activeTitles])
+
+  // Set dateArchived in completions for anything no longer active
+  await pool.query(`
+    UPDATE completions
+    SET dateArchived = NOW()
+    WHERE dateArchived IS NULL
+    AND title != ALL($1)
+  `, [activeTitles])
+}

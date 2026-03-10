@@ -1,6 +1,6 @@
 # Requirements
 
-## Business Logic
+**Business Logic**
 - [ ] Allow access only to users identified via Cloudflare  
 - [x] Needs at least one main data table
     - [x] Searching target languages needs to use friendly names
@@ -11,12 +11,11 @@
     - [x] Table must implement an on-click filter for each tab in the spreadsheet
 - [ ] There must be a dashbaord-style page for total words translated per language  
     - [ ] This page must also be filterable by product type
-    
 
-## Dev
+**Dev**
 - [x] The backend API must use Node.js to take advantage of async capabilities
 
-### JSON Schema (transient data)
+**JSON Schema (transient data)**
 - [ ] JSON returned from API must conform to the following schema, types and enums:
     - [x] title: string
     - [x] productCode: string
@@ -33,9 +32,8 @@
     - [ ] mediaInfo: dict
         - [x] mediaType: array[string] = audio_video || literature || website || interpretation || pcog.church
         - [x] wordCount: int || null
-        - [ ] duration: int (time in minutes) || null
 
-### JSON Schema (permanent data)
+**JSON Schema (permanent data)**  
 - [ ] The JSON used to store product information long-term must conform to the following schema, types and enums:
     - [ ] title: string
     - [ ] productCode: string
@@ -43,9 +41,35 @@
     - [ ] mediaInfo: dict
         - [ ] mediaType: array[string] = audio_video || literature || website || interpretation || pcog.church
         - [ ] wordCount: int || null
-        - [ ] duration: int (time in minutes) || null
-    - [ ] dateCompleted
-    - [ ] dateCreated
+    - [ ] datePublished
     - [ ] dateArchived
     
+## PostgreSQL Databases  
+*Database name: langops_dashboard*   
 
+**Transient Data**   
+*Table name: products*  
+*keys:*  
+- title: TEXT PRIMARY KEY  
+- productCode: TEXT  
+- targetLang: TEXT  
+- productStatus: TEXT  
+- crowdinUrl: TEXT  
+- TrelloUrl: TEXT  
+- due: TIMESTAMP WITH TIME ZONE  
+- lastActivity: TIMESTAMP WITH TIME ZONE  
+- published: BOOLEAN  
+- translationProg: INTEGER  
+- approvalProg: INTEGER  
+- mediaType: TEXT[]  
+- wordCount: INTEGER
+
+**Permanent Data**  
+*Table name: completions*  
+*keys:*
+- id: SERIAL PRIMARY KEY  
+- title: TEXT  
+- productCode: TEXT  
+- targetLang: TEXT  
+- datePublished: TIMESTAMP WITH TIME ZONE  
+- dateArchived: TIMESTAMP DEFAULT NOW() 
