@@ -12,14 +12,19 @@ export async function syncProducts() {
     console.log('Syncing products...')
 
     const cards = await getAllCards()
+    console.log(`Fetched ${cards.length} total cards.`)
+
     const trelloProducts = await getTrelloProducts(cards)
+    console.log(`Found ${trelloProducts.length} products.`)
+
     const products = await getProductData(trelloProducts)
+    console.log(`Added data to ${products.length} products.`)
 
     await upsertProducts(products)
+    console.log("Products added to database.")
 
     const activeTitles = products.map(p => p.title)
     await archiveProducts(activeTitles)
-
     console.log(`Synced ${products.length} products`)
 
   } catch (error) {

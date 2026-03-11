@@ -4,6 +4,7 @@ import pool from '../database/databaseConfig.mjs';
 const router = Router();
 
 router.get("/api/data", async (req, res) => {
+    console.log("Querying database...")
     try {
         const result = await pool.query(`
         SELECT 
