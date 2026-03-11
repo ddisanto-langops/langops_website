@@ -1,6 +1,6 @@
 import express from 'express';
+import router from './routes/index.mjs'
 import cors from 'cors'
-import routes from './routes/index.mjs'
 import path from 'path'
 import { fileURLToPath } from 'url'
 
@@ -9,8 +9,12 @@ const app = express();
 const PORT = process.env.PORT || 3200;
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
+const router = Router()
+
 // allow cors
 app.use(cors())
+
+app.use(router)
 
 app.use(express.static(path.join(__dirname,'../client/dist')))
 
