@@ -178,8 +178,7 @@ function getMediaInfo(product) {
     // Extract word count from regex match
     const wordCountMatch = title.match(wordcountPattern);
     const wordCount = wordCountMatch ? wordCountMatch[1] : null;
-    
-    const duration = null;
+
     const productCode = product.productCode;
     
     // FAST LOOKUP: Returns array of group names, or empty array if not found
@@ -188,7 +187,6 @@ function getMediaInfo(product) {
     return {
         mediaType: mediaType,
         wordCount: wordCount,
-        duration: duration
         }
     
 }
@@ -279,7 +277,7 @@ export async function upsertProducts(products) {
       await pool.query(`
         INSERT INTO completions (
           title, productCode, targetLang,
-          mediaType, wordCount, duration, datePublished
+          mediaType, wordCount, datePublished
         ) VALUES ($1,$2,$3,$4,$5,$6,$7)
         ON CONFLICT (title) DO UPDATE SET
           wordCount     = EXCLUDED.wordCount,
