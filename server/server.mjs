@@ -3,7 +3,10 @@ import router from './routes/index.mjs'
 import cors from 'cors'
 import path from 'path'
 import { fileURLToPath } from 'url'
+import { syncProducts } from './services/sync.mjs';
 
+// sync every time the server restarts
+syncProducts()
 
 const app = express();
 const PORT = process.env.PORT || 3200;
