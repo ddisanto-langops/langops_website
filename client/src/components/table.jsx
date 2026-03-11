@@ -35,7 +35,7 @@ const columns = [
   columnHelper.accessor('due', {
     header: 'Due',
   }),
-  columnHelper.accessor(row => row.mediaInfo?.mediaType, {
+  columnHelper.accessor('mediaType', {
   id: 'mediaType',
   enableHiding: true,
   filterFn: includesMediaType,
