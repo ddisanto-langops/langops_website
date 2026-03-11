@@ -278,7 +278,7 @@ export async function upsertProducts(products) {
         INSERT INTO completions (
           title, productCode, targetLang,
           mediaType, wordCount, datePublished
-        ) VALUES ($1,$2,$3,$4,$5,$6,$7)
+        ) VALUES ($1,$2,$3,$4,$5,$6)
         ON CONFLICT (title) DO UPDATE SET
           wordCount     = EXCLUDED.wordCount,
           datePublished = EXCLUDED.datePublished,
