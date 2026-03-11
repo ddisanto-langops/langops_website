@@ -21,7 +21,7 @@ for (const [groupName, codes] of Object.entries(productGroups)) {
 }
 
 
-async function getAllCards() {     
+export async function getAllCards() {     
 
     try {
         const response = await fetch(`https://api.trello.com/1/boards/${trelloBoardId}/cards?key=${trelloKey}&token=${trelloToken}`, {
@@ -35,7 +35,7 @@ async function getAllCards() {
 }
 
 
-async function getTrelloProducts(cards) {
+export async function getTrelloProducts(cards) {
 
     const productCodePattern = '^([A-Z-]*)([0-9]*[A-Z]*)(?=_)';
     const targetLangPattern = '(?<=_)([AENSFINLRDTOPH]{2})(?:[-])([AENSFINLRDTOPH]{2})(?![A-Za-z-])';
