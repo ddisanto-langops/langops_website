@@ -1,6 +1,11 @@
 import cron from 'node-cron'
-import { getAllCards, getTrelloProducts, getProductData } from '../services/trelloService.mjs'
-import { upsertProducts, archiveProducts } from '../db/syncProducts.mjs'
+import { getAllCards,
+    getTrelloProducts,
+    getProductData,
+    upsertProducts,
+    archiveProducts 
+} from '../services/products.mjs'
+
 
 export async function syncProducts() {
   try {
