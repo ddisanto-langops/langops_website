@@ -1,20 +1,10 @@
 import { Router } from 'express';
 import pool from '../database/databaseConfig.mjs';
-import  { syncProducts } from '../services/sync.mjs'
-import { exampleData } from '../services/exampleData.mjs';
 
 const router = Router();
 
 router.get("/api/data", async (req, res) => {
-    res.set('Cache-Control', 'no-store')
     try {
-        const count = await pool.query('SELECT COUNT(*) FROM products')
-
-        if (parseInt(count.rows[0].count) === 0) {
-        console.log('No data found, running initial sync...')
-        await syncProducts()
-        }
-
         const result = await pool.query(`
         SELECT 
             title,
