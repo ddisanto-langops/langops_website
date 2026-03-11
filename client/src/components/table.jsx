@@ -15,7 +15,9 @@ import {
 const includesMediaType = (row, columnId, filterValue) => {
   if (!filterValue || filterValue.length === 0) return true
   const cellValue = row.getValue(columnId)
-  return filterValue.some(val => cellValue?.includes(val))
+  if (!cellValue) return false
+  const filterArray = Array.isArray(filterValue) ? filterValue : [filterValue]
+  return filterArray.some(val => cellValue?.includes(val))
 }
 
 const columnHelper = createColumnHelper()
