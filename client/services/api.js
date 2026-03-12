@@ -3,3 +3,9 @@ export async function fetchProducts() {
     if (!response.ok) throw new Error('Failed to fetch products')
     return response.json()
 }
+
+export async function fetchCompletions() {
+    const response = await fetch("/api/completions")
+    if (!response.ok) throw new Error("Failed to fetch completions data.")
+    return response.json()
+}

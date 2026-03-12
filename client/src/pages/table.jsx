@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Table } from '../components/table'
 import { TableDetail } from '../components/tableDetail'
+import { Link } from 'react-router-dom'
 
 export function TableDisplay() {
 
@@ -8,6 +9,11 @@ export function TableDisplay() {
 
   return (
   <div id='main-container'>
+    <div className='navbar-container'>
+      <nav>
+        <Link to={'/'} className='navbar-link'>Dashboard View</Link>
+      </nav>
+    </div>
     <h1 id='products-page-title'>Products</h1>
     <div className='table-layout-container'>
       <div className='table-container'>

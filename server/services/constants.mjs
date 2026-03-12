@@ -28,7 +28,7 @@ export const productGroups = {
     literature: ['CWL', 'LIT', 'LIT-S'],
     interpretation: ['ANN', 'BS', 'SER', 'SMT'],
     website: ['LIT-S', 'PT', 'TB', 'MB', 'KOD', 'POD'],
-    audio_video: ['KOD', 'TW', 'POD', 'WW', 'OTHER']
+    audio_video: ['KOD', 'TW', 'POD', 'PTVID', 'WW', 'OTHER']
 }
 
 export const trelloLangIds = [

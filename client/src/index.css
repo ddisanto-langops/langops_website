@@ -2,6 +2,18 @@
     background-color: rgb(30, 31, 41);
 }
 
+.navbar-container {
+    min-height: 25px;
+    display: flex;
+    justify-content: left;
+}
+
+.navbar-link {
+    margin: 10px;
+    margin-left: 20px;
+    color: blueviolet;
+}
+
 #main-container {
     color: rgb(32, 170, 235);
 }
@@ -14,6 +26,10 @@
 #dashboard-page-title {
     color: white;
     justify-self: center;
+}
+
+#dashboard-container {
+    display: grid;
 }
 
 .table-layout-container {

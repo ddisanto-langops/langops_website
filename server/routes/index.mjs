@@ -4,7 +4,7 @@ import pool from '../database/databaseConfig.mjs';
 const router = Router();
 
 router.get("/api/data", async (req, res) => {
-    console.log("Querying database...")
+    console.log("Querying transient data...")
     try {
         const result = await pool.query(`
         SELECT 
@@ -30,5 +30,30 @@ router.get("/api/data", async (req, res) => {
         res.status(500).json({ error: error.message })
     }
     })
+
+router.get('api/completions', async (req, res) => {
+    console.log("Querying completions...")
+    const { lang, code, from, to } = req.query
+    console.log(lang, code, from, to)
+
+    try {
+        const result = await pool.query(`
+        SELECT 
+            SUM(wordcount) AS "totalWords",
+            COUNT(*) AS "totalProducts"
+        FROM completions
+        WHERE
+            ($1::text IS NULL OR targetlang = $1)
+            AND ($2::text IS NULL OR productcode = $2)
+            AND ($3::date IS NULL OR datepublished >= $3)
+            AND ($4::date IS NULL OR datepublished <= $4)
+    `, [lang ?? null, code ?? null, from ?? null, to ?? null])
+
+    res.json(result.rows[0])
+        
+    } catch (error) {
+        res.status(500).json({error: error.message})
+    }
+})
 
 export default router;
