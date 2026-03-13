@@ -33,16 +33,20 @@
 }
 
 #dashboard-filter-container {
+    display: flex;
     color: white;
-    justify-items: center;
+    justify-content: center;
 }
 
-#dashboard-lang-select {
+.dashboard-dropdown {
     color: white;
     justify-items: center;
+    margin: 10px;
 }
 
-#total-words {
+#total-words-container {
+    display: flex;
+    justify-content: center;
     font-size: 2rem;
     color: blueviolet;
 }

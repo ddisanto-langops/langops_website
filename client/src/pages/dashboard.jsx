@@ -8,6 +8,7 @@ export default function Dashboard() {
   const [ filters, setFilters ] = useState({
     lang: null,
     code: null,
+    group: null,
     to: null,
     from: null
   })
@@ -22,7 +23,6 @@ export default function Dashboard() {
       <h1 id="dashboard-page-title">Dashboard</h1>
       <div id='dashboard-container'>
         <div id='dashboard-filter-container'>
-          <p>Filter</p>
           <DropdownFilters filters={filters} onFilterChange={setFilters} />
         </div>
         <div id='total-words-container'>

@@ -54,3 +54,15 @@ export const languageCodes = {
     'FI': 'Finnish',
     'HE': 'Hebrew'
 }
+
+export const friendlyLanguages = [
+    'French',
+    'German',
+    'Spanish',
+    'Portuguese',
+    'Dutch',
+    'Italian',
+    'Afrikaans',
+    'Finnish',
+    'Hebrew',
+]

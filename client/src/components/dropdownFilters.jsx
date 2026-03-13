@@ -1,8 +1,12 @@
+import { productCodes, friendlyLanguages, productGroups } from "../../../server/services/constants.mjs"
+
 export function DropdownFilters({filters, onFilterChange}) {
     return (
-
+    
+    <>
     <select
     id="dashboard-lang-select"
+    className="dashboard-dropdown"
       value={filters.lang ?? ''}
       onChange={e => onFilterChange({
         ...filters,
@@ -10,16 +14,40 @@ export function DropdownFilters({filters, onFilterChange}) {
       })}
     >
       <option value="">All Languages</option>
-      <option value="Spanish">Spanish</option>
-      <option value="French">French</option>
-      <option value="German">German</option>
-      <option value="Portuguese">Portuguese</option>
-      <option value="Dutch">Dutch</option>
-      <option value="Italian">Italian</option>
-      <option value="Afrikaans">Afrikaans</option>
-      <option value="Finnish">Finnish</option>
-      <option value="Hebrew">Hebrew</option>
+      {friendlyLanguages.map((option) => (
+        <option value={option}>{option}</option>
+      ))}
     </select>
+    <select
+    id="dashboard-code-select"
+    className="dashboard-dropdown"
+      value={filters.code ?? ''}
+      onChange={e => onFilterChange({
+        ...filters,
+        code: e.target.value || null
+      })}
+    >
+      <option value="">All Codes</option>
+      {productCodes.map((code) => (
+        <option value={code}>{code}</option>
+      ))}
+    </select>
+    <select
+    id="dashboard-group-select"
+    className="dashboard-dropdown"
+      value={filters.group ?? ''}
+      onChange={e => onFilterChange({
+        ...filters,
+        group: e.target.value || null
+      })}
+    >
+      <option value="">All Media Groups</option>
+      {Object.entries(productGroups).map(([group, value]) => (
+        <option value={value}>{group}</option>
+      ))}
+    </select>
+    </>
 
+    // TODO: Add date filters
   )
 }
