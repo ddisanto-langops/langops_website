@@ -44,7 +44,7 @@ router.get('/api/completions', async (req, res) => {
         WHERE
             ($1::text IS NULL OR targetlang = $1)
             AND ($2::text IS NULL OR productcode = $2)
-            AND ($3::text IS NULL OR mediatype = ANY($3::text))
+            AND ($3::text IS NULL OR $3::text = ANY(mediatype))
             AND ($4::date IS NULL OR datepublished >= $4)
             AND ($5::date IS NULL OR datepublished <= $5)
     `, [lang ?? null, code ?? null, group, from ?? null, to ?? null])
