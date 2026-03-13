@@ -6,7 +6,8 @@ export function ClickFilter({ onTabClick }) {
             <button className="click-filter-button" onClick={() => onTabClick(['literature'])}>Literature</button>
             <button className="click-filter-button" onClick={() => onTabClick(['website'])}>Website</button>
             <button className="click-filter-button" onClick={() => onTabClick(['interpretation'])}>Interpretation</button>
-            <button className="click-filter-button" onClick={() => onTabClick(['pcog.church'])}>PCOG.church</button>
+            <button className="click-filter-button" onClick={() => onTabClick(['pcgChurch'])}>PCG.church</button>
+            <button className="click-filter-button" onClick={() => onTabClick(['magazines'])}>Magazines</button>
         </div>
     )
 }

@@ -31,12 +31,21 @@ export const productGroups = {
     audio_video: ['KOD', 'TW', 'POD', 'PTVID', 'WW', 'OTHER']
 }
 
+
+export const labelGroups = {
+    pcgChurch: 'PCG.CHURCH',
+    magazines: 'MAGAZINE'
+}
+
 export const groupDisplayNames = {
     literature: "Literature",
     interpretation: "Interpretation",
     website: "Website",
-    audio_video: "Audio/Video"
+    audio_video: "Audio/Video",
+    pcgChurch: "PCOG.church",
+    magazines: "Magazines"
 }
+
 
 export const trelloLangIds = [
     "65a69ef7128bbe9b3123689c", // French

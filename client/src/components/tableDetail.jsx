@@ -12,8 +12,9 @@ export function TableDetail({ row }) {
       <p>Translation Progress: {row.translationProg ? `${row.translationProg}%` : '❓'}</p>
       <p>Approval Progress: {row.approvalProg ? `${row.approvalProg}%` : '❓'}</p>
       <p>Published: {row.published ? '✅': '❌'} </p>
-      <a className="detail-link" href={row.crowdinUrl}>{row.crowdinUrl ? 'Crowdin Link': ''}</a>
-      <a className="detail-link" href={row.trelloUrl}>{row.trelloUrl ? 'Trello Link': ''}</a>
+      <a className="detail-link" href={row.crowdinUrl} target="_blank" rel="noopener">{row.crowdinUrl ? 'Crowdin Link': ''}</a>
+      <br></br>
+      <a className="detail-link" href={row.trelloUrl} target="_blank" rel="noopener">{row.trelloUrl ? 'Trello Link': ''}</a>
     </div>
   )
 }

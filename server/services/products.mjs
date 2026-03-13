@@ -1,6 +1,6 @@
 import fetch from 'node-fetch'
 import { TranslationStatus } from '@crowdin/crowdin-api-client';
-import { customFields, languageCodes, productCodes, productGroups } from './constants.mjs';
+import { customFields, languageCodes, productCodes, productGroups, labelGroups } from './constants.mjs';
 import pool from '../database/databaseConfig.mjs';
 
 const trelloBoardId = process.env.TrelloBoardId;
@@ -19,6 +19,10 @@ for (const [groupName, codes] of Object.entries(productGroups)) {
         groupLookup.get(code).push(groupName);
     });
 }
+
+const labelLookup = new Map(
+    Object.entries(labelGroups).map(([key, trelloName]) => [trelloName, key])
+)
 
 
 export async function getAllCards() {     
@@ -112,11 +116,14 @@ export async function getTrelloProducts(cards) {
                 }
             }
 
+            // labels
+            const labels = cardJson.labels?.map(l => l.name) ?? []
+
             productData.push({
-                // TODO: finish building this JSON structure to match desired schema
                 "title": title,
                 "productCode": productCode,
                 "targetLang": targetLang,
+                "labels": labels,
                 "trelloUrl": trelloUrl,
                 "crowdinUrl": crowdinUrl,
                 "due": due,
@@ -171,7 +178,7 @@ function getProductStatus(product) {
     return 'unknown'
 }
 
-function getMediaInfo(product) {
+function getMediaInfo(product, labels = []) {
     const wordcountPattern = '(?<=-)(?:[A-Z+]*)([0-9]{1,})(?=_)';
     const title = product.title;
     
@@ -184,8 +191,12 @@ function getMediaInfo(product) {
     // FAST LOOKUP: Returns array of group names, or empty array if not found
     const mediaType = groupLookup.get(productCode) || [];
 
+    const labelMediaTypes = labels
+        .map(label => labelLookup.get(label))
+        .filter(Boolean)
+
     return {
-        mediaType: mediaType,
+        mediaType: [...new Set([...mediaType, ...labelMediaTypes])],
         wordCount: wordCount,
         }
     
@@ -204,7 +215,7 @@ export async function getProductData(trelloData) {
                         translationProg: null,
                         approvalProg: null,
                         productStatus: getProductStatus({...product, translationProg: null}),
-                        mediaInfo: getMediaInfo({...product})
+                        mediaInfo: getMediaInfo({...product}, product.labels ?? [])
 
                     }
                 }
@@ -219,7 +230,7 @@ export async function getProductData(trelloData) {
                     translationProg: crowdinProgress.translationProgress,
                     approvalProg: crowdinProgress.approvalProgress,
                     productStatus: getProductStatus({...product, translationProg: crowdinProgress.translationProgress}),
-                    mediaInfo: getMediaInfo({...product})
+                    mediaInfo: getMediaInfo({...product}, product.labels ?? [])
                 }
             })
         )
