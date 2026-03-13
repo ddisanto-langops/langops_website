@@ -43,24 +43,28 @@ const columns = [
   })
 ]
 
-function fetchExampleData() { //DELETE FOR PROD
-  return exampleData
-}
 
 export function Table({ onRowClick }) {
   
-  //REMOVE FOR PROD AND REINSTATE QUERY BELOW
+
+  /*
+  FOR TESTING ONLY
+
+  function fetchExampleData() {
+  return exampleData
+  }
+
   const { data = [], isLoading, isError } = useQuery({
     queryKey: ['products'],
     queryFn: fetchExampleData
   })
+  */
   
-  /*
   const { data = [], isLoading, isError } = useQuery({
     queryKey: ['products'],
     queryFn: fetchProducts
   })
-  */
+
   const [sorting, setSorting] = useState([])
   const [columnFilters, setColumnFilters] = useState([])
   const [activeTab, setActiveTab] = useState(null)
