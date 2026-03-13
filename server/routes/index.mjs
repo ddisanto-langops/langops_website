@@ -31,10 +31,10 @@ router.get("/api/data", async (req, res) => {
     }
     })
 
-router.get('api/completions', async (req, res) => {
+router.get('/api/completions', async (req, res) => {
     console.log("Querying completions...")
-    const { lang, code, from, to } = req.query
-    console.log(lang, code, from, to)
+    const { lang, code, group, from, to } = req.query
+    console.log(lang, code, group, from, to)
 
     try {
         const result = await pool.query(`
