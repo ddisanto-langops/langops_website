@@ -31,6 +31,13 @@ export const productGroups = {
     audio_video: ['KOD', 'TW', 'POD', 'PTVID', 'WW', 'OTHER']
 }
 
+export const groupDisplayNames = {
+    literature: "Literature",
+    interpretation: "Interpretation",
+    website: "Website",
+    audio_video: "Audio/Video"
+}
+
 export const trelloLangIds = [
     "65a69ef7128bbe9b3123689c", // French
     "65a69f0bd7a48a7be8f06855", // German

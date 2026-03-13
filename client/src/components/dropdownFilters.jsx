@@ -1,4 +1,4 @@
-import { productCodes, friendlyLanguages, productGroups } from "../../../server/services/constants.mjs"
+import { productCodes, friendlyLanguages, groupDisplayNames } from "../../../server/services/constants.mjs"
 
 export function DropdownFilters({filters, onFilterChange}) {
     return (
@@ -19,6 +19,20 @@ export function DropdownFilters({filters, onFilterChange}) {
       ))}
     </select>
     <select
+      id="dashboard-group-select"
+      className="dashboard-dropdown"
+      value={filters.group ?? ''}
+      onChange={e => onFilterChange({
+        ...filters,
+        group: e.target.value || null
+      })}
+    >
+      <option value="">All Media Groups</option>
+      {Object.entries(groupDisplayNames).map(([key, value]) => (
+        <option value={key}>{value}</option>
+      ))}
+    </select>
+    <select
     id="dashboard-code-select"
     className="dashboard-dropdown"
       value={filters.code ?? ''}
@@ -30,20 +44,6 @@ export function DropdownFilters({filters, onFilterChange}) {
       <option value="">All Codes</option>
       {productCodes.map((code) => (
         <option value={code}>{code}</option>
-      ))}
-    </select>
-    <select
-      id="dashboard-group-select"
-      className="dashboard-dropdown"
-      value={filters.group ?? ''}
-      onChange={e => onFilterChange({
-        ...filters,
-        group: e.target.value || null
-      })}
-    >
-      <option value="">All Media Groups</option>
-      {Object.entries(productGroups).map(([group, value]) => (
-        <option value={group}>{group}</option>
       ))}
     </select>
     </>
