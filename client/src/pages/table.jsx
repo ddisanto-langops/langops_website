@@ -9,12 +9,13 @@ export function TableDisplay() {
 
   return (
   <div id='main-container'>
-    <div className='navbar-container'>
-      <nav>
-        <Link to={'/'} className='navbar-link'>Dashboard View</Link>
-      </nav>
+    <div className='page-head-container'>
+      <div className='navbar-container'>
+        <nav>
+          <Link to={'/'} className='navbar-link'>Back To Dashboard View</Link>
+        </nav>
+      </div>
     </div>
-    <h1 id='products-page-title'>Products</h1>
     <div className='table-layout-container'>
       <div className='table-container'>
         <Table onRowClick={setSelectedRow} />

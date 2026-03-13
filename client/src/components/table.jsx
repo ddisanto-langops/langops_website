@@ -1,5 +1,6 @@
 /* eslint-disable no-unused-vars */
 import { fetchProducts } from "../../services/api"
+import { exampleData } from "../../services/exampleData.mjs"; // REMOVE FOR PROD
 import { ClickFilter } from "./clickFilter";
 import { useQuery } from "@tanstack/react-query"
 import { useState } from "react";
@@ -42,12 +43,24 @@ const columns = [
   })
 ]
 
+function fetchExampleData() { //DELETE FOR PROD
+  return exampleData
+}
+
 export function Table({ onRowClick }) {
+  
+  //REMOVE FOR PROD AND REINSTATE QUERY BELOW
+  const { data = [], isLoading, isError } = useQuery({
+    queryKey: ['products'],
+    queryFn: fetchExampleData
+  })
+  
+  /*
   const { data = [], isLoading, isError } = useQuery({
     queryKey: ['products'],
     queryFn: fetchProducts
   })
-  
+  */
   const [sorting, setSorting] = useState([])
   const [columnFilters, setColumnFilters] = useState([])
   const [activeTab, setActiveTab] = useState(null)
@@ -78,6 +91,7 @@ export function Table({ onRowClick }) {
 
   return (
   <>
+  <h1 id='products-page-title'>Products</h1>
   <ClickFilter onTabClick={handleTabClick}/>
   <table id="product-table">
     <thead id="product-table-head">
