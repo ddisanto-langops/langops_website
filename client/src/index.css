@@ -86,11 +86,11 @@
 }
 
 #product-table tbody tr td {
-    background-color: #fff;    /* Needs a background for the glow to show */
+    background-color: hsl(263, 33%, 37%);    /* Needs a background for the glow to show */
     padding: 15px;
     
     /* The "Soft Glow" */
-    box-shadow: 0 0 8px rgba(0, 0, 0, 0.1); 
+    box-shadow: 0 0 8px hsl(276, 33%, 36%); 
     
     /* Optional: Remove side shadows to make it look like one continuous row */
     border-top: 1px solid transparent;
