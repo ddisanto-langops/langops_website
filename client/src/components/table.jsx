@@ -46,7 +46,7 @@ const columns = [
 
 export function Table({ onRowClick }) {
   
-  /* FOR TESTING ONLY
+//FOR TESTING ONLY
   function fetchExampleData() {
   return exampleData
   }
@@ -55,12 +55,13 @@ export function Table({ onRowClick }) {
     queryKey: ['products'],
     queryFn: fetchExampleData
   })
-  */
- 
+
+/*
   const { data = [], isLoading, isError } = useQuery({
     queryKey: ['products'],
     queryFn: fetchProducts
   })
+    */
 
   const [sorting, setSorting] = useState([])
   const [columnFilters, setColumnFilters] = useState([])
