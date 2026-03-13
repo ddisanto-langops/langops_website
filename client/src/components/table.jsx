@@ -79,7 +79,7 @@ export function Table({ onRowClick }) {
   return (
   <>
   <ClickFilter onTabClick={handleTabClick}/>
-  <table>
+  <table id="product-table">
     <thead id="product-table-head">
         {table.getHeaderGroups().map(headerGroup => (
             <tr key={headerGroup.id}>
