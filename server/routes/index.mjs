@@ -32,9 +32,10 @@ router.get("/api/data", async (req, res) => {
     })
 
 router.get('/api/completions', async (req, res) => {
-    console.log("Querying completions...")
     const { lang, code, group, from, to } = req.query
-    console.log(lang, code, group, from, to)
+    console.log(`"Querying completions: ${lang}, ${code}, ${group}, ${from}, ${to}`)
+
+    const groupArray = group ? group.split(',') : null // split language group array if present
 
     try {
         const result = await pool.query(`
@@ -45,9 +46,10 @@ router.get('/api/completions', async (req, res) => {
         WHERE
             ($1::text IS NULL OR targetlang = $1)
             AND ($2::text IS NULL OR productcode = $2)
-            AND ($3::date IS NULL OR datepublished >= $3)
-            AND ($4::date IS NULL OR datepublished <= $4)
-    `, [lang ?? null, code ?? null, from ?? null, to ?? null])
+            const groupArray = group ? group.split(',') : null
+            AND ($3::date IS NULL OR datepublished >= $4)
+            AND ($4::date IS NULL OR datepublished <= $5)
+    `, [lang ?? null, code ?? null, groupArray, from ?? null, to ?? null])
 
     res.json(result.rows[0])
         
