@@ -43,12 +43,37 @@ body {
     display: flex;
     color: white;
     justify-content: center;
+    gap: 15px;
+    padding: 20px;
+    border-radius: 12px;
+    margin-bottom: 20px;
 }
 
-.dashboard-dropdown {
-    color: rgb(0, 0, 0);
-    justify-items: center;
-    margin: 10px;
+.dashboard-dropdown, .filter-input {
+    background-color: hsl(263, 33%, 25%); /* Slightly darker than your rows */
+    color: #ffffff;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    padding: 10px 15px;
+    font-size: 0.95rem;
+    outline: none;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    appearance: none; /* Removes default browser arrow */
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org' width='12' height='12' fill='white' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: calc(100% - 12px) center;
+    padding-right: 35px;
+}
+
+.dashboard-dropdown:hover {
+    border-color: coral;
+    background-color: hsl(263, 33%, 30%);
+}
+
+.dashboard-dropdown:focus {
+    border-color: coral;
+    box-shadow: 0 0 0 3px rgba(255, 127, 80, 0.2); /* Soft coral outer glow */
 }
 
 #total-words-container {
@@ -78,12 +103,22 @@ body {
 }
 
 .click-filter-button {
+    background: linear-gradient(135deg, coral, #e75520);
     color: white;
-    font-size: 1.2rem;
-    background-color: rgb(211, 82, 35);
-    border-radius: 6px;
-    box-shadow: 0px 0 2px 1px rgb(0, 0, 0);
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    box-shadow: 0 4px 15px rgba(255, 127, 80, 0.3);
+    transition: transform 0.2s, box-shadow 0.2s;
     margin: 5px;
+}
+
+.click-filter-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(255, 127, 80, 0.4);
 }
 
 .table-container {
@@ -105,7 +140,7 @@ td {
 }
 
 .table-filter {
-    color: white;
+    color: rgb(0, 0, 0);
     font-size: 1rem;
 }
 
