@@ -7,10 +7,9 @@ const trelloBoardId = process.env.TrelloBoardId;
 const trelloKey = process.env.TrelloKey;
 const trelloToken = process.env.TrelloToken;
 
-// lookup
-// Pre-process the groups into a Map of arrays
+// lookups for product groups and labels
+// Pre-processes the groups into a Map of arrays
 const groupLookup = new Map();
-
 for (const [groupName, codes] of Object.entries(productGroups)) {
     codes.forEach(code => {
         if (!groupLookup.has(code)) {
@@ -20,9 +19,10 @@ for (const [groupName, codes] of Object.entries(productGroups)) {
     });
 }
 
-const labelLookup = new Map(
-    Object.entries(labelGroups).map(([key, trelloName]) => [trelloName, key])
-)
+const labelLookup = new Map()
+for (const [key, trelloNames] of Object.entries(labelGroups)) {
+    trelloNames.forEach(name => labelLookup.set(name, key))
+}
 
 
 export async function getAllCards() {     

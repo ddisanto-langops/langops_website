@@ -33,8 +33,8 @@ export const productGroups = {
 
 
 export const labelGroups = {
-    pcgChurch: 'PCG.CHURCH',
-    magazines: 'MAGAZINE'
+    pcgChurch: ['PCG.CHURCH'],
+    magazines: ['Royal Vision', 'Let the Stones Speak', 'The Philadelphia Trumpet']
 }
 
 export const groupDisplayNames = {
