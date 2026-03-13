@@ -51,6 +51,6 @@ export const languageCodes = {
     'NL': 'Dutch',
     'IT': 'Italian',
     'AF': 'Afrikaans',
-    'FI': 'FINNISH',
+    'FI': 'Finnish',
     'HE': 'Hebrew'
 }

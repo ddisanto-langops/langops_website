@@ -1,6 +1,17 @@
 import { Link } from 'react-router-dom'
+import { useState } from 'react'
+import { TotalWords } from '../components/totalWords'
+import { DropdownFilters } from '../components/dropdownFilters'
 
 export default function Dashboard() {
+
+  const [ filters, setFilters ] = useState({
+    lang: null,
+    code: null,
+    to: null,
+    from: null
+  })
+
   return (
     <div className="homepage-container">
       <div className='navbar-container'>
@@ -12,9 +23,10 @@ export default function Dashboard() {
       <div id='dashboard-container'>
         <div id='dashboard-filter-container'>
           <p>Filter</p>
+          <DropdownFilters filters={filters} onFilterChange={setFilters} />
         </div>
         <div id='total-words-container'>
-          <p>Total Words</p>
+          <TotalWords filters={filters}/>
         </div>
       </div>
     </div>

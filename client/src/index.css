@@ -32,6 +32,21 @@
     display: grid;
 }
 
+#dashboard-filter-container {
+    color: white;
+    justify-items: center;
+}
+
+#dashboard-lang-select {
+    color: white;
+    justify-items: center;
+}
+
+#total-words {
+    font-size: 2rem;
+    color: blueviolet;
+}
+
 .table-layout-container {
     display: flex;
     margin: 40px;
