@@ -33,9 +33,9 @@ router.get("/api/data", async (req, res) => {
 
 router.get('/api/completions', async (req, res) => {
     const { lang, code, group, from, to } = req.query
-    console.log(`"Querying completions: ${lang}, ${code}, ${group}, ${from}, ${to}`)
+    console.log(`"Querying completions: Lang: ${lang}, Code: ${code}, Media Group: ${group}, From: ${from}, To: ${to}`)
 
-    const groupArray = group ? group.split(',') : null // split language group array if present
+    const groupArray = group ? group.split(',') : null // group comes as string, split into array if present
 
     try {
         const result = await pool.query(`

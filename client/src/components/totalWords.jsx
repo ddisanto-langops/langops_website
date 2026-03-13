@@ -11,8 +11,3 @@ export function TotalWords({filters}) {
   if (isLoading) return <p>Loading...</p>
   return <p id="total-words">{data?.totalWords ?? 0} words</p>
 }
-
-/*
-EXAMPLE:
-SELECT wordcount FROM completions WHERE productcode='MB' AND targetlang='Spanish';
-*/

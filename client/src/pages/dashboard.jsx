@@ -9,8 +9,8 @@ export default function Dashboard() {
     lang: null,
     code: null,
     group: null,
+    from: null,
     to: null,
-    from: null
   })
 
   return (

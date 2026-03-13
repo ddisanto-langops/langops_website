@@ -9,7 +9,7 @@ export async function fetchCompletions(filters) {
 
     if (filters.lang) params.append('lang', filters.lang)
     if (filters.code) params.append('code', filters.code)
-    if (filters.group) params.append('group', filters.group.join(',')) // This is an array, how to handle it and where?
+    if (filters.group) params.append('group', filters.group)
     if (filters.from) params.append('from', filters.from)
     if (filters.to) params.append('to', filters.to)
 
