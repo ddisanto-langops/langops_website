@@ -46,7 +46,7 @@ body {
 }
 
 .dashboard-dropdown {
-    color: white;
+    color: rgb(0, 0, 0);
     justify-items: center;
     margin: 10px;
 }
