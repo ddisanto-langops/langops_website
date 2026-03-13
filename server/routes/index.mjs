@@ -46,9 +46,9 @@ router.get('/api/completions', async (req, res) => {
         WHERE
             ($1::text IS NULL OR targetlang = $1)
             AND ($2::text IS NULL OR productcode = $2)
-            const groupArray = group ? group.split(',') : null
-            AND ($3::date IS NULL OR datepublished >= $4)
-            AND ($4::date IS NULL OR datepublished <= $5)
+            AND ($3::text[] IS NULL OR productcode = ANY($3::text[]))
+            AND ($4::date IS NULL OR datepublished >= $4)
+            AND ($5::date IS NULL OR datepublished <= $5)
     `, [lang ?? null, code ?? null, groupArray, from ?? null, to ?? null])
 
     res.json(result.rows[0])
