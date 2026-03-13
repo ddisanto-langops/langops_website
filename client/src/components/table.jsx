@@ -107,7 +107,7 @@ export function Table({ onRowClick }) {
             </tr>
         ))}
     </thead>
-    <tbody>
+    <tbody id="product-table-body">
       {table.getRowModel().rows.map(row => (
         <tr className="table-row" style={{ cursor: 'pointer' }} key={row.id} onClick={() => onRowClick(row.original)}>
           {row.getVisibleCells().map(cell => (

@@ -91,6 +91,9 @@
     top: 31px;
 }
 
+#product-table-body {
+    margin-top: 5px;
+}
 
 .table-data {
     padding: 10px;
