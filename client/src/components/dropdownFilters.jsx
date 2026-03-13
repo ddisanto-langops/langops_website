@@ -33,8 +33,8 @@ export function DropdownFilters({filters, onFilterChange}) {
       ))}
     </select>
     <select
-    id="dashboard-group-select"
-    className="dashboard-dropdown"
+      id="dashboard-group-select"
+      className="dashboard-dropdown"
       value={filters.group ?? ''}
       onChange={e => onFilterChange({
         ...filters,
@@ -43,7 +43,7 @@ export function DropdownFilters({filters, onFilterChange}) {
     >
       <option value="">All Media Groups</option>
       {Object.entries(productGroups).map(([group, value]) => (
-        <option value={value}>{group}</option>
+        <option value={group}>{group}</option>
       ))}
     </select>
     </>
