@@ -86,19 +86,17 @@
 
 #product-table {
     border-collapse: separate; /* Required for box-shadow on rows */
-    border-spacing: 0 10px;    /* Adds vertical "breathing room" between rows */
+    border-spacing: 0px 10px;    /* Adds vertical "breathing room" between rows */
+    empty-cells: show;
 }
 
 #product-table tbody tr td {
-    background-color: hsl(263, 33%, 37%);    /* Needs a background for the glow to show */
+    background-color: hsl(263, 33%, 37%);   
     padding: 15px;
-    
-    /* The "Soft Glow" */
-    box-shadow: 0 0 8px hsl(276, 33%, 36%); 
-    
-    /* Optional: Remove side shadows to make it look like one continuous row */
-    border-top: 1px solid transparent;
-    border-bottom: 1px solid transparent;
+    /* Soft glow */
+    box-shadow: 0 0 8px hsl(276, 33%, 36%);
+     border: none !important;
+  
 }
 
 /* Rounded corners for the "glowy" row effect */
@@ -110,6 +108,10 @@
     border-radius: 0 8px 8px 0;
 }
 
+#product-table tbody tr:hover td {
+    background-color: coral;
+    box-shadow: 0 0 12px coral;
+}
 
 
 #product-table-head {
@@ -132,15 +134,12 @@
     margin-right: 10px;
 }
 
-.table-row:hover {
-    color: coral;
-}
-
 td {
     width: 25%;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    font-size: 1.2rem;
 }
 
 .table-detail-container {

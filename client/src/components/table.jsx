@@ -46,10 +46,7 @@ const columns = [
 
 export function Table({ onRowClick }) {
   
-
-  /*
-  FOR TESTING ONLY
-
+  /* FOR TESTING ONLY
   function fetchExampleData() {
   return exampleData
   }
@@ -59,7 +56,7 @@ export function Table({ onRowClick }) {
     queryFn: fetchExampleData
   })
   */
-  
+ 
   const { data = [], isLoading, isError } = useQuery({
     queryKey: ['products'],
     queryFn: fetchProducts
