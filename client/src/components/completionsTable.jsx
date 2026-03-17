@@ -37,8 +37,9 @@ const columns = [
   columnHelper.accessor('mediaType', {
     header: 'Media Type',
     cell: (info) => {
-      if (!info) return "N/A"
-      return info.getValue().join(', ')
+    const value = info.getValue()
+    if (!value || value.length === 0) return 'N/A'
+    return value.join(', ')
     },
     filterFn: includesMediaType,
   }),

@@ -62,7 +62,16 @@ router.get('/api/admin/completions', async (req, res) => {
 
     try {
         const result = await pool.query(`
-            SELECT * FROM completions
+            SELECT
+                id,
+                title,
+                productcode AS "productCode",
+                targetlang AS "targetLang",
+                mediatype AS "mediaType",
+                wordcount AS "wordCount",
+                datepublished AS "datePublished",
+                datearchived AS "dateArchived"
+            FROM completions
             WHERE
                 ($1::text IS NULL OR targetlang = $1)
                 AND ($2::text IS NULL OR productcode = $2)
