@@ -51,7 +51,7 @@ const columns = [
 export function CompletionsTable({ onRowClick }) {
   
   //FOR TESTING ONLY
-  
+    /*
     function fetchExampleData() {
     return exampleCompletionsData
     }
@@ -60,14 +60,14 @@ export function CompletionsTable({ onRowClick }) {
       queryKey: ['completions'],
       queryFn: fetchExampleData
     })
-  
+  */
 
-  /*
+  
   const { data = [], isLoading, isError } = useQuery({
     queryKey: ['completions'],
     queryFn: fetchAdminCompletions
   })
-  */
+  
 
   const [sorting, setSorting] = useState([])
   const [columnFilters, setColumnFilters] = useState([])
