@@ -38,11 +38,10 @@
     - [x] title: string
     - [x] productCode: string
     - [x] targetLang: string
-    - [x] mediaInfo: dict
-        - [x] mediaType: array[string] = audio_video || literature || website || interpretation || pcog.church
-        - [X] wordCount: int || null
-    - [X] datePublished
-    - [X] dateArchived
+    - [x] mediaType: array[string] = audio_video || literature || website || interpretation || pcgChurch
+    - [x] wordCount: int || null
+    - [x] datePublished
+    - [x] dateArchived
     
 ## PostgreSQL Databases  
 *Database name: langops_dashboard*   

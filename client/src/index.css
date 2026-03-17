@@ -25,11 +25,6 @@ body {
     color: rgb(32, 170, 235);
 }
 
-#products-page-title {
-    color: rgb(255, 255, 255);
-    justify-self: center;
-}
-
 #dashboard-page-title {
     color: white;
     justify-self: center;
@@ -149,14 +144,19 @@ td {
     margin-right: 10px;
 }
 
-#product-table {
+#products-page-title, #completions-page-title {
+    color: rgb(255, 255, 255);
+    justify-self: center;
+}
+
+#product-table, #completions-table {
     table-layout: fixed;      /* CRITICAL: Enables ellipsis and forces width */
     width: 100%;             /* Fills the 75% container */
     border-collapse: separate; 
     border-spacing: 0 10px;   /* 0 horizontal = seamless hover */
 }
 
-#product-table-head th {
+#product-table-head th, #completions-table-head th {
     position: sticky;
     top: 60px;
     background-color: rgb(30, 31, 41); /* Must match page bg to hide scrolling glow */
@@ -166,7 +166,7 @@ td {
     font-size: 1.5rem;
 }
 
-#product-table td {
+#product-table td, #completions-table td {
     width: 25%;               /* Now respected because of table-layout: fixed */
     overflow: hidden;
     text-overflow: ellipsis;
@@ -177,7 +177,7 @@ td {
     border: none;
 }
 
-#product-table tbody tr td {
+#product-table tbody tr td, #completions-table tbody tr td {
     background-color: hsl(263, 33%, 37%);   
     padding: 15px;
     /* Soft glow */
@@ -186,7 +186,7 @@ td {
   
 }
 
-#product-table tbody tr:hover td {
+#product-table tbody tr:hover td, #completions-table tbody tr:hover td {
     background-color: coral;
     box-shadow: 0 0 12px coral;
     cursor: pointer;

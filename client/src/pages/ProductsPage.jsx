@@ -1,9 +1,9 @@
 import { useState } from 'react'
-import { Table } from '../components/table'
+import { ProductsTable } from '../components/productsTable'
 import { TableDetail } from '../components/tableDetail'
 import { Link } from 'react-router-dom'
 
-export function TableDisplay() {
+export function ProductsPage() {
 
   const [selectedRow, setSelectedRow] = useState(null)
 
@@ -18,7 +18,7 @@ export function TableDisplay() {
     </div>
     <div className='table-layout-container'>
       <div className='table-container'>
-        <Table onRowClick={setSelectedRow} />
+        <ProductsTable onRowClick={setSelectedRow} />
       </div>
       <div className='table-detail-container'>
         <TableDetail row={selectedRow} />

@@ -144,7 +144,7 @@ export const exampleData = [
     "translationProg": null,
     "approvalProg": null,
     "mediaInfo": {
-      "mediaType": ["pcog.church", "audio_video", "literature"],
+      "mediaType": ["PCG.CHURCH", "audio_video", "literature"],
       "wordCount": 850,
       "duration": 45
     }
@@ -263,7 +263,7 @@ export const exampleData = [
     "translationProg": 12,
     "approvalProg": 0,
     "mediaInfo": {
-      "mediaType": ["literature", "pcog.church"],
+      "mediaType": ["literature", "PCG.CHURCH"],
       "wordCount": 3200,
       "duration": null
     }
@@ -399,7 +399,7 @@ export const exampleData = [
     "translationProg": null,
     "approvalProg": null,
     "mediaInfo": {
-      "mediaType": ["website", "pcog.church"],
+      "mediaType": ["website", "PCG.CHURCH"],
       "wordCount": 200,
       "duration": null
     }
@@ -416,7 +416,7 @@ export const exampleData = [
     "translationProg": 65,
     "approvalProg": 30,
     "mediaInfo": {
-      "mediaType": ["pcog.church", "literature"],
+      "mediaType": ["PCG.CHURCH", "literature"],
       "wordCount": 1100,
       "duration": null
     }

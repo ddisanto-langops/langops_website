@@ -44,7 +44,7 @@ const columns = [
 ]
 
 
-export function Table({ onRowClick }) {
+export function ProductsTable({ onRowClick }) {
   
   //FOR TESTING ONLY
   /*
