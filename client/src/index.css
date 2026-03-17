@@ -6,6 +6,7 @@ body {
     background-color: rgb(30, 31, 41); /* Apply background to body, NOT * */
     margin: 0;
     font-family: sans-serif;
+    overflow-x: hidden;
 }
 
 #navbar-div {
@@ -111,7 +112,7 @@ body {
     padding-bottom: 10px;
     position: sticky;
     top: 0px;
-    width: 105%;
+    width: 100%;
 }
 
 .click-filter-button {
@@ -139,8 +140,10 @@ body {
 }
 
 #completions-table-container {
-    width: 90%;
+    width: 95%;
+    margin: 0 auto;
     justify-self: center;
+    overflow-x: auto;
 }
 
 td {
@@ -180,6 +183,7 @@ td {
 
 #completions-table {
     table-layout: fixed;      /* CRITICAL: Enables ellipsis and forces width */
+    width: 100%;
     border-collapse: separate; 
     border-spacing: 0 10px;
 }
@@ -196,7 +200,7 @@ td {
 }
 
 #product-table td, #completions-table td {
-    width: 25%;               /* Now respected because of table-layout: fixed */
+    width: auto;               /* Now respected because of table-layout: fixed */
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;      /* Required for ellipsis */
