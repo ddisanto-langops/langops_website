@@ -95,6 +95,13 @@ body {
     margin: 10px;
 }
 
+#completions-table-layout-container {
+    display: flex;
+    align-items: flex-start; /* Prevents side panel from stretching */
+    gap: 20px;
+    margin: 10px;
+}
+
 #click-filter {
     background-color: rgb(30, 31, 41);
     height: auto;
@@ -131,6 +138,11 @@ body {
     color: white;
 }
 
+#completions-table-container {
+    width: 90%;
+    justify-self: center;
+}
+
 td {
     width: 25%;
     overflow: hidden;
@@ -159,15 +171,22 @@ td {
     justify-self: center;
 }
 
-#product-table, #completions-table {
+#product-table {
     table-layout: fixed;      /* CRITICAL: Enables ellipsis and forces width */
     width: 100%;             /* Fills the 75% container */
     border-collapse: separate; 
     border-spacing: 0 10px;   /* 0 horizontal = seamless hover */
 }
 
+#completions-table {
+    table-layout: fixed;      /* CRITICAL: Enables ellipsis and forces width */
+    border-collapse: separate; 
+    border-spacing: 0 10px;
+}
+
 #product-table-head th, #completions-table-head th {
     position: sticky;
+    color: white;
     top: 60px;
     background-color: rgb(30, 31, 41); /* Must match page bg to hide scrolling glow */
     z-index: 2;

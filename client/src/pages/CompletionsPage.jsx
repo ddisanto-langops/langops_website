@@ -20,8 +20,8 @@ export function CompletionsPage() {
         <NavBar />
       </div>
     </div>
-    <div className='table-layout-container'>
-      <div className='table-container'>
+    <div className='completions-table-layout-container'>
+      <div id='completions-table-container'>
         <CompletionsTable onRowClick={handleRowClick} />
       </div>
     </div>
