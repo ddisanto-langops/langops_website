@@ -82,3 +82,13 @@ export const friendlyLanguages = [
     'Finnish',
     'Hebrew',
 ]
+
+export const friendlyFieldNames = {
+    title: "Title",
+    productCode: "Product Code",
+    targetLang: "Target Language",
+    mediaType: "Media Type",
+    wordCount: "Word Count",
+    datePublished: "Date Published",
+    dateArchived: "Date Archived"
+}

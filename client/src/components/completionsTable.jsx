@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import { fetchAdminCompletions } from "../../services/api"
 import { exampleCompletionsData } from "../../services/exampleCompletionsData.mjs"
 import { ClickFilter } from "./clickFilter";
@@ -89,55 +88,54 @@ export function CompletionsTable({ onRowClick }) {
   const handleTabClick = (value) => {
     setActiveTab(value)
     table.getColumn('mediaType').setFilterValue(value)
+  }
 
   if (isLoading) return <p>Loading...</p>
   if (isError) return <p>Error loading products.</p>
-}
-
-
 
   return (
-  <>
-  <h1 id='completions-page-title'>Completions</h1>
-  <ClickFilter onTabClick={handleTabClick}/>
-  <table id="completions-table">
-    <thead id="completions-table-head">
+    <>
+    <h1 id='completions-page-title'>Completions</h1>
+    <ClickFilter onTabClick={handleTabClick}/>
+    <table id="completions-table">
+      <thead id="completions-table-head">
         {table.getHeaderGroups().map(headerGroup => (
-            <tr key={headerGroup.id}>
-              {headerGroup.headers.map(header => {
-                return (
-                <th key={header.id}>
-                  <div
-                    title="Click to sort"
-                    onClick={header.column.getToggleSortingHandler()}
-                    style={{ cursor: 'pointer' }}
-                >
-                    {flexRender(header.column.columnDef.header, header.getContext())}
-                    {header.column.getIsSorted() === 'asc' ? ' ↑'
-                    : header.column.getIsSorted() === 'desc' ? ' ↓' : ''}
-                  </div>
-                <input
-                  className="table-filter"
-                  placeholder="Filter..."
-                  value={header.column.getFilterValue() ?? ''}
-                  onChange={e => header.column.setFilterValue(e.target.value)}
-                />
-                </th>
-            )})}
-            </tr>
+          <tr key={headerGroup.id}>
+            {headerGroup.headers.map(header => {
+              return (
+              <th key={header.id}>
+                <div
+                  title="Click to sort"
+                  onClick={header.column.getToggleSortingHandler()}
+                  style={{ cursor: 'pointer' }}
+              >
+                  {flexRender(header.column.columnDef.header, header.getContext())}
+                  {header.column.getIsSorted() === 'asc' ? ' ↑'
+                  : header.column.getIsSorted() === 'desc' ? ' ↓' : ''}
+                </div>
+              <input
+                className="table-filter"
+                placeholder="Filter..."
+                value={header.column.getFilterValue() ?? ''}
+                onChange={e => header.column.setFilterValue(e.target.value)}
+              />
+              </th>
+          )})}
+          </tr>
         ))}
-    </thead>
-    <tbody id="completions-table-body">
-      {table.getRowModel().rows.map(row => (
-        <tr className="table-row" style={{ cursor: 'pointer' }} key={row.id} onClick={() => onRowClick(row.original)}>
-          {row.getVisibleCells().map(cell => (
-            <td className="table-data" key={cell.id}>
-              {flexRender(cell.column.columnDef.cell, cell.getContext())}
-            </td>
-          ))}
-        </tr>
-      ))}
-    </tbody>
-  </table>
-  </>
-)}
+      </thead>
+      <tbody id="completions-table-body">
+        {table.getRowModel().rows.map(row => (
+          <tr className="table-row" style={{ cursor: 'pointer' }} key={row.id} onClick={() => onRowClick(row.original)}>
+            {row.getVisibleCells().map(cell => (
+              <td className="table-data" key={cell.id}>
+                {flexRender(cell.column.columnDef.cell, cell.getContext())}
+              </td>
+            ))}
+          </tr>
+        ))}
+      </tbody>
+    </table>
+    </>
+  )
+}

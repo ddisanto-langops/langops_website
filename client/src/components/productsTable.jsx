@@ -86,11 +86,9 @@ export function ProductsTable({ onRowClick }) {
     setActiveTab(value)
     table.getColumn('mediaType').setFilterValue(value)
 
-  if (isLoading) return <p>Loading...</p>
-  if (isError) return <p>Error loading products.</p>
-}
-
-
+    if (isLoading) return <p>Loading...</p>
+    if (isError) return <p>Error loading products.</p>
+  }
 
   return (
   <>

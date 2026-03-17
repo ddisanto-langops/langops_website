@@ -1,10 +1,17 @@
 import { useState } from 'react'
 import { CompletionsTable } from '../components/completionsTable'
 import { Link } from 'react-router-dom'
+import { EditModal } from '../components/EditModal'
 
 export function CompletionsPage() {
 
-  const [selectedRow, setSelectedRow] = useState(null)
+  const [selectedRecord, setSelectedRecord] = useState(null)
+  const [isModalOpen, setIsModalOpen] = useState(false)
+
+  const handleRowClick = (row) => {
+    setSelectedRecord(row),
+    setIsModalOpen(true)
+  }
 
   return (
   <div id='main-container'>
@@ -17,9 +24,13 @@ export function CompletionsPage() {
     </div>
     <div className='table-layout-container'>
       <div className='table-container'>
-        <CompletionsTable onRowClick={setSelectedRow} />
+        <CompletionsTable onRowClick={handleRowClick} />
       </div>
     </div>
+    {selectedRecord && (
+      <EditModal record={selectedRecord} isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+    )}
+    
   </div>
   )
 }

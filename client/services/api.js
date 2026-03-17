@@ -37,3 +37,21 @@ export async function fetchAdminCompletions(filters = {}) {
     if (!response.ok) throw new Error("Failed to fetch completions data.")
     return response.json()
 }
+
+export async function updateCompletion(record) {
+    const response = await fetch(`/api/admin/completions/${record.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(record)
+    })
+    if (!response.ok) throw new Error('Failed to update completion')
+    return response.json()
+}
+
+export async function deleteCompletion(id) {
+    const response = await fetch(`/api/admin/completions/${id}`, {
+        method: 'DELETE',
+    })
+    if (!response.ok) throw new Error('Failed to delete completion')
+    return response.json()
+}
