@@ -3,7 +3,7 @@ import { useState } from 'react'
 import { TotalWords } from '../components/totalWords'
 import { DropdownFilters } from '../components/dropdownFilters'
 
-export function Dashboard() {
+export default function Dashboard() {
 
   const [ filters, setFilters ] = useState({
     lang: null,
