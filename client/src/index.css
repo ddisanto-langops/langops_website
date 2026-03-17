@@ -8,10 +8,20 @@ body {
     font-family: sans-serif;
 }
 
-.navbar-container {
-    min-height: 25px;
+#navbar-div {
     display: flex;
-    justify-content: left;
+    width: 100%;
+    justify-content: center;
+    align-content: center;
+    padding: 10px;
+}
+
+#navbar {
+    display: flex;
+    align-items: center;
+    border: 1px solid rgba(32, 101, 190, 0.418);
+    box-shadow: 0px 0px 4px 2px hsl(263, 60%, 68%);
+    border-radius: 8px;
 }
 
 .navbar-link {

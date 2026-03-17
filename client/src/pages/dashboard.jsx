@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom'
+import { NavBar } from '../components/NavBar'
 import { useState } from 'react'
 import { TotalWords } from '../components/totalWords'
 import { DropdownFilters } from '../components/dropdownFilters'
@@ -16,9 +16,7 @@ export function Dashboard() {
   return (
     <div className="homepage-container">
       <div className='navbar-container'>
-        <nav>
-          <Link to={'./table'} className='navbar-link'>Table View</Link>
-        </nav>
+        <NavBar />
       </div>
       <h1 id="dashboard-page-title">Dashboard</h1>
       <div id='dashboard-container'>

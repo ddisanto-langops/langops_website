@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { ProductsTable } from '../components/productsTable'
 import { TableDetail } from '../components/tableDetail'
-import { Link } from 'react-router-dom'
+import { NavBar } from '../components/NavBar'
 
 export function ProductsPage() {
 
@@ -11,9 +11,7 @@ export function ProductsPage() {
   <div id='main-container'>
     <div className='page-head-container'>
       <div className='navbar-container'>
-        <nav>
-          <Link to={'/'} className='navbar-link'>Back To Dashboard View</Link>
-        </nav>
+        <NavBar />
       </div>
     </div>
     <div className='table-layout-container'>
