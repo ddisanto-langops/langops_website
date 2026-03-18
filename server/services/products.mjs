@@ -48,7 +48,7 @@ export async function getTrelloProducts(cards) {
 
     try {
 
-        for (let card of cards) {
+        for (const card of cards) {
 
             const title = card.name;
             
@@ -77,10 +77,10 @@ export async function getTrelloProducts(cards) {
                 console.log(`Error fetching card JSON: ${error.message}`)
             }
             
-            // Skip if no expanded data available
+            // Skip to next card if no expanded data available
             if (!cardJson) continue;
 
-            // Otherwise, get simple Trello data:
+            // Get more Trello data:
             const due = cardJson.due;
             const lastActivity = cardJson.dateLastActivity;
             const trelloUrl = card.url;
