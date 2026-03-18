@@ -49,12 +49,15 @@ export function EditModal({record, isOpen, onClose}) {
                         </div>
                     ))}
                 </div>
-                
                 <div className="modal-actions">
                     
                     <button 
                         id="btn-save" 
-                        onClick={() => saveMutation.mutate(formData)}>
+                        onClick={() => {
+                            saveMutation.mutate(formData); 
+                            onClose()
+                            }
+                        }>
                         {saveMutation.isPending ? 'Saving...' : 'Save'}
                     </button>
                     <button
