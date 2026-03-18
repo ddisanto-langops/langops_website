@@ -47,23 +47,23 @@ const columns = [
 export function ProductsTable({ onRowClick }) {
   
   //FOR TESTING ONLY
-
-    function fetchExampleData() {
-    return exampleData
-    }
-
-    const { data = [], isLoading, isError } = useQuery({
-      queryKey: ['products'],
-      queryFn: fetchExampleData
-    })
-
-  
   /*
+  function fetchExampleData() {
+  return exampleData
+  }
+
+  const { data = [], isLoading, isError } = useQuery({
+    queryKey: ['products'],
+    queryFn: fetchExampleData
+  })
+  */
+  
+  
   const { data = [], isLoading, isError } = useQuery({
     queryKey: ['products'],
     queryFn: fetchProducts
   })
-  */
+  
 
   const [sorting, setSorting] = useState([])
   const [columnFilters, setColumnFilters] = useState([])
