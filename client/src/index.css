@@ -3,7 +3,7 @@
 }
 
 body {
-    background-color: rgb(30, 31, 41); /* Apply background to body, NOT * */
+    background-color: hsl(211, 37%, 21%); /* Apply background to body, NOT * */
     margin: 0;
     font-family: sans-serif;
     overflow-x: hidden;
@@ -21,14 +21,14 @@ body {
     display: flex;
     align-items: center;
     border: 1px solid rgba(32, 101, 190, 0.418);
-    box-shadow: 0px 0px 4px 2px hsl(263, 60%, 68%);
+    box-shadow: 0px 0px 4px 2px hsla(28, 91%, 57%, 0.795);
     border-radius: 8px;
 }
 
 .navbar-link {
     margin: 10px;
     margin-left: 20px;
-    color: blueviolet;
+    color: hsla(28, 91%, 57%, 0.795);
     font-size: 1.3rem;
 }
 
@@ -56,7 +56,7 @@ body {
 }
 
 .dashboard-dropdown, .filter-input {
-    background-color: hsl(263, 33%, 25%); /* Slightly darker than your rows */
+    background-color: hsla(204, 85%, 56%, 0.747);
     color: #ffffff;
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 8px;
@@ -74,19 +74,20 @@ body {
 
 .dashboard-dropdown:hover {
     border-color: coral;
-    background-color: hsl(263, 33%, 30%);
+    background-color: hsla(202, 83%, 60%, 0.884);
 }
 
 .dashboard-dropdown:focus {
     border-color: coral;
     box-shadow: 0 0 0 3px rgba(255, 127, 80, 0.2); /* Soft coral outer glow */
+    background-color: hsla(202, 83%, 60%, 0.884);
 }
 
 #total-words-container {
     display: flex;
     justify-content: center;
     font-size: 2rem;
-    color: blueviolet;
+    color: hsl(28, 94%, 69%);
 }
 
 .table-layout-container {
@@ -104,7 +105,7 @@ body {
 }
 
 #click-filter {
-    background-color: rgb(30, 31, 41);
+    background-color: hsl(211, 37%, 21%);
     height: auto;
     display: flex;
     justify-content: center;
@@ -116,7 +117,7 @@ body {
 }
 
 .click-filter-button {
-    background: linear-gradient(135deg, coral, #e75520);
+    background: linear-gradient(135deg, hsla(204, 85%, 56%, 0.747), hsl(202, 94%, 69%));
     color: white;
     border: none;
     padding: 10px 20px;
@@ -124,19 +125,21 @@ body {
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    box-shadow: 0 4px 15px rgba(255, 127, 80, 0.3);
+    box-shadow: 0 4px 15px hsla(199, 100%, 66%, 0.384);
     transition: transform 0.2s, box-shadow 0.2s;
     margin: 5px;
 }
 
 .click-filter-button:hover {
     transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(255, 127, 80, 0.4);
+    box-shadow: 0 6px 20px hsla(199, 100%, 66%, 0.616);
 }
 
 .table-container {
     width: 75%; /* Set a firm width for the table side */
     color: white;
+    display: grid;
+    justify-items: center;
 }
 
 #completions-table-container {
@@ -174,14 +177,14 @@ td {
 }
 
 #product-table {
-    table-layout: fixed;      /* CRITICAL: Enables ellipsis and forces width */
-    width: 100%;             /* Fills the 75% container */
+    table-layout: fixed;      /* Enables ellipsis and forces width */
+    width: 95%;             /* Fills the 75% container */
     border-collapse: separate; 
     border-spacing: 0 10px;   /* 0 horizontal = seamless hover */
 }
 
 #completions-table {
-    table-layout: fixed;      /* CRITICAL: Enables ellipsis and forces width */
+    table-layout: fixed;      /* Enables ellipsis and forces width */
     width: 100%;
     border-collapse: separate; 
     border-spacing: 0 10px;
@@ -191,36 +194,25 @@ td {
     position: sticky;
     color: white;
     top: 60px;
-    background-color: rgb(30, 31, 41); /* Must match page bg to hide scrolling glow */
+    background-color: hsl(211, 37%, 21%);
     z-index: 2;
     padding: 10px;
     text-align: left;
     font-size: 1.5rem;
 }
 
-#product-table td, #completions-table td {
-    width: auto;               /* Now respected because of table-layout: fixed */
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;      /* Required for ellipsis */
-    padding: 15px;
-    background-color: hsl(263, 33%, 37%);
-    box-shadow: 0 0 8px hsl(276, 33%, 36%);
-    border: none;
-}
-
 #product-table tbody tr td, #completions-table tbody tr td {
-    background-color: hsl(263, 33%, 37%);   
+    background-color: hsla(207, 71%, 43%, 0.678);   
     padding: 15px;
     /* Soft glow */
-    box-shadow: 0 0 8px hsl(276, 33%, 36%);
-     border: none !important;
+    box-shadow: 0 0 8px hsla(207, 71%, 43%, 0.678);
+    border: none !important;
   
 }
 
 #product-table tbody tr:hover td, #completions-table tbody tr:hover td {
-    background-color: coral;
-    box-shadow: 0 0 12px coral;
+    background-color: hsla(28, 94%, 69%, 0.699);
+    box-shadow: 0 0 12px hsla(28, 94%, 69%, 0.699);
     cursor: pointer;
 }
 
@@ -232,7 +224,7 @@ td {
     width: 25%; /* Remaining space */
     position: sticky;
     top: 20px;
-    background-color: rgb(30, 31, 41);
+    background-color: hsl(211, 37%, 21%);
     border: 2px solid black;
     border-radius: 8px;
     box-shadow: 2px 2px black;
