@@ -143,7 +143,6 @@ body {
     width: 95%;
     margin: 0 auto;
     justify-self: center;
-    overflow-x: auto;
 }
 
 td {
@@ -265,7 +264,7 @@ h2 {
     padding: 2rem;
     border-radius: 8px;
     width: 100%;
-    max-width: 500px; /* Adjust based on your preference */
+    max-width: 50%; /* Adjust based on your preference */
     box-shadow: 0 4px 15px rgba(0,0,0,0.2);
 }
 
