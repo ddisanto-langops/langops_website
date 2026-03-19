@@ -14,7 +14,10 @@ const PORT = process.env.PORT || 3200;
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 app.use(helmet())
-app.use(cors())
+app.use(cors({
+  origin: 'https://pcglangops.com',
+  methods: ['GET', 'PUT', 'DELETE']
+}))
 app.use(express.json())
 app.use(router)
 
