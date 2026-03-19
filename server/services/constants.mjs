@@ -24,6 +24,10 @@ export const productCodes = [
     'TW'
 ]
 
+/*
+TODO: merge productGroups and labelGroups
+*/
+// Grouping of product codes extracted via regex from card titles, associated with searchable keys
 export const productGroups = {
     literature: ['CWL', 'LIT', 'LIT-S'],
     interpretation: ['ANN', 'BS', 'SER', 'SMT'],
@@ -31,12 +35,13 @@ export const productGroups = {
     audio_video: ['KOD', 'TW', 'POD', 'PTVID', 'WW', 'OTHER']
 }
 
-
+// Labels extracted from card titles, associated with searchable keys
 export const labelGroups = {
     pcgChurch: ['PCG.CHURCH'],
     magazines: ['Royal Vision', 'Let the Stones Speak', 'The Philadelphia Trumpet']
 }
 
+// Abstraction to display UI-friendly product group names
 export const groupDisplayNames = {
     literature: "Literature",
     interpretation: "Interpretation",
@@ -47,17 +52,18 @@ export const groupDisplayNames = {
 }
 
 
-export const trelloLangIds = [
-    "65a69ef7128bbe9b3123689c", // French
-    "65a69f0bd7a48a7be8f06855", // German
-    "545bcbf174d650d56706a84b", // Spanish
-    "65fde7c2fc62ec46d36d5d1e", // Portuguese
-    "6602d06bb42a2329238c5e84", // Dutch
-    "668ea91e9d95af525d18f039", // Italian
-    "683a2a5fcfd62b060f622aba", // Afrikaans
-    "675064f4fc67adcbbdfc2e47", // Finnish
-    "683a26393a0502e6f5dc33d6" // Hebrew
-]
+export const trelloLangIds = {
+    French: "65a69ef7128bbe9b3123689c",
+    German: "65a69f0bd7a48a7be8f06855",
+    Spanish: "545bcbf174d650d56706a84b",
+    Portuguese: "65fde7c2fc62ec46d36d5d1e",
+    Dutch: "6602d06bb42a2329238c5e84",
+    Italian: "668ea91e9d95af525d18f039",
+    Afrikaans: "683a2a5fcfd62b060f622aba",
+    Finnish: "675064f4fc67adcbbdfc2e47",
+    Hebrew: "683a26393a0502e6f5dc33d6"
+};
+
 
 export const languageCodes = {
     'FR': 'French',

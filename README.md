@@ -7,7 +7,7 @@
 - Completions: all Trello products which 1. have 'PUBLISHED' checked off, or 2. are archived on Trello
 
 ## Data Structure  
-There are two tables with the PostgreSQL database, one for transient (product) data, the other for permanent data (it removes translation/approval progress and due dates since they're no longer relevant after completion).  
+There are two tables within the PostgreSQL database: one for transient data ("product"), the other for permanent data ("completions"). The latter does not include translation/approval progress, due dates and other such information, since they're no longer relevant after completion.  
 **The transient data (products) data table captures:**  
 - Title
 - Product Code
@@ -30,3 +30,6 @@ There are two tables with the PostgreSQL database, one for transient (product) d
 - Word count
 - Date published
 - Date archived
+
+## Constants  
+The website relies on constant variables to define controlled inputs, e.g. dropdowns. Editing the constants.js file, e.g. to add a product code, will propagate the change throughout the website. Examples of constants include target languages, product codes, and abstractions for the UI to display user-friendly names instead of programmatically-formated ones.
