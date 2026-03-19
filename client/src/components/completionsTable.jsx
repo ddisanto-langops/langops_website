@@ -56,19 +56,18 @@ export function CompletionsTable({ onRowClick }) {
   function fetchExampleData() {
   return exampleCompletionsData
   }
-
+  
   const { data = [], isLoading, isError } = useQuery({
     queryKey: ['completions'],
     queryFn: fetchExampleData
   })
-  */ 
+  */
 
-
+  
   const { data = [], isLoading, isError } = useQuery({
     queryKey: ['completions'],
     queryFn: fetchAdminCompletions
   })
-
 
   const [sorting, setSorting] = useState([])
   const [columnFilters, setColumnFilters] = useState([])
@@ -106,6 +105,7 @@ export function CompletionsTable({ onRowClick }) {
               return (
               <th key={header.id}>
                 <div
+                  className="table-sort-div"
                   title="Click to sort"
                   onClick={header.column.getToggleSortingHandler()}
                   style={{ cursor: 'pointer' }}
