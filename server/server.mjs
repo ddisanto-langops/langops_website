@@ -1,5 +1,6 @@
 import express from 'express';
 import router from './routes/index.mjs'
+import helmet from 'helmet'
 import cors from 'cors'
 import path from 'path'
 import { fileURLToPath } from 'url'
@@ -12,7 +13,7 @@ const app = express();
 const PORT = process.env.PORT || 3200;
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
-// allow cors
+app.use(helmet())
 app.use(cors())
 app.use(express.json())
 app.use(router)

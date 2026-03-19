@@ -1,5 +1,4 @@
 import { fetchAdminCompletions } from "../../services/api"
-import { exampleCompletionsData } from "../../services/exampleCompletionsData.mjs"
 import { ClickFilter } from "./clickFilter";
 import { useQuery } from "@tanstack/react-query"
 import { useState } from "react";
@@ -50,19 +49,6 @@ const columns = [
 
 
 export function CompletionsTable({ onRowClick }) {
-  
-  //FOR TESTING ONLY
-  /*
-  function fetchExampleData() {
-  return exampleCompletionsData
-  }
-  
-  const { data = [], isLoading, isError } = useQuery({
-    queryKey: ['completions'],
-    queryFn: fetchExampleData
-  })
-  */
-
   
   const { data = [], isLoading, isError } = useQuery({
     queryKey: ['completions'],

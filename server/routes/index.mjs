@@ -1,5 +1,7 @@
 import { Router } from 'express';
 import pool from '../database/databaseConfig.mjs';
+import { exampleCompletionsData } from '../database/exampleCompletionsData.mjs';
+import { exampleData } from '../database/exampleData.mjs'
 
 const router = Router();
 
