@@ -12,9 +12,9 @@ export async function syncProducts() {
     console.log('Syncing products...')
 
     const cards = await getAllCards()
-    console.log(`Fetched ${cards.length} total cards.`)
+    console.log(`Fetched ${cards.length} cards from board.`)
 
-    const trelloProducts = await getTrelloProducts(cards)
+    const trelloProducts = getTrelloProducts(cards)
     console.log(`Found ${trelloProducts.length} products.`)
 
     const products = await getProductData(trelloProducts)

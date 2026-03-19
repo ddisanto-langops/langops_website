@@ -79,25 +79,23 @@ export function getTrelloProducts(cards) {
                     if (foundIds.includes(id)) {
                         return lang
                     }
+                    else {
+                        return null
+                    }
                 })
-                return match[0]
+                return match ? match[0] : null
                 
             }
             
             // Find Crowdin URL if present
             const crowdinUrl = () => {
-                for (const attachment of card.attachments) {
-                    if (attachment.name.includes("Crowdin")) {
-                        return attachment.url
-                    } else {
-                        return null
-                    }
-                }
+                const found = card.attachments?.find(a => a.name.includes("Crowdin"));
+                return found?.url || null;
             }
             
             // Is "published" checked off?
             let published = false;
-            for (let item of card.customFieldItems) {
+            for (let item of (card.customFieldItems || [])) {
                 if (item.idCustomField === customFields.published && item.value.checked === 'true') {
                     published = true
                 }
@@ -142,7 +140,7 @@ export function getTrelloProducts(cards) {
     return productData
 
     } catch (error) {
-        console.log(`extractProducts: ${error.message}`)
+        console.log(`extractProducts: ${error}`)
     }
 }
 
