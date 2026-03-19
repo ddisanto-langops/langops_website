@@ -178,6 +178,10 @@ h2 { overflow-wrap: break-word; }
 #product-table { width: 95%; }
 #completions-table { width: 100%; }
 
+.table-sort-div:hover {
+    color: coral;
+}
+
 #product-table-head th,
 #completions-table-head th {
     position: sticky;
@@ -215,7 +219,7 @@ td {
 
 #product-table tbody tr:hover,
 #completions-table tbody tr:hover {
-    background-color: hsla(28, 94%, 69%, 0.699);
+    background-color: hsla(28, 94%, 69%, 0.884);
     box-shadow: 0 0 12px hsla(28, 94%, 69%, 0.699);
     cursor: pointer;
 }

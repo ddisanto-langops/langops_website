@@ -104,6 +104,7 @@ export function ProductsTable({ onRowClick }) {
                 return (
                 <th key={header.id}>
                   <div
+                    className="table-sort-div"
                     title="Click to sort"
                     onClick={header.column.getToggleSortingHandler()}
                     style={{ cursor: 'pointer' }}
