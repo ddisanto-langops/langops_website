@@ -97,6 +97,151 @@ export const exampleCard = {
   mirrorSourceId: null
 }
 
+export const secondExampleCard = {
+  "id": "6953550fb87a67105c8e8d28",
+  "agent": {
+    "name": null,
+    "conversationId": null
+  },
+  "badges": {
+    "attachments": 1,
+    "fogbugz": "",
+    "checkItems": 16,
+    "checkItemsChecked": 0,
+    "checkItemsEarliestDue": null,
+    "comments": 0,
+    "description": true,
+    "due": "2026-01-01T10:00:00.000Z",
+    "dueComplete": false,
+    "lastUpdatedByAi": false,
+    "start": null,
+    "externalSource": null,
+    "attachmentsByType": {
+      "trello": {}
+    },
+    "location": false,
+    "votes": 0,
+    "maliciousAttachments": 0,
+    "viewingMemberVoted": false,
+    "subscribed": false
+  },
+  "checkItemStates": [],
+  "closed": false,
+  "dueComplete": false,
+  "dateLastActivity": "2026-03-19T14:09:10.094Z",
+  "desc": "TYPE: MB\n\n**Filename:**\n\nMB [Month] [dd] - STAFF[word count]\n\n**PATH:**\n\n[MT] → [MTPE] → [TTA]",
+  "descData": {
+    "emoji": {}
+  },
+  "due": "2026-01-01T10:00:00.000Z",
+  "dueReminder": -1,
+  "email": null,
+  "idBoard": "5176af831f22073e1e0012e3",
+  "idChecklists": [
+    "6953550fb87a67105c8e8e9d",
+    "6953550fb87a67105c8e8e83",
+    "6953550fb87a67105c8e8e99",
+    "6953550fb87a67105c8e8e89",
+    "6953550fb87a67105c8e8ea9"
+  ],
+  "idList": "661817a2f2685a8e4a314638",
+  "idMembers": [],
+  "idMembersVoted": [],
+  "idShort": 21622,
+  "idAttachmentCover": null,
+  "labels": [
+    {
+      "id": "65ba0fca608afe05de600231",
+      "idBoard": "5176af831f22073e1e0012e3",
+      "idOrganization": "515c52a01071a6096b000680",
+      "name": "WEB ARTICLE",
+      "nodeId": "ari:cloud:trello::label/workspace/515c52a01071a6096b000680/65ba0fca608afe05de600231",
+      "color": "lime",
+      "uses": 3055
+    },
+    {
+      "id": "65a69ef7128bbe9b3123689c",
+      "idBoard": "5176af831f22073e1e0012e3",
+      "idOrganization": "515c52a01071a6096b000680",
+      "name": "FRENCH",
+      "nodeId": "ari:cloud:trello::label/workspace/515c52a01071a6096b000680/65a69ef7128bbe9b3123689c",
+      "color": "purple_light",
+      "uses": 2622
+    }
+  ],
+  "idLabels": [
+    "65ba0fca608afe05de600231",
+    "65a69ef7128bbe9b3123689c"
+  ],
+  "manualCoverAttachment": true,
+  "name": "MB_TESTCUSTOMFIELDS_FR",
+  "nodeId": "ari:cloud:trello::card/workspace/515c52a01071a6096b000680/6953550fb87a67105c8e8d28",
+  "pinned": false,
+  "pos": 140737488388096,
+  "shortLink": "ThgXVpk9",
+  "shortUrl": "https://trello.com/c/ThgXVpk9",
+  "start": null,
+  "subscribed": false,
+  "url": "https://trello.com/c/ThgXVpk9/21622-mbtestcustomfieldsfr",
+  "cover": {
+    "idAttachment": null,
+    "color": "purple",
+    "idUploadedBackground": null,
+    "size": "normal",
+    "brightness": "light",
+    "yPosition": 0.5,
+    "idPlugin": null
+  },
+  "isTemplate": false,
+  "cardRole": null,
+  "mirrorSourceId": null,
+  "attachments": [
+    {
+      "id": "69bc038510b84acd1c999fa5",
+      "bytes": null,
+      "date": "2026-03-19T14:09:09.954Z",
+      "edgeColor": null,
+      "idMember": "6078386266beb879e0657312",
+      "isMalicious": false,
+      "isUpload": false,
+      "mimeType": "",
+      "name": "Crowdin",
+      "previews": [],
+      "sourceView": null,
+      "url": "https://crowdin.com",
+      "pos": 140737488355328,
+      "fileName": ""
+    }
+  ],
+  "customFieldItems": [
+    {
+      "id": "6953551edcfd9ba794a7cedd",
+      "value": {},
+      "idValue": null,
+      "idCustomField": "694efa16d67cda3bf9fabdab",
+      "idModel": "6953550fb87a67105c8e8d28",
+      "modelType": "card"
+    },
+    {
+      "id": "695355165bb875512b188896",
+      "value": {},
+      "idValue": null,
+      "idCustomField": "694ef9fdf5bf21eada294ef4",
+      "idModel": "6953550fb87a67105c8e8d28",
+      "modelType": "card"
+    },
+    {
+      "id": "6953550fb87a67105c8e8e60",
+      "value": null,
+      "idValue": "65f1b4b226571a365f7687dc",
+      "idCustomField": "65f1b4b226571a365f7687da",
+      "idModel": "6953550fb87a67105c8e8d28",
+      "modelType": "card"
+    }
+  ]
+}
+
+
 export const exampleData = [
     {
         "title": "PT_33842-You-Can-t-Kill-an-Idea-With-a-Missile-2026-03-11-DM2241_EN-FR",

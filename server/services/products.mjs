@@ -1,6 +1,12 @@
 import fetch from 'node-fetch'
 import { TranslationStatus } from '@crowdin/crowdin-api-client';
-import { customFields, languageCodes, productCodes, productGroups, labelGroups } from './constants.mjs';
+import { 
+    customFields,
+    trelloLangIds, 
+    productCodes, 
+    productGroups, 
+    labelGroups 
+} from './constants.mjs';
 import pool from '../database/databaseConfig.mjs';
 
 const trelloBoardId = process.env.TrelloBoardId;
@@ -25,10 +31,17 @@ for (const [key, trelloNames] of Object.entries(labelGroups)) {
 }
 
 
-export async function getAllCards() {     
+export async function getAllCards() {
+
+    const params = new URLSearchParams({
+                    fields: 'all',
+                    attachments: 'true',
+                    attachment_fields: 'all',
+                    customFieldItems: true
+                });
 
     try {
-        const response = await fetch(`https://api.trello.com/1/boards/${trelloBoardId}/cards?key=${trelloKey}&token=${trelloToken}`, {
+        const response = await fetch(`https://api.trello.com/1/boards/${trelloBoardId}/cards?key=${trelloKey}&token=${trelloToken}&params=${params.toString()}`, {
             method: 'GET'
         })
         return response.json()
@@ -39,62 +52,52 @@ export async function getAllCards() {
 }
 
 
-export async function getTrelloProducts(cards) {
+export function getTrelloProducts(cards) {
 
     const productCodePattern = '^([A-Z-]*)([0-9]*[A-Z]*)(?=_)';
-    const targetLangPattern = '(?<=_)([AENSFINLRDTOPH]{2})(?:[-])([AENSFINLRDTOPH]{2})(?![A-Za-z-])';
 
     let productData = [];
 
     try {
 
         for (const card of cards) {
-
             const title = card.name;
             
-            // If card isn't a valid product as defined in constants, skip to next one
+            // If card has no product code, product code isn't valid, or card is template, skip it
             const productCode = title.match(productCodePattern)?.[1];
             if (!productCode || !productCodes.includes(productCode) || card.isTemplate === true) continue;
 
+            // Get more Trello data:
+            const due = card.due;
+            const lastActivity = card.dateLastActivity;
+            const trelloUrl = card.url;
 
-            // If card is a valid product, get the expanded data
-            let cardJson = null;
-            try {
-                const cardId = card.id
-                const params = new URLSearchParams({
-                    fields: 'all',
-                    attachments: 'true',
-                    attachment_fields: 'all',
-                    customFieldItems: true
-                });
-
-                const r = await fetch(`https://api.trello.com/1/cards/${cardId}?key=${trelloKey}&token=${trelloToken}&params=${params.toString()}`, {
-                    method: 'GET'
+            // Get target language via ID instead of regex
+            const targetLang = () => {
+                const foundIds = card.idLabels
+                const match = Object.entries(trelloLangIds).find(([lang, id]) => {
+                    if (foundIds.includes(id)) {
+                        return lang
+                    }
                 })
-                cardJson = await r.json();
-
-            } catch (error) {
-                console.log(`Error fetching card JSON: ${error.message}`)
+                return match[0]
+                
             }
             
-            // Skip to next card if no expanded data available
-            if (!cardJson) continue;
-
-            // Get more Trello data:
-            const due = cardJson.due;
-            const lastActivity = cardJson.dateLastActivity;
-            const trelloUrl = card.url;
-            const targetLang = languageCodes[title.match(targetLangPattern)?.[2]];
-            
             // Find Crowdin URL if present
-            let crowdinUrl = null;
-            for (let attachment of cardJson.attachments) {
-                attachment.name === "Crowdin" ? crowdinUrl = attachment.url : null
+            const crowdinUrl = () => {
+                for (const attachment of card.attachments) {
+                    if (attachment.name.includes("Crowdin")) {
+                        return attachment.url
+                    } else {
+                        return null
+                    }
+                }
             }
             
             // Is "published" checked off?
             let published = false;
-            for (let item of cardJson.customFieldItems) {
+            for (let item of card.customFieldItems) {
                 if (item.idCustomField === customFields.published && item.value.checked === 'true') {
                     published = true
                 }
@@ -102,7 +105,7 @@ export async function getTrelloProducts(cards) {
 
             // Has Crowdin project ID?
             let crowdinProjectId = null;
-            for (let item of cardJson.customFieldItems) {
+            for (let item of card.customFieldItems) {
                 if (item.idCustomField === customFields.crowdinProj) {
                     crowdinProjectId = item.value.text
                 }
@@ -110,22 +113,22 @@ export async function getTrelloProducts(cards) {
 
             // Has Crowdin file ID?
             let crowdinFileId = null;
-            for (let item of cardJson.customFieldItems) {
+            for (let item of card.customFieldItems) {
                 if (item.idCustomField === customFields.crowdinFile) {
                     crowdinFileId = item.value.text
                 }
             }
 
             // labels
-            const labels = cardJson.labels?.map(l => l.name) ?? []
+            const labels = card.labels?.map(l => l.name) ?? []
 
             productData.push({
                 "title": title,
                 "productCode": productCode,
-                "targetLang": targetLang,
+                "targetLang": targetLang(),
                 "labels": labels,
                 "trelloUrl": trelloUrl,
-                "crowdinUrl": crowdinUrl,
+                "crowdinUrl": crowdinUrl(),
                 "due": due,
                 "lastActivity": lastActivity,
                 "published": published,
@@ -135,7 +138,7 @@ export async function getTrelloProducts(cards) {
             }) 
         
     }
-    
+
     return productData
 
     } catch (error) {

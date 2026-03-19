@@ -1,9 +1,11 @@
+// Defines all custom fields to extract from Trello cards
 export const customFields = {
     published: "688a48647c40d0183e053280",
     crowdinProj: "694efa16d67cda3bf9fabdab",
     crowdinFile: "694ef9fdf5bf21eada294ef4",
 }
 
+// Defines all valid product codes
 export const productCodes = [
     'ANN',
     'BCC',
@@ -24,10 +26,12 @@ export const productCodes = [
     'TW'
 ]
 
+
 /*
-TODO: merge productGroups and labelGroups
+Defines which product codes (extracted from card title) belong to which group(s).
+The associated key will be added to 'mediaType' in the API's response.
+Note that one product code can belong to multiple groups.
 */
-// Grouping of product codes extracted via regex from card titles, associated with searchable keys
 export const productGroups = {
     literature: ['CWL', 'LIT', 'LIT-S'],
     interpretation: ['ANN', 'BS', 'SER', 'SMT'],
@@ -35,7 +39,12 @@ export const productGroups = {
     audio_video: ['KOD', 'TW', 'POD', 'PTVID', 'WW', 'OTHER']
 }
 
-// Labels extracted from card titles, associated with searchable keys
+/*
+Defines product groups to be extracted from card lables.
+If one of the labels is present in the Trello card's array of labels,
+the associated key will be added to 'mediaType' in the API's response.
+Note that one label can belong to multiple groups.
+*/
 export const labelGroups = {
     pcgChurch: ['PCG.CHURCH'],
     magazines: ['Royal Vision', 'Let the Stones Speak', 'The Philadelphia Trumpet']
@@ -51,7 +60,11 @@ export const groupDisplayNames = {
     magazines: "Magazines"
 }
 
-
+/*
+On a Trello card, all IDs are stored in an array.
+The language of the card will be determined by this ID,
+regardless of what the title may or may not contain.
+*/
 export const trelloLangIds = {
     French: "65a69ef7128bbe9b3123689c",
     German: "65a69f0bd7a48a7be8f06855",
@@ -64,19 +77,7 @@ export const trelloLangIds = {
     Hebrew: "683a26393a0502e6f5dc33d6"
 };
 
-
-export const languageCodes = {
-    'FR': 'French',
-    'DE': 'German',
-    'ES': 'Spanish',
-    'PT': 'Portuguese',
-    'NL': 'Dutch',
-    'IT': 'Italian',
-    'AF': 'Afrikaans',
-    'FI': 'Finnish',
-    'HE': 'Hebrew'
-}
-
+// Abstraction for language display in UI
 export const friendlyLanguages = [
     'French',
     'German',
@@ -89,6 +90,7 @@ export const friendlyLanguages = [
     'Hebrew',
 ]
 
+// Abstraction for product fields display in UI
 export const friendlyFieldNames = {
     title: "Title",
     productCode: "Product Code",
