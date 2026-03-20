@@ -38,7 +38,7 @@ const columns = [
     header: 'Media Type',
     cell: (info) => {
     const value = info.getValue()
-    if (!value || value.length === 0) return 'N/A'
+    if (!value || value.length === 0) return null
     return value.join(', ')
     },
     filterFn: includesMediaType,

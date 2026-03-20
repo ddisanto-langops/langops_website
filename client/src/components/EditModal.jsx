@@ -2,6 +2,7 @@ import { useState, useEffect } from "react"
 import { friendlyFieldNames } from "../../../server/services/constants.mjs"
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { updateCompletion, deleteCompletion } from '../../services/api'
+import { mediaGroups, groupDisplayNames } from "../../../server/services/constants.mjs"
 
 export function EditModal({record, isOpen, onClose}) {
     const queryClient = useQueryClient()
@@ -29,25 +30,60 @@ export function EditModal({record, isOpen, onClose}) {
 
     if (!isOpen) return null
 
+    const allMediaTypes = Object.keys(mediaGroups)
+    const editableFields = ['title', 'productCode', 'targetLang', 'wordCount', 'datePublished', 'dateArchived']
+
     return (
         <div className="modal-overlay">
             <div className="modal-content">
                 <h2 className="modal-title">Edit Record</h2>
                 
                 <div className="modal-body">
-                    {Object.entries(formData).map(([key, value]) => (
-                        <div key={key} className="modal-field">
-                            <label className="modal-label">
-                                {friendlyFieldNames[key] || key}:
-                            </label>
-                            <input 
-                                className="modal-input"
-                                value={value || ''}
-                                onChange={e => setFormData({...formData, [key]: e.target.value})}
-                                readOnly={key === 'id'}
-                            />
-                        </div>
+                    {Object.entries(formData)
+                        .filter(([key]) => editableFields.includes(key))
+                        .map(([key, value]) => (
+                            <div key={key} className="modal-field">
+                                <label className="modal-label">{friendlyFieldNames[key] || key}:</label>
+                                <input 
+                                    className="modal-input"
+                                    value={value || ''}
+                                    onChange={e => setFormData({...formData, [key]: e.target.value})}
+                                    readOnly={key === 'targetLang' || key === 'productCode'}
+                                />
+                            </div>
                     ))}
+                    <div className="modal-field">
+                        <label className="modal-label">Media Type:</label>
+                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+                            {allMediaTypes.map(type => {
+                                const isSelected = formData.mediaType?.includes(type) ?? false
+                                return (
+                                    <button
+                                        key={type}
+                                        type="button"
+                                        onClick={() => {
+                                            const current = formData.mediaType ?? []
+                                            const updated = isSelected
+                                                ? current.filter(t => t !== type)
+                                                : [...current, type]
+                                            setFormData({...formData, mediaType: updated})
+                                        }}
+                                        style={{
+                                            padding: '4px 12px',
+                                            borderRadius: '999px',
+                                            border: '1px solid coral',
+                                            background: isSelected ? 'coral' : 'transparent',
+                                            color: 'white',
+                                            cursor: 'pointer',
+                                            fontSize: '0.85rem'
+                                        }}
+                                    >
+                                        {groupDisplayNames[type]}
+                                    </button>
+                                )
+                            })}
+                        </div>
+                    </div>
                 </div>
                 <div className="modal-actions">
                     

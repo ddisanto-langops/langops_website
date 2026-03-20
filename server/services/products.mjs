@@ -4,8 +4,7 @@ import {
     customFields,
     trelloLangIds, 
     productCodes, 
-    productGroups, 
-    labelGroups 
+    mediaGroups 
 } from './constants.mjs';
 import pool from '../database/databaseConfig.mjs';
 
@@ -16,18 +15,13 @@ const trelloToken = process.env.TrelloToken;
 // lookups for product groups and labels
 // Pre-processes the groups into a Map of arrays
 const groupLookup = new Map();
-for (const [groupName, codes] of Object.entries(productGroups)) {
+for (const [groupName, codes] of Object.entries(mediaGroups)) {
     codes.forEach(code => {
         if (!groupLookup.has(code)) {
             groupLookup.set(code, []);
         }
         groupLookup.get(code).push(groupName);
     });
-}
-
-const labelLookup = new Map()
-for (const [key, trelloNames] of Object.entries(labelGroups)) {
-    trelloNames.forEach(name => labelLookup.set(name, key))
 }
 
 
@@ -179,7 +173,7 @@ function getProductStatus(product) {
     return 'unknown'
 }
 
-function getMediaInfo(product, labels = []) {
+function getMediaInfo(product) {
     const wordcountPattern = '(?<=-)(?:[A-Z+]*)([0-9]{1,})(?=_)';
     const title = product.title;
     
@@ -192,12 +186,8 @@ function getMediaInfo(product, labels = []) {
     // FAST LOOKUP: Returns array of group names, or empty array if not found
     const mediaType = groupLookup.get(productCode) || [];
 
-    const labelMediaTypes = labels
-        .map(label => labelLookup.get(label))
-        .filter(Boolean)
-
     return {
-        mediaType: [...new Set([...mediaType, ...labelMediaTypes])],
+        mediaType: [...new Set([...mediaType])],
         wordCount: wordCount,
         }
     
@@ -216,7 +206,7 @@ export async function getProductData(trelloData) {
                         translationProg: null,
                         approvalProg: null,
                         productStatus: getProductStatus({...product, translationProg: null}),
-                        mediaInfo: getMediaInfo({...product}, product.labels ?? [])
+                        mediaInfo: getMediaInfo({...product})
 
                     }
                 }
@@ -231,7 +221,7 @@ export async function getProductData(trelloData) {
                     translationProg: crowdinProgress.translationProgress,
                     approvalProg: crowdinProgress.approvalProgress,
                     productStatus: getProductStatus({...product, translationProg: crowdinProgress.translationProgress}),
-                    mediaInfo: getMediaInfo({...product}, product.labels ?? [])
+                    mediaInfo: getMediaInfo({...product})
                 }
             })
         )
@@ -292,9 +282,8 @@ export async function upsertProducts(products) {
           mediaType, wordCount, datePublished
         ) VALUES ($1,$2,$3,$4,$5,$6)
         ON CONFLICT (title) DO UPDATE SET
-          wordCount     = EXCLUDED.wordCount,
-          datePublished = EXCLUDED.datePublished,
-          mediaType     = EXCLUDED.mediaType
+          targetlang    = EXCLUDED.targetlang,
+          productcode   = EXCLUDED.productcode
       `, [
         product.title,
         product.productCode,

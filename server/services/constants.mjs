@@ -28,24 +28,16 @@ export const productCodes = [
 
 
 /*
-Defines which product codes (extracted from card title) belong to which group(s).
+Defines which product codes (extracted from card title) 
+and labels (extracted from card idLabels field) belong to which group(s).
 The associated key will be added to 'mediaType' in the API's response.
 Note that one product code can belong to multiple groups.
 */
-export const productGroups = {
+export const mediaGroups = {
     literature: ['CWL', 'LIT', 'LIT-S'],
     interpretation: ['ANN', 'BS', 'SER', 'SMT'],
     website: ['LIT-S', 'PT', 'TB', 'MB', 'KOD', 'POD'],
-    audio_video: ['KOD', 'TW', 'POD', 'PTVID', 'WW', 'OTHER']
-}
-
-/*
-Defines product groups to be extracted from card lables.
-If one of the labels is present in the Trello card's array of labels,
-the associated key will be added to 'mediaType' in the API's response.
-Note that one label can belong to multiple groups.
-*/
-export const labelGroups = {
+    audio_video: ['KOD', 'TW', 'POD', 'PTVID', 'WW', 'OTHER'],
     pcgChurch: ['PCG.CHURCH'],
     magazines: ['Royal Vision', 'Let the Stones Speak', 'The Philadelphia Trumpet']
 }
@@ -56,7 +48,7 @@ export const groupDisplayNames = {
     interpretation: "Interpretation",
     website: "Website",
     audio_video: "Audio/Video",
-    pcgChurch: "PCOG.church",
+    pcgChurch: "PCG.church",
     magazines: "Magazines"
 }
 

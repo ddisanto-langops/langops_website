@@ -44,6 +44,7 @@ export async function updateCompletion(record) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(record)
     })
+    console.log(JSON.stringify(response))
     if (!response.ok) throw new Error('Failed to update completion')
     return response.json()
 }

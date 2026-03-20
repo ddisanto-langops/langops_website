@@ -1,7 +1,5 @@
 import { Router } from 'express';
 import pool from '../database/databaseConfig.mjs';
-import { exampleCompletionsData } from '../database/exampleCompletionsData.mjs';
-import { exampleData } from '../database/exampleData.mjs'
 
 const router = Router();
 
@@ -93,20 +91,24 @@ router.get('/api/admin/completions', async (req, res) => {
 router.put('/api/admin/completions/:id', async (req, res) => {
     const { id } = req.params
     const { title, productCode, targetLang, mediaType, wordCount, datePublished, dateArchived } = req.body
-
+    
+     const mediaTypeArray = Array.isArray(mediaType) && mediaType.length > 0
+        ? mediaType.filter(Boolean)
+        : null
+    
     try {
         const result = await pool.query(`
             UPDATE completions
             SET title = $1,
                 productcode = $2,
                 targetlang = $3,
-                mediatype = $4,
+                mediatype = $4::text[],
                 wordcount = $5,
                 datepublished = $6,
                 datearchived = $7
             WHERE id = $8
             RETURNING *
-        `, [title, productCode, targetLang, mediaType, wordCount, datePublished, dateArchived, id])
+        `, [title, productCode, targetLang, mediaTypeArray, wordCount, datePublished, dateArchived, id])
 
         if (result.rows.length === 0) {
             return res.status(404).json({ error: 'Record not found' })
