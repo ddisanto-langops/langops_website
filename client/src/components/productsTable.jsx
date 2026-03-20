@@ -11,7 +11,7 @@ import {
   getFilteredRowModel,
   flexRender
 } from '@tanstack/react-table'
-import { formatDate } from "../../services/dateFormat";
+import { formatDate } from "../../services/formatDate";
 
 const includesMediaType = (row, columnId, filterValue) => {
   if (!filterValue || filterValue.length === 0) return true

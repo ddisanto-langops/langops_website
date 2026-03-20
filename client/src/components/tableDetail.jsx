@@ -1,3 +1,5 @@
+import { formatDate } from '../../services/formatDate'
+
 export function TableDetail({ row }) {
 
     if (!row) return <div className="placeholder">Select a row to see details.</div>;
@@ -7,8 +9,8 @@ export function TableDetail({ row }) {
       <h2>{row.title}</h2>
       <p>Language: {row.targetLang}</p>
       <p>Status: {row.productStatus || '❓'}</p>
-      <p>Due: {row.due || '❓'}</p>
-      <p>Last Activity: {row.lastActivity || '❓'}</p>
+      <p>Due: {formatDate(row.due) || '❓'}</p>
+      <p>Last Activity: {formatDate(row.lastActivity) || '❓'}</p>
       <p>Translation Progress: {row.translationProg ? `${row.translationProg}%` : '❓'}</p>
       <p>Approval Progress: {row.approvalProg ? `${row.approvalProg}%` : '❓'}</p>
       <p>Published: {row.published ? '✅': '❌'} </p>
