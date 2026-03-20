@@ -1,6 +1,6 @@
 import { productCodes, friendlyLanguages, groupDisplayNames } from "../../../server/services/constants.mjs"
 
-export function DropdownFilters({filters, onFilterChange}) {
+export function DashboardFilters({filters, onFilterChange}) {
     return (
     
     <>
@@ -46,6 +46,36 @@ export function DropdownFilters({filters, onFilterChange}) {
         <option value={code}>{code}</option>
       ))}
     </select>
+    <div className="date-picker-div">
+      <label>From: 
+        <input 
+        className="date-picker"
+        type="date"
+        id="from"
+        name="filter-start"
+        value={filters.from ?? null}
+        onChange={e => onFilterChange({
+          ...filters,
+          from: e.target.value || null
+        })}
+        />
+      </label>
+    </div>
+    <div className="date-picker-div">
+      <label>To: 
+        <input 
+        className="date-picker"
+        type="date"
+        id="to"
+        name="filter-end"
+        value={filters.to ?? null}
+        onChange={e => onFilterChange({
+          ...filters,
+          to: e.target.value || null
+        })}
+        />
+      </label>
+    </div>
     </>
 
     // TODO: Add date filters

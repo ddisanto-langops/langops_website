@@ -339,3 +339,27 @@ td {
 #btn-close:hover, #btn-delete:hover, #btn-save:hover {
     border: 1px solid coral
 }
+
+.date-picker-div {
+    background-color: hsla(204, 85%, 56%, 0.747);
+    border: 1px solid transparent;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    padding: 5px;
+}
+
+.date-picker-div:hover {
+    border: 1px solid coral;
+    background-color: hsla(202, 83%, 60%, 0.884);
+}
+
+.date-picker {
+    background-color: transparent;
+    color: white;
+    border-radius: 8px;
+    font-size: 1rem;
+    border: 1px transparent;
+    padding: 5px;
+    font-family: Arial, Helvetica, sans-serif;
+}

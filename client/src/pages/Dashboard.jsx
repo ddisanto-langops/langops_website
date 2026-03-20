@@ -1,7 +1,7 @@
 import { NavBar } from '../components/NavBar'
 import { useState } from 'react'
 import { TotalWords } from '../components/totalWords'
-import { DropdownFilters } from '../components/dropdownFilters'
+import { DashboardFilters } from '../components/dashboardFilters'
 
 export function Dashboard() {
 
@@ -21,7 +21,7 @@ export function Dashboard() {
       <h1 id="dashboard-page-title">Dashboard</h1>
       <div id='dashboard-container'>
         <div id='dashboard-filter-container'>
-          <DropdownFilters filters={filters} onFilterChange={setFilters} />
+          <DashboardFilters filters={filters} onFilterChange={setFilters} />
         </div>
         <div id='total-words-container'>
           <TotalWords filters={filters}/>
