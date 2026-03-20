@@ -261,7 +261,7 @@ td {
 }
 
 .modal-content {
-    background: rgb(30, 31, 41);
+    background: hsl(211, 37%, 21%);
     padding: 2rem;
     border-radius: 8px;
     width: 100%;
@@ -294,7 +294,7 @@ td {
 }
 
 .modal-input {
-    background-color: rgb(30, 31, 41);
+    background-color: hsl(211, 38%, 15%);
     color: white;
     padding: 0.5rem;
     border: 1px solid #ccc;
@@ -310,22 +310,32 @@ td {
     gap: 10px;
 }
 
-#btn-close { padding: 0.5rem 1rem; cursor: pointer; }
+#btn-close { 
+    border: 1px solid transparent;
+    border-radius: 4px;
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+    background: linear-gradient(45deg, #a9b3bd, hsl(180, 13%, 95%));
+}
 
 #btn-save {
     padding: 0.5rem 1rem;
     cursor: pointer;
-    background: #007bff;
+    background: linear-gradient(45deg, #007bff, hsl(177, 60%, 62%));
     color: white;
-    border: none;
+    border: 1px solid transparent;
     border-radius: 4px;
 }
 
 #btn-delete {
     padding: 0.5rem 1rem;
     cursor: pointer;
-    background: #ac1414;
+    background: linear-gradient(45deg, #ac1414, hsl(24, 60%, 62%));
     color: white;
-    border: none;
+    border: 1px solid transparent;
     border-radius: 4px;
+}
+
+#btn-close:hover, #btn-delete:hover, #btn-save:hover {
+    border: 1px solid coral
 }
