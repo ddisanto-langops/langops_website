@@ -10,6 +10,7 @@ import {
   getFilteredRowModel,
   flexRender
 } from '@tanstack/react-table'
+import { formatDate } from "../../services/dateFormat"
 
 const includesMediaType = (row, columnId, filterValue) => {
   if (!filterValue || filterValue.length === 0) return true
@@ -43,7 +44,8 @@ const columns = [
     filterFn: includesMediaType,
   }),
   columnHelper.accessor('datePublished', {
-    header: 'Date Published'
+    header: 'Date Published',
+    cell: info => formatDate(info.getValue())
   })
 ]
 
