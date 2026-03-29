@@ -100,6 +100,26 @@ h2 { overflow-wrap: break-word; }
     color: hsl(28, 94%, 69%);
 }
 
+.product-count-container {
+    display: grid;
+    grid-template-columns: repeat(4, 25%);
+    border: 1px solid coral;
+    border-radius: 6px;
+    width: 95%;
+    justify-self: center;
+    padding: 10px;
+}
+
+.product-count-data {
+    justify-self: center;
+    color: hsl(28, 94%, 69%);
+    font-size: 1.5rem;
+    background: linear-gradient(135deg, hsla(204, 85%, 56%, 0.747), hsl(202, 82%, 56%));
+    padding: 5px;
+    border-radius: 8px;
+    margin: 10px;
+}
+
 /* =====================
    DROPDOWNS & INPUTS
    ===================== */

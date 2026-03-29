@@ -35,7 +35,24 @@ export async function fetchAdminCompletions(filters = {}) {
 
     const response = await fetch(url)
     if (!response.ok) throw new Error("Failed to fetch completions data.")
-    return response.json()
+    return await response.json()
+}
+
+export async function fetchCompletionsByProduct(filters = {}) {
+    const params = new URLSearchParams()
+
+    if (filters.lang) params.append('lang', filters.lang)
+    if (filters.code) params.append('code', filters.code)
+    if (filters.group) params.append('group', filters.group)
+    if (filters.from) params.append('from', filters.from)
+    if (filters.to) params.append('to', filters.to)
+    
+    const query = params.toString()
+    const url = `/api/data/completions/byproduct${query ? `?${query}` : ''}`
+
+    const response = await fetch(url)
+    if (!response.ok) throw new Error("Failed to fetch completions data.")
+    return await response.json()
 }
 
 export async function updateCompletion(record) {

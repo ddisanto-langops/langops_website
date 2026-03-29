@@ -2,6 +2,7 @@ import { NavBar } from '../components/NavBar'
 import { useState } from 'react'
 import { TotalWords } from '../components/totalWords'
 import { DashboardFilters } from '../components/dashboardFilters'
+import { ProductCount } from '../components/productCount'
 
 export function Dashboard() {
 
@@ -25,6 +26,9 @@ export function Dashboard() {
         </div>
         <div id='total-words-container'>
           <TotalWords filters={filters}/>
+        </div>
+        <div>
+          <ProductCount filters={filters} />
         </div>
       </div>
     </div>

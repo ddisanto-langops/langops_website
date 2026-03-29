@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import { productCodes } from '../services/constants.mjs';
 import pool from '../database/databaseConfig.mjs';
 
 const router = Router();
@@ -47,10 +48,34 @@ router.get('/api/completions', async (req, res) => {
             AND ($3::text IS NULL OR $3::text = ANY(mediatype))
             AND ($4::date IS NULL OR datepublished >= $4)
             AND ($5::date IS NULL OR datepublished <= $5)
-    `, [lang ?? null, code ?? null, group, from ?? null, to ?? null])
+    `, [lang ?? null, code ?? null, group, from ?? null, to ?? null]);
 
-    res.json(result.rows[0])
+    res.json(result.rows[0]);
         
+    } catch (error) {
+        res.status(500).json({error: error.message})
+    }
+})
+
+
+router.get("/api/data/completions/byproduct", async (req, res) => {
+    const { lang, code, group, from, to } = req.query
+    try {
+        const result = await pool.query(`
+            SELECT productcode, count(*) AS occurence_count
+            FROM completions
+            WHERE
+                ($1::text IS NULL OR targetlang = $1)
+                AND ($2::text IS NULL OR productcode = $2)
+                AND ($3::text IS NULL OR $3::text = ANY(mediatype))
+                AND ($4::date IS NULL OR datepublished >= $4)
+                AND ($5::date IS NULL OR datepublished <= $5)
+            GROUP BY productcode;`,
+            [lang ?? null, code ?? null, group, from ?? null, to ?? null]
+        );
+        
+        res.json(result.rows);
+
     } catch (error) {
         res.status(500).json({error: error.message})
     }
