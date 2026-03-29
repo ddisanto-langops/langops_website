@@ -12,30 +12,37 @@ body {
 
 h2 { overflow-wrap: break-word; }
 
-/* =====================
-   NAVBAR
-   ===================== */
+/* =======================
+   NAVBAR & WEBSITE TITLE
+   ======================= */
+
+.website-title-div {
+    justify-items: center;
+    color: white;
+}
+
 #navbar-div {
     display: flex;
-    width: 100%;
-    justify-content: center;
-    align-content: center;
-    padding: 10px;
+    flex-direction: column;
+    justify-self: center;
+    width: 98%;
+    margin: 5px;
+    
+    border-radius: 8px;
 }
 
 #navbar {
     display: flex;
     align-items: center;
-    border: 1px solid rgba(32, 101, 190, 0.418);
-    box-shadow: 0px 0px 4px 2px hsla(28, 91%, 57%, 0.795);
-    border-radius: 8px;
+    justify-content: center;
+    
 }
 
 .navbar-link {
     margin: 10px;
     margin-left: 20px;
     color: hsla(28, 91%, 57%, 0.795);
-    font-size: 1.3rem;
+    font-size: 0.8rem;
 }
 
 /* =====================
@@ -104,6 +111,7 @@ h2 { overflow-wrap: break-word; }
     display: grid;
     grid-template-columns: repeat(4, 25%);
     border: 1px solid coral;
+    box-shadow: 0 0 8px coral;
     border-radius: 6px;
     width: 95%;
     justify-self: center;

@@ -81,7 +81,7 @@ export function ProductsTable({ onRowClick }) {
 
   return (
   <>
-  <h1 id='products-page-title'>Products</h1>
+  <h2 id='products-page-title'>Products</h2>
   <ClickFilter onTabClick={handleTabClick}/>
   <table id="product-table">
     <thead id="product-table-head">

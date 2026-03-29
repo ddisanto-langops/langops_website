@@ -83,7 +83,7 @@ export function CompletionsTable({ onRowClick }) {
 
   return (
     <>
-    <h1 id='completions-page-title'>Completions</h1>
+    <h2 id='completions-page-title'>Completions</h2>
     <ClickFilter onTabClick={handleTabClick}/>
     <table id="completions-table">
       <thead id="completions-table-head">
