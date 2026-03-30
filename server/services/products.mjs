@@ -28,21 +28,21 @@ for (const [groupName, codes] of Object.entries(mediaGroups)) {
 export async function getAllCards() {
 
     const params = new URLSearchParams({
-                    fields: 'all',
-                    attachments: 'true',
-                    attachment_fields: 'all',
-                    customFieldItems: true
-                });
+        fields: 'all',
+        attachments: 'true',
+        attachment_fields: 'all',
+        customFieldItems: true
+        });
 
-    try {
-        const response = await fetch(`https://api.trello.com/1/boards/${trelloBoardId}/cards?key=${trelloKey}&token=${trelloToken}&params=${params.toString()}`, {
-            method: 'GET'
-        })
-        return response.json()
+        try {
+            const response = await fetch(`https://api.trello.com/1/boards/${trelloBoardId}/cards?key=${trelloKey}&token=${trelloToken}&params=${params.toString()}`, {
+                method: 'GET'
+            })
+            return response.json()
 
-    } catch (error) {
-        console.log(`getAllCards: ${error.message}`)
-    }
+        } catch (error) {
+            console.log(`getAllCards: ${error.message}`)
+        }
 }
 
 

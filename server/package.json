@@ -5,7 +5,8 @@
   "main": "server.mjs",
   "scripts": {
     "start": "node server.mjs",
-    "dev": "nodemon server.mjs && set NODE_ENV=development"
+    "dev": "nodemon server.mjs && set NODE_ENV=development",
+    "test": "node ../tests/test.mjs"
   },
   "repository": {
     "type": "git",
