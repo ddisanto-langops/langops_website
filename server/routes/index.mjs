@@ -1,5 +1,4 @@
 import { Router } from 'express';
-import { productCodes } from '../services/constants.mjs';
 import pool from '../database/databaseConfig.mjs';
 
 const router = Router();
@@ -49,8 +48,13 @@ router.get('/api/completions', async (req, res) => {
             AND ($4::date IS NULL OR datepublished >= $4)
             AND ($5::date IS NULL OR datepublished <= $5)
     `, [lang ?? null, code ?? null, group, from ?? null, to ?? null]);
-
-    res.json(result.rows[0]);
+    
+    const data = result.rows[0];
+    const responseData = {
+        totalWords: Number(data.totalWords),
+        totalProducts: Number(data.totalProducts)
+    };
+    res.json(responseData);
         
     } catch (error) {
         res.status(500).json({error: error.message})

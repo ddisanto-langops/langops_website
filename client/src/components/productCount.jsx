@@ -2,7 +2,6 @@ import { useQuery } from "@tanstack/react-query"
 import { fetchCompletionsByProduct } from "../../services/api"
 
 export function ProductCount({filters}) {
-	console.log("ProductCount Rendering with filters:", filters)
 
 	const { data, isLoading, isError, error } = useQuery({
 	queryKey: ['byproduct', filters],
@@ -17,8 +16,6 @@ export function ProductCount({filters}) {
    if (!Array.isArray(data)) {
 	return <p>Data is not in the expected format.</p>;
   }
-
-  console.log("Type:", typeof data, "Is Array:", Array.isArray(data), "Value:", data);
 
   return (
 	<>

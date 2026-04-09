@@ -9,5 +9,5 @@ export function TotalWords({filters}) {
   })
 
   if (isLoading) return <p>Loading...</p>
-  return <p id="total-words">{data?.totalWords ?? 0} words</p>
+  return <p id="total-words">{data?.totalWords.toLocaleString() ?? 0} words</p>
 }
