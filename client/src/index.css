@@ -214,7 +214,7 @@ h2 { overflow-wrap: break-word; }
 #completions-table-head th {
     position: sticky;
     color: white;
-    top: 60px;
+    top: 0px;
     background-color: hsl(211, 37%, 21%);
     z-index: 2;
     padding: 10px;
