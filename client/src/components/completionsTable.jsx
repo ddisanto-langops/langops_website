@@ -15,6 +15,15 @@ import { formatDate } from "../../services/formatDate"
 
 const columnHelper = createColumnHelper()
 
+const includesMediaType = (row, columnId, filterValue) => {
+  if (!filterValue || filterValue.length === 0) return true
+  const cellValue = row.getValue(columnId)
+  if (!cellValue) return false
+  const filterArray = Array.isArray(filterValue) ? filterValue : [filterValue]
+  return filterArray.some(val => cellValue?.includes(val))
+}
+
+
 const columns = [
   columnHelper.accessor('title', { header: 'Title' }),
   columnHelper.accessor('productCode', { header: 'Product Code' }),
@@ -22,6 +31,8 @@ const columns = [
   columnHelper.accessor('mediaType', {
     header: 'Media Type',
     cell: (info) => info.getValue()?.join(', '),
+    // 2. PLUG IT BACK IN HERE:
+    filterFn: includesMediaType, 
   }),
   columnHelper.accessor('datePublished', {
     header: 'Date Published',
