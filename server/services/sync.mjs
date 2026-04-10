@@ -46,7 +46,7 @@ export async function syncProducts() {
     */
     // get all archived cards since a specified date
     const archivedCards = await getArchivedCards()
-    console.log(`Fetched ${activeCards.length} archived cards from board.`)
+    console.log(`Fetched ${archivedCards.length} archived cards from board.`)
 
     // determine which are products
     const archivedTrelloProducts = getTrelloProducts(archivedCards)

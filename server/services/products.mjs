@@ -165,7 +165,7 @@ async function getCrowdinFileProgress(projectId, fileId) {
 // =====================
 
 function getProductStatus(product) {
-    if (product.published) return 'completed'
+    if (product.published) return 'published'
 
     const sevenDaysAgo = new Date()
     sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7)

@@ -21,7 +21,7 @@
     - [x] productCode: string
     - [x] targetLang: string
         - [x] this must be a "friendly name" e.g. "Spanish" not "es"
-    - [x] productStatus: string = completed || pending || unknown
+    - [x] productStatus: string = published || pending || unknown
     - [x] crowdinUrl: string || null
     - [x] TrelloUrl: string
     - [x] due: string (date format) || null
@@ -40,8 +40,8 @@
     - [x] targetLang: string
     - [x] mediaType: array[string] = audio_video || literature || website || interpretation || pcgChurch
     - [x] wordCount: int || null
-    - [x] datePublished
-    - [x] dateArchived
+    - [x] datePublished: date
+    - [x] dateArchived: date
     
 ## PostgreSQL Databases  
 *Database name: langops_dashboard*   
