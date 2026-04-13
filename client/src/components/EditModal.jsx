@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react"
-import { friendlyFieldNames } from "../../../server/services/constants.mjs"
+import { friendlyFieldNames, friendlyLanguages } from "../../../server/services/constants.mjs"
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { updateCompletion, deleteCompletion } from '../../services/api'
 import { mediaGroups, groupDisplayNames } from "../../../server/services/constants.mjs"
@@ -44,12 +44,25 @@ export function EditModal({record, isOpen, onClose}) {
                         .map(([key, value]) => (
                             <div key={key} className="modal-field">
                                 <label className="modal-label">{friendlyFieldNames[key] || key}:</label>
-                                <input 
-                                    className="modal-input"
-                                    value={value || ''}
-                                    onChange={e => setFormData({...formData, [key]: e.target.value})}
-                                    readOnly={key === 'productCode'}
-                                />
+                                {key === 'targetLang' ? 
+                                    <select
+                                        className="modal-input"
+                                        value={value}
+                                        onChange={e => setFormData({...formData, [key]: e.target.value})}
+                                    >
+                                        {friendlyLanguages.map(lang => 
+                                            <option>{lang}</option>
+                                        )}
+                                    </select>
+                                    : 
+                                    <input 
+                                        className="modal-input"
+                                        value={value || ''}
+                                        onChange={e => setFormData({...formData, [key]: e.target.value})}
+                                        readOnly={key === 'productCode'}
+                                    />
+                                }
+                                
                             </div>
                     ))}
                     <div className="modal-field">
