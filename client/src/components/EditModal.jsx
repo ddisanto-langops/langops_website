@@ -48,7 +48,7 @@ export function EditModal({record, isOpen, onClose}) {
                                     className="modal-input"
                                     value={value || ''}
                                     onChange={e => setFormData({...formData, [key]: e.target.value})}
-                                    readOnly={key === 'targetLang' || key === 'productCode'}
+                                    readOnly={key === 'productCode'}
                                 />
                             </div>
                     ))}
