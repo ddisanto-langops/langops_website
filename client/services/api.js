@@ -67,9 +67,11 @@ export async function updateCompletion(record) {
 }
 
 export async function deleteCompletion(id) {
-    const response = await fetch(`/api/admin/completions/${id}`, {
+    if (confirm("Are you sure you want to delete this record? This action cannot be undone.")) {
+        const response = await fetch(`/api/admin/completions/${id}`, {
         method: 'DELETE',
-    })
-    if (!response.ok) throw new Error('Failed to delete completion')
-    return response.json()
+        })
+        if (!response.ok) throw new Error('Failed to delete completion')
+        return response.json()
+    }
 }

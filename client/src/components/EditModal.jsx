@@ -37,13 +37,27 @@ export function EditModal({record, isOpen, onClose}) {
         <div className="modal-overlay">
             <div className="modal-content">
                 <h2 className="modal-title">Edit Record</h2>
-                
+                {formData.trelloUrl ? 
+                <p
+                    className="trello-link-completions"
+                    style={{justifySelf: 'center'}}
+                >
+                    <a
+                        id="completions-link"
+                        style={{color: 'coral'}} 
+                        href={formData.trelloUrl} target="_blank"
+                    >
+                        Click to view on Trello
+                    </a>
+                </p>
+                : null
+                }
                 <div className="modal-body">
                     {Object.entries(formData)
                         .filter(([key]) => editableFields.includes(key))
                         .map(([key, value]) => (
                             <div key={key} className="modal-field">
-                                <label className="modal-label">{friendlyFieldNames[key] || key}:</label>
+                                <label key={key} className="modal-label">{friendlyFieldNames[key] || key}:</label>
                                 {key === 'targetLang' ? 
                                     <select
                                         className="modal-input"
@@ -55,7 +69,7 @@ export function EditModal({record, isOpen, onClose}) {
                                         )}
                                     </select>
                                     : 
-                                    <input 
+                                    <input
                                         className="modal-input"
                                         value={value || ''}
                                         onChange={e => setFormData({...formData, [key]: e.target.value})}

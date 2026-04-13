@@ -306,6 +306,10 @@ td {
     justify-self: center;
 }
 
+#completions-link {
+    justify-self: center;
+}
+
 .modal-field {
     display: grid;
     grid-template-columns: 140px 1fr;
