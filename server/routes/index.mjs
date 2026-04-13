@@ -99,7 +99,8 @@ router.get('/api/admin/completions', async (req, res) => {
                 mediatype AS "mediaType",
                 wordcount AS "wordCount",
                 datepublished AS "datePublished",
-                datearchived AS "dateArchived"
+                datearchived AS "dateArchived",
+                trello_url AS "trelloUrl"
             FROM completions
             WHERE
                 ($1::text IS NULL OR targetlang = $1)

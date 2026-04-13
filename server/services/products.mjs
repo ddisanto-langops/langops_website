@@ -261,8 +261,8 @@ export async function upsertArchivedProducts(archivedProducts) {
         await pool.query(`
             INSERT INTO completions (
                 title, productCode, targetLang,
-                mediaType, wordCount, datePublished
-            ) VALUES ($1,$2,$3,$4,$5,$6)
+                mediaType, wordCount, datePublished, trello_url
+            ) VALUES ($1,$2,$3,$4,$5,$6,$7)
             ON CONFLICT (title) DO UPDATE SET
                 targetlang  = EXCLUDED.targetlang,
                 productcode = EXCLUDED.productcode
@@ -272,7 +272,8 @@ export async function upsertArchivedProducts(archivedProducts) {
             product.targetLang,
             product.mediaType ?? null,
             product.wordCount ?? null,
-            product.lastActivity ?? null
+            product.lastActivity ?? null,
+            product.trelloUrl ?? null
         ])
     }
 }
