@@ -69,7 +69,10 @@ export function getTrelloProducts(cards) {
             
             const productCode = title.match(productCodePattern)?.[1];
             if (!productCode || !productCodes.includes(productCode) || card.isTemplate === true) continue;
-
+            
+            const wordCountMatch = title.match(wordcountPattern)
+            const wordCount = wordCountMatch ? parseInt(wordCountMatch[1]) : null
+            
             const due = card.due;
             const lastActivity = card.dateLastActivity;
             const trelloUrl = card.url;
@@ -105,10 +108,6 @@ export function getTrelloProducts(cards) {
                 )?.value.text ?? null
             }
 
-            // Word count from title
-            const wordCountMatch = title.match(wordcountPattern)
-            const wordCount = wordCountMatch ? parseInt(wordCountMatch[1]) : null
-
             // Media type from product code and labels
             const productMediaType = groupLookup.get(productCode) || []
             const labelMediaTypes = (card.labels ?? []).flatMap(label => 
@@ -140,10 +139,11 @@ export function getTrelloProducts(cards) {
 }
 
 // =====================
-// CROWDIN
+// ENRICHMENT
 // =====================
 
 async function getCrowdinFileProgress(projectId, fileId) {
+    if (!projectId || !fileId) return null;
     try {
         const translationStatusApi = new TranslationStatus({
             token: process.env.crowdinToken
@@ -160,19 +160,16 @@ async function getCrowdinFileProgress(projectId, fileId) {
     }
 }
 
-// =====================
-// ENRICHMENT
-// =====================
 
 function getProductStatus(product) {
     if (product.published) return 'published'
 
     const sevenDaysAgo = new Date()
     sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7)
-    const recentActivity = new Date(product.lastActivity) >= sevenDaysAgo
+    const hasRecentActivity = new Date(product.lastActivity) >= sevenDaysAgo
     const hasTranslationProgress = product.translationProg > 0
 
-    if (hasTranslationProgress || recentActivity) return 'pending'
+    if (hasTranslationProgress || hasRecentActivity) return 'pending'
     return 'unknown'
 }
 
