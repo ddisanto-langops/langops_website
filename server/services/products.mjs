@@ -86,18 +86,17 @@ export function getTrelloProducts(cards) {
                 return match ? match[0] : null
             })()
 
-            // Crowdin URL from attachments
-            const crowdinUrl = card.attachments?.find(
-                a => a.name.includes("Crowdin")
-            )?.url ?? null
-
-            const editorUrl = card.attachments?.find(
-                a => a.name.includes("Edit Article")
-            )?.url ?? null
-
-            const articleUrl = card.attachments?.find(
-                a => a.name.includes("Article")
-            )?.url ?? null
+            // Crowdin, editor and article URL from attachments
+            let crowdinUrl = null, editorUrl = null, articleUrl = null
+            for (const attachment of card.attachments ?? []) {
+                if (attachment.name.includes("Crowdin")) {
+                    crowdinUrl = attachment.url
+                } else if (attachment.name.includes("Edit Article")) {
+                    editorUrl = attachment.url
+                } else if (attachment.name.match(articleUrlPattern)) {
+                    articleUrl = attachment.url
+                } 
+            }
 
             // Custom fields
             let published = null, crowdinProjectId = null, crowdinFileId = null
@@ -279,7 +278,10 @@ export async function upsertArchivedProducts(archivedProducts) {
             ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)
             ON CONFLICT (title) DO UPDATE SET
                 targetlang  = EXCLUDED.targetlang,
-                productcode = EXCLUDED.productcode
+                productcode = EXCLUDED.productcode,
+                article_url = EXCLUDED.article_url,
+                editor_url  = EXCLUDED.editor_url,
+                trello_url  = EXCLUDED.trello_url
         `, [
             product.title,
             product.productCode,
@@ -287,7 +289,7 @@ export async function upsertArchivedProducts(archivedProducts) {
             product.mediaType ?? null,
             product.wordCount ?? null,
             product.lastActivity ?? null,
-            product.trelloUrl ?? null,
+            product.trelloUrl,
             product.articleUrl ?? null,
             product.editorUrl ?? null
         ])

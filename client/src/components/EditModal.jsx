@@ -52,6 +52,36 @@ export function EditModal({record, isOpen, onClose}) {
                 </p>
                 : null
                 }
+                {formData.editorUrl ? 
+                <p
+                    className="trello-link-completions"
+                    style={{justifySelf: 'center'}}
+                >
+                    <a
+                        id="completions-link"
+                        style={{color: 'coral'}} 
+                        href={formData.editorUrl} target="_blank"
+                    >
+                        Click to Edit in Refinery
+                    </a>
+                </p>
+                : null
+                }
+                {formData.articleUrl ? 
+                <p
+                    className="trello-link-completions"
+                    style={{justifySelf: 'center'}}
+                >
+                    <a
+                        id="completions-link"
+                        style={{color: 'coral'}} 
+                        href={formData.articleUrl} target="_blank"
+                    >
+                        Click to view article
+                    </a>
+                </p>
+                : null
+                }
                 <div className="modal-body">
                     {Object.entries(formData)
                         .filter(([key]) => editableFields.includes(key))

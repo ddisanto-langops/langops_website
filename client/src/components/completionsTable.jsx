@@ -12,6 +12,7 @@ import {
 } from '@tanstack/react-table'
 import { useVirtualizer } from '@tanstack/react-virtual'
 import { formatDate } from "../../services/formatDate"
+import { groupDisplayNames } from "../../../server/services/constants.mjs"
 
 const columnHelper = createColumnHelper()
 
@@ -30,8 +31,10 @@ const columns = [
   columnHelper.accessor('targetLang', { header: 'Language' }),
   columnHelper.accessor('mediaType', {
     header: 'Media Type',
-    cell: (info) => info.getValue()?.join(', '),
-    // 2. PLUG IT BACK IN HERE:
+    cell: (info) => {
+      const mediaTypes = info.getValue() ?? []
+      return mediaTypes.map((type) => groupDisplayNames[type] || type).join(', ')
+    },
     filterFn: includesMediaType, 
   }),
   columnHelper.accessor('datePublished', {

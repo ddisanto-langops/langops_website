@@ -210,7 +210,17 @@ h2 { overflow-wrap: break-word; }
     color: coral;
 }
 
-#product-table-head th,
+#product-table-head th {
+    position: sticky;
+    color: white;
+    top: 75px;
+    background-color: hsl(211, 37%, 21%);
+    z-index: 2;
+    padding: 10px;
+    text-align: left;
+    font-size: 1.5rem;
+}
+
 #completions-table-head th {
     position: sticky;
     color: white;
@@ -289,12 +299,14 @@ td {
 }
 
 .modal-content {
+    overflow-y: auto;
     background: hsl(211, 37%, 21%);
     padding: 2rem;
     border-radius: 8px;
     width: 100%;
     max-width: 50%;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    max-height: 95%;
 }
 
 .modal-title {
@@ -336,9 +348,9 @@ td {
 }
 
 .modal-actions {
-    margin-top: 2rem;
+    margin-top: 5px;
     display: flex;
-    justify-content: flex-end;
+    justify-content: center;
     gap: 10px;
 }
 
