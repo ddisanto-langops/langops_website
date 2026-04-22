@@ -47,7 +47,7 @@ export function EditModal({record, isOpen, onClose}) {
                         style={{color: 'coral'}} 
                         href={formData.trelloUrl} target="_blank"
                     >
-                        Click to view on Trello
+                        View on Trello
                     </a>
                 </p>
                 : null
@@ -62,7 +62,7 @@ export function EditModal({record, isOpen, onClose}) {
                         style={{color: 'coral'}} 
                         href={formData.editorUrl} target="_blank"
                     >
-                        Click to Edit in Refinery
+                        Edit in Refinery
                     </a>
                 </p>
                 : null
@@ -77,7 +77,7 @@ export function EditModal({record, isOpen, onClose}) {
                         style={{color: 'coral'}} 
                         href={formData.articleUrl} target="_blank"
                     >
-                        Click to view article
+                        View article
                     </a>
                 </p>
                 : null
