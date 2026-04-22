@@ -14,6 +14,8 @@ router.get("/api/data", async (req, res) => {
             productstatus AS "productStatus",
             crowdinurl AS "crowdinUrl",
             trellourl AS "trelloUrl",
+            article_url AS "articleUrl",
+            editor_url AS "editorUrl",
             due,
             lastactivity AS "lastActivity",
             published,
@@ -29,8 +31,16 @@ router.get("/api/data", async (req, res) => {
     } catch (error) {
         res.status(500).json({ error: error.message })
     }
-    })
+})
 
+
+
+/*
+    This is the route for the dashboard page,
+    providing product completion stats as opposed
+    to the detailed table view found on
+    the completions page.
+*/
 router.get('/api/completions', async (req, res) => {
     const { lang, code, group, from, to } = req.query
     console.log(`"Querying completions: Lang: ${lang}, Code: ${code}, Media Group: ${group}, From: ${from}, To: ${to}`)
@@ -85,7 +95,11 @@ router.get("/api/data/completions/byproduct", async (req, res) => {
     }
 })
 
-
+/*
+    This endpoint is for the detailed completions
+    page, as opposed to the dashboard which also
+    queries the completions database.
+*/
 router.get('/api/admin/completions', async (req, res) => {
     const { lang, code, group, from, to } = req.query
 
@@ -100,7 +114,9 @@ router.get('/api/admin/completions', async (req, res) => {
                 wordcount AS "wordCount",
                 datepublished AS "datePublished",
                 datearchived AS "dateArchived",
-                trello_url AS "trelloUrl"
+                trello_url AS "trelloUrl",
+                editor_url as "editorUrl",
+                article_url as "articleUrl"
             FROM completions
             WHERE
                 ($1::text IS NULL OR targetlang = $1)

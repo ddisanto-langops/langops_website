@@ -58,6 +58,7 @@ export async function getArchivedCards() {
 export function getTrelloProducts(cards) {
     const productCodePattern = '^([A-Z-]*)([0-9]*[A-Z]*)(?=_)';
     const wordcountPattern = '(?<=-)(?:[A-Z+]*)([0-9]{1,})(?=_)';
+    const articleUrlPattern = 'https?:\/\/(?:www\.)?(?:latrompeta|dieposaune|latrompette|detrompet){1,256}\.[a-zA-Z0-9()]{1,6}\b(?:[-a-zA-Z0-9()@:%_\+.~#?&//=]*)'
 
     if (!cards) return []
 
@@ -90,6 +91,14 @@ export function getTrelloProducts(cards) {
                 a => a.name.includes("Crowdin")
             )?.url ?? null
 
+            const editorUrl = card.attachments?.find(
+                a => a.name.includes("Edit Article")
+            )?.url ?? null
+
+            const articleUrl = card.attachments?.find(
+                a => a.name.includes("Article")
+            )?.url ?? null
+
             // Custom fields
             let published = null, crowdinProjectId = null, crowdinFileId = null
 
@@ -120,6 +129,8 @@ export function getTrelloProducts(cards) {
                 productCode,
                 targetLang,
                 trelloUrl,
+                articleUrl,
+                editorUrl,
                 crowdinUrl,
                 due,
                 lastActivity,
@@ -218,16 +229,19 @@ export async function upsertProducts(products) {
         await pool.query(`
             INSERT INTO products (
                 title, productCode, targetLang, productStatus,
-                crowdinUrl, trelloUrl, due, lastActivity,
+                crowdinUrl, trelloUrl, article_url,
+                editor_url, due, lastActivity,
                 published, translationProg, approvalProg,
                 mediaType, wordCount
-            ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)
+            ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15)
             ON CONFLICT (title) DO UPDATE SET
                 productCode     = EXCLUDED.productCode,
                 targetLang      = EXCLUDED.targetLang,
                 productStatus   = EXCLUDED.productStatus,
                 crowdinUrl      = EXCLUDED.crowdinUrl,
                 trelloUrl       = EXCLUDED.trelloUrl,
+                editor_url      = EXCLUDED.editor_url,
+                article_url     = EXCLUDED.article_url,
                 due             = EXCLUDED.due,
                 lastActivity    = EXCLUDED.lastActivity,
                 published       = EXCLUDED.published,
@@ -242,6 +256,8 @@ export async function upsertProducts(products) {
             product.productStatus,
             product.crowdinUrl ?? null,
             product.trelloUrl,
+            product.editorUrl ?? null,
+            product.articleUrl ?? null,
             product.due ?? null,
             product.lastActivity ?? null,
             product.published,
@@ -258,8 +274,9 @@ export async function upsertArchivedProducts(archivedProducts) {
         await pool.query(`
             INSERT INTO completions (
                 title, productCode, targetLang,
-                mediaType, wordCount, datePublished, trello_url
-            ) VALUES ($1,$2,$3,$4,$5,$6,$7)
+                mediaType, wordCount, datePublished, trello_url,
+                article_url, editor_url
+            ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)
             ON CONFLICT (title) DO UPDATE SET
                 targetlang  = EXCLUDED.targetlang,
                 productcode = EXCLUDED.productcode
@@ -270,7 +287,9 @@ export async function upsertArchivedProducts(archivedProducts) {
             product.mediaType ?? null,
             product.wordCount ?? null,
             product.lastActivity ?? null,
-            product.trelloUrl ?? null
+            product.trelloUrl ?? null,
+            product.articleUrl ?? null,
+            product.editorUrl ?? null
         ])
     }
 }
