@@ -101,6 +101,7 @@ export function getTrelloProducts(cards) {
             
             const due = card.due;
             const lastActivity = card.dateLastActivity;
+            const dateArchived = card.dateClosed
             const trelloUrl = card.url;
 
             // Target language via label ID
@@ -145,6 +146,7 @@ export function getTrelloProducts(cards) {
                 crowdinFileId,
                 mediaType,
                 wordCount,
+                dateArchived
             })
         }
 
@@ -281,14 +283,15 @@ export async function upsertArchivedProducts(archivedProducts) {
             INSERT INTO completions (
                 title, productCode, targetLang,
                 mediaType, wordCount, datePublished, trello_url,
-                article_url, editor_url
-            ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)
+                article_url, editor_url, dateArchived
+            ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9, $10)
             ON CONFLICT (title) DO UPDATE SET
                 targetlang  = EXCLUDED.targetlang,
                 productcode = EXCLUDED.productcode,
                 article_url = EXCLUDED.article_url,
                 editor_url  = EXCLUDED.editor_url,
-                trello_url  = EXCLUDED.trello_url
+                trello_url  = EXCLUDED.trello_url,
+                datearchived = EXCLUDED.dateArchived
         `, [
             product.title,
             product.productCode,
@@ -298,7 +301,8 @@ export async function upsertArchivedProducts(archivedProducts) {
             product.lastActivity ?? null,
             product.trelloUrl,
             product.articleUrl ?? null,
-            product.editorUrl ?? null
+            product.editorUrl ?? null,
+            product.dateArchived ?? null
         ])
     }
 }
