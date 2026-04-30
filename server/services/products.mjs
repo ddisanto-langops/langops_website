@@ -68,8 +68,33 @@ export function getTrelloProducts(cards) {
         for (const card of cards) {
             const title = card.name;
             
+            // Skip if product code absent, invalid, or if card is a template
             const productCode = title.match(productCodePattern)?.[1];
             if (!productCode || !productCodes.includes(productCode) || card.isTemplate === true) continue;
+
+            // Skip excluded cards based on custom field
+            const exclude = card.customFieldItems.some(
+                    item => item.idCustomField === customFields.exclude 
+                    && item.value.checked === 'true'
+            )
+            if (exclude) continue;
+            
+            // Get custom fields
+            let published = null, crowdinProjectId = null, crowdinFileId = null
+            if (card.customFieldItems) {
+                published = card.customFieldItems.some(
+                    item => item.idCustomField === customFields.published 
+                    && item.value.checked === 'true'
+                ) || null
+
+                crowdinProjectId = card.customFieldItems.find(
+                    item => item.idCustomField === customFields.crowdinProj
+                )?.value.text ?? null
+
+                crowdinFileId = card.customFieldItems.find(
+                    item => item.idCustomField === customFields.crowdinFile
+                )?.value.text ?? null
+            }
             
             const wordCountMatch = title.match(wordcountPattern)
             const wordCount = wordCountMatch ? parseInt(wordCountMatch[1]) : null
@@ -86,7 +111,7 @@ export function getTrelloProducts(cards) {
                 return match ? match[0] : null
             })()
 
-            // Crowdin, editor and article URL from attachments
+            // Attachments: Crowdin, editor and article URL
             let crowdinUrl = null, editorUrl = null, articleUrl = null
             for (const attachment of card.attachments ?? []) {
                 if (attachment.name.includes("Crowdin")) {
@@ -96,24 +121,6 @@ export function getTrelloProducts(cards) {
                 } else if (attachment.name.match(articleUrlPattern)) {
                     articleUrl = attachment.url
                 } 
-            }
-
-            // Custom fields
-            let published = null, crowdinProjectId = null, crowdinFileId = null
-
-            if (card.customFieldItems) {
-                published = card.customFieldItems.some(
-                    item => item.idCustomField === customFields.published 
-                    && item.value.checked === 'true'
-                ) || null
-
-                crowdinProjectId = card.customFieldItems.find(
-                    item => item.idCustomField === customFields.crowdinProj
-                )?.value.text ?? null
-
-                crowdinFileId = card.customFieldItems.find(
-                    item => item.idCustomField === customFields.crowdinFile
-                )?.value.text ?? null
             }
 
             // Media type from product code and labels

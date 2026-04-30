@@ -3,6 +3,7 @@ export const customFields = {
     published: "688a48647c40d0183e053280",
     crowdinProj: "694efa16d67cda3bf9fabdab",
     crowdinFile: "694ef9fdf5bf21eada294ef4",
+    exclude: "69ef857e7b87bddeafa48757"
 }
 
 // Defines all valid product codes
