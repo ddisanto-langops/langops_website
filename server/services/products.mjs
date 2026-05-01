@@ -67,34 +67,50 @@ export function getTrelloProducts(cards) {
 
         for (const card of cards) {
             const title = card.name;
-            
-            // Skip if product code absent, invalid, or if card is a template
             const productCode = title.match(productCodePattern)?.[1];
-            if (!productCode || !productCodes.includes(productCode) || card.isTemplate === true) continue;
 
-            // Skip excluded cards based on custom field
-            const exclude = card.customFieldItems.some(
-                    item => item.idCustomField === customFields.exclude 
-                    && item.value.checked === 'true'
-            )
-            if (exclude) continue;
+            // Skip if product code absent, invalid, or if card is a template
+            const skipCard = (card) => {
+                let exclude = false
+                if (card.customFieldItems) {
+                    exclude = card.customFieldItems.some(
+                        item => item.idCustomField === customFields.exclude 
+                        && item.value.checked === 'true'
+                    )
+                }
+                
+                if (!productCode || !productCodes.includes(productCode) || card.isTemplate === true || exclude) {
+                    return true
+                } else {
+                    return false
+                }
+            }
             
+            if (skipCard(card)) {
+              console.log(`skipped: ${card.name}`)
+              continue
+            } else {
+              console.log(`accepted: ${card.name}`)
+            }
+
             // Get custom fields
             let published = null, crowdinProjectId = null, crowdinFileId = null
-            if (card.customFieldItems) {
-                published = card.customFieldItems.some(
-                    item => item.idCustomField === customFields.published 
-                    && item.value.checked === 'true'
-                ) || null
+        
+            published = card.customFieldItems.some(
+                item => item.idCustomField === customFields.published 
+                && item.value.checked === 'true'
+            ) || null
 
-                crowdinProjectId = card.customFieldItems.find(
-                    item => item.idCustomField === customFields.crowdinProj
-                )?.value.text ?? null
+            crowdinProjectId = card.customFieldItems.find(
+                item => item.idCustomField === customFields.crowdinProj
+            )?.value.text ?? null
 
-                crowdinFileId = card.customFieldItems.find(
-                    item => item.idCustomField === customFields.crowdinFile
-                )?.value.text ?? null
-            }
+            crowdinFileId = card.customFieldItems.find(
+                item => item.idCustomField === customFields.crowdinFile
+            )?.value.text ?? null
+            
+            
+            
             
             const wordCountMatch = title.match(wordcountPattern)
             const wordCount = wordCountMatch ? parseInt(wordCountMatch[1]) : null
