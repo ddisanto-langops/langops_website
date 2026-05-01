@@ -58,7 +58,6 @@ export async function getArchivedCards() {
 export function getTrelloProducts(cards) {
     const productCodePattern = '^([A-Z-]*)([0-9]*[A-Z]*)(?=_)';
     const wordcountPattern = '(?<=-)(?:[A-Z+]*)([0-9]{1,})(?=_)';
-    const articleUrlPattern = 'https?:\/\/(?:www\.)?(?:latrompeta|dieposaune|latrompette|detrompet){1,256}\.[a-zA-Z0-9()]{1,6}\b(?:[-a-zA-Z0-9()@:%_\+.~#?&//=]*)'
 
     if (!cards) return []
 
@@ -131,13 +130,9 @@ export function getTrelloProducts(cards) {
             // Attachments: Crowdin, editor and article URL
             let crowdinUrl = null, editorUrl = null, articleUrl = null
             for (const attachment of card.attachments ?? []) {
-                if (attachment.name.includes("Crowdin")) {
-                    crowdinUrl = attachment.url
-                } else if (attachment.name.includes("Edit Article")) {
-                    editorUrl = attachment.url
-                } else if (attachment.name.match(articleUrlPattern)) {
-                    articleUrl = attachment.url
-                } 
+                attachment.name.includes("Crowdin") ? crowdinUrl = attachment.url : null
+                attachment.name.includes("Edit Article") ? editorUrl = attachment.url : null
+                attachment.name.match("Article") ? articleUrl = attachment.url : null
             }
 
             // Media type from product code and labels
