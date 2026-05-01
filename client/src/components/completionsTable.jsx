@@ -17,18 +17,37 @@ import { groupDisplayNames } from "../../../server/services/constants.mjs"
 const columnHelper = createColumnHelper()
 
 const includesMediaType = (row, columnId, filterValue) => {
-  if (!filterValue || filterValue.length === 0) return true
+  if (!filterValue || (Array.isArray(filterValue) && filterValue.length === 0)) return true
   const cellValue = row.getValue(columnId)
-  if (!cellValue) return false
+  if (cellValue == null) return false
   const filterArray = Array.isArray(filterValue) ? filterValue : [filterValue]
-  return filterArray.some(val => cellValue?.includes(val))
+  const searchableValue = String(cellValue).toLowerCase()
+  return filterArray.some(val => 
+    searchableValue.includes(String(val).toLowerCase())
+  )
 }
+
+const caseInsensitiveFilter = (row, columnId, filterValue) => {
+  if (!filterValue) return true;
+  const cellValue = row.getValue(columnId);
+  if (!cellValue) return false;
+  return cellValue.toString().toLowerCase().includes(filterValue.toLowerCase());
+};
 
 
 const columns = [
-  columnHelper.accessor('title', { header: 'Title' }),
-  columnHelper.accessor('productCode', { header: 'Product Code' }),
-  columnHelper.accessor('targetLang', { header: 'Language' }),
+  columnHelper.accessor('title', {
+    header: 'Title',
+    filterFn: caseInsensitiveFilter
+  }),
+  columnHelper.accessor('productCode', {
+    header: 'Product Code', 
+    filterFn: caseInsensitiveFilter
+  }),
+  columnHelper.accessor('targetLang', {
+    header: 'Language',
+    filterFn: caseInsensitiveFilter
+  }),
   columnHelper.accessor('mediaType', {
     header: 'Media Type',
     cell: (info) => {
