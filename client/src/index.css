@@ -275,18 +275,44 @@ td {
 #completions-table tbody tr td:last-child { border-radius: 0 8px 8px 0; }
 
 
+/* =====================
+   TABLE PAGINATION
+   ===================== */
+
 .pagination-controls {
     background-color: hsl(211, 37%, 21%);
+    height: 90px;
+    color: coral;
     font-size: 1rem;
     display: flex;
     justify-content: center;
+    align-items: center;
     gap: 15px;
-    margin-top: 15px;
+    margin-top: 25px;
     margin-bottom: 5px;
     padding-bottom: 10px;
     z-index: 5;
     position: sticky;
     top: 75px;
+}
+
+.pagination-button {
+    background: linear-gradient(135deg, hsla(40, 20%, 94%, 0.747), hsl(34, 91%, 43%));
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    box-shadow: 0 4px 15px hsla(44, 100%, 66%, 0.384);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.pagination-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px hsla(44, 100%, 66%, 0.384);
 }
 
 /* =====================

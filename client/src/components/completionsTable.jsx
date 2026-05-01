@@ -113,14 +113,14 @@ export function CompletionsTable({ onRowClick }) {
       <h2 id='completions-page-title'>Completions</h2>
       <ClickFilter onTabClick={handleTabClick}/>
       <div className="pagination-controls">
-        <button onClick={() => table.previousPage()} disabled={!table.getCanPreviousPage()}>
+        <button className="pagination-button" onClick={() => table.previousPage()} disabled={!table.getCanPreviousPage()}>
           Previous
         </button>
         <span>Page {pagination.pageIndex + 1} of {pageCount}</span>
-        <button onClick={() => table.nextPage()} disabled={!table.getCanNextPage()}>
+        <span>({totalCount} records)</span>
+        <button className="pagination-button" onClick={() => table.nextPage()} disabled={!table.getCanNextPage()}>
           Next
         </button>
-        <span>({totalCount} total records)</span>
       </div>
 
       <div style={{ overflow: 'auto', position: 'relative' }}>
