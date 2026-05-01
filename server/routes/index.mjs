@@ -101,7 +101,21 @@ router.get("/api/data/completions/byproduct", async (req, res) => {
     queries the completions database.
 */
 router.get('/api/admin/completions', async (req, res) => {
-    const { lang, code, group, from, to } = req.query
+    const { lang, code, group, from, to, title, page = '1', limit = '50', sortBy, sortDir } = req.query
+
+    const pageNum = Math.max(1, parseInt(page, 10) || 1)
+    const limitNum = Math.min(200, Math.max(1, parseInt(limit, 10) || 50))
+    const offset = (pageNum - 1) * limitNum
+
+    const allowedSortColumns = {
+        title: 'title',
+        productCode: 'productcode',
+        targetLang: 'targetlang',
+        datePublished: 'datepublished',
+        wordCount: 'wordcount',
+    }
+    const sortColumn = allowedSortColumns[sortBy] ?? 'datepublished'
+    const sortDirection = sortDir === 'asc' ? 'ASC' : 'DESC'
 
     try {
         const result = await pool.query(`
@@ -116,18 +130,24 @@ router.get('/api/admin/completions', async (req, res) => {
                 datearchived AS "dateArchived",
                 trello_url AS "trelloUrl",
                 editor_url as "editorUrl",
-                article_url as "articleUrl"
+                article_url as "articleUrl",
+                COUNT(*) OVER() AS total_count
             FROM completions
             WHERE
-                ($1::text IS NULL OR targetlang = $1)
-                AND ($2::text IS NULL OR productcode = $2)
+                ($1::text IS NULL OR targetlang ILIKE '%' || $1 || '%')
+                AND ($2::text IS NULL OR productcode ILIKE '%' || $2 || '%')
                 AND ($3::text IS NULL OR $3 = ANY(mediatype))
                 AND ($4::date IS NULL OR datepublished >= $4)
                 AND ($5::date IS NULL OR datepublished <= $5)
-            ORDER BY datepublished DESC NULLS LAST
-        `, [lang ?? null, code ?? null, group ?? null, from ?? null, to ?? null])
+                AND ($6::text IS NULL OR title ILIKE '%' || $6 || '%')
+            ORDER BY ${sortColumn} ${sortDirection} NULLS LAST
+            LIMIT $7 OFFSET $8
+        `, [lang ?? null, code ?? null, group ?? null, from ?? null, to ?? null, title ?? null, limitNum, offset])
 
-        res.json(result.rows)
+        const totalCount = result.rows.length > 0 ? parseInt(result.rows[0].total_count, 10) : 0
+        const data = result.rows.map(({ total_count, ...row }) => row)
+
+        res.json({ data, totalCount, page: pageNum, pageSize: limitNum })
 
     } catch (error) {
         res.status(500).json({ error: error.message })
