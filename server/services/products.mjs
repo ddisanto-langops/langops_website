@@ -92,6 +92,9 @@ export function getTrelloProducts(cards) {
               console.log(`accepted: ${card.name}`)
             }
 
+            // Get ID of accepted card
+            const id = card.id
+
             // Get custom fields
             let published = null, crowdinProjectId = null, crowdinFileId = null
         
@@ -143,6 +146,7 @@ export function getTrelloProducts(cards) {
             const mediaType = [...new Set([...productMediaType, ...labelMediaTypes])]
 
             productData.push({
+                id,
                 title,
                 productCode,
                 targetLang,
@@ -247,12 +251,12 @@ export async function upsertProducts(products) {
     for (const product of products) {
         await pool.query(`
             INSERT INTO products (
-                title, productCode, targetLang, productStatus,
+                id, title, productCode, targetLang, productStatus,
                 crowdinUrl, trelloUrl, article_url,
                 editor_url, due, lastActivity,
                 published, translationProg, approvalProg,
                 mediaType, wordCount
-            ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15)
+            ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15, $16)
             ON CONFLICT (title) DO UPDATE SET
                 productCode     = EXCLUDED.productCode,
                 targetLang      = EXCLUDED.targetLang,
@@ -269,6 +273,7 @@ export async function upsertProducts(products) {
                 mediaType       = EXCLUDED.mediaType,
                 wordCount       = EXCLUDED.wordCount
         `, [
+            product.id,
             product.title,
             product.productCode,
             product.targetLang,
@@ -292,10 +297,10 @@ export async function upsertArchivedProducts(archivedProducts) {
     for (const product of archivedProducts) {
         await pool.query(`
             INSERT INTO completions (
-                title, productCode, targetLang,
+                id, title, productCode, targetLang,
                 mediaType, wordCount, datePublished, trello_url,
                 article_url, editor_url, dateArchived
-            ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9, $10)
+            ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9, $10, $11)
             ON CONFLICT (title) DO UPDATE SET
                 targetlang  = EXCLUDED.targetlang,
                 productcode = EXCLUDED.productcode,
@@ -304,6 +309,7 @@ export async function upsertArchivedProducts(archivedProducts) {
                 trello_url  = EXCLUDED.trello_url,
                 datearchived = EXCLUDED.dateArchived
         `, [
+            product.id,
             product.title,
             product.productCode,
             product.targetLang,
