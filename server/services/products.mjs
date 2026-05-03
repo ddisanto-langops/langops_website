@@ -257,7 +257,7 @@ export async function upsertProducts(products) {
                 published, translationProg, approvalProg,
                 mediaType, wordCount
             ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15, $16)
-            ON CONFLICT (title) DO UPDATE SET
+            ON CONFLICT (id) DO UPDATE SET
                 productCode     = EXCLUDED.productCode,
                 targetLang      = EXCLUDED.targetLang,
                 productStatus   = EXCLUDED.productStatus,
@@ -301,7 +301,7 @@ export async function upsertArchivedProducts(archivedProducts) {
                 mediaType, wordCount, datePublished, trello_url,
                 article_url, editor_url, dateArchived
             ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9, $10, $11)
-            ON CONFLICT (title) DO UPDATE SET
+            ON CONFLICT (id) DO UPDATE SET
                 targetlang  = EXCLUDED.targetlang,
                 productcode = EXCLUDED.productcode,
                 article_url = EXCLUDED.article_url,
