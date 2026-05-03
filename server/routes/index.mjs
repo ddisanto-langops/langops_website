@@ -8,6 +8,7 @@ router.get("/api/data", async (req, res) => {
     try {
         const result = await pool.query(`
         SELECT 
+            id,
             title,
             productcode AS "productCode",
             targetlang AS "targetLang",
