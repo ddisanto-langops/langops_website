@@ -258,6 +258,7 @@ export async function upsertProducts(products) {
                 mediaType, wordCount
             ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15, $16)
             ON CONFLICT (id) DO UPDATE SET
+                id              = EXCLUDED.id,
                 productCode     = EXCLUDED.productCode,
                 targetLang      = EXCLUDED.targetLang,
                 productStatus   = EXCLUDED.productStatus,
@@ -302,6 +303,7 @@ export async function upsertArchivedProducts(archivedProducts) {
                 article_url, editor_url, dateArchived
             ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9, $10, $11)
             ON CONFLICT (id) DO UPDATE SET
+                id          = EXCLUDED.id,
                 targetlang  = EXCLUDED.targetlang,
                 productcode = EXCLUDED.productcode,
                 article_url = EXCLUDED.article_url,
