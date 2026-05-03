@@ -1,41 +1,37 @@
 import { fetchAdminCompletions } from "../../services/api"
 import { ClickFilter } from "./clickFilter";
-import { useQuery } from "@tanstack/react-query"
-import { useState, useRef } from "react";
+import { useQuery, keepPreviousData } from "@tanstack/react-query"
+import { useState, useEffect } from "react";
 import {
   useReactTable,
   getCoreRowModel,
   getSortedRowModel,
+  getPaginationRowModel,
   createColumnHelper,
-  getFilteredRowModel,
   flexRender
 } from '@tanstack/react-table'
-import { useVirtualizer } from '@tanstack/react-virtual'
 import { formatDate } from "../../services/formatDate"
 import { groupDisplayNames } from "../../../server/services/constants.mjs"
 
 const columnHelper = createColumnHelper()
 
-const includesMediaType = (row, columnId, filterValue) => {
-  if (!filterValue || filterValue.length === 0) return true
-  const cellValue = row.getValue(columnId)
-  if (!cellValue) return false
-  const filterArray = Array.isArray(filterValue) ? filterValue : [filterValue]
-  return filterArray.some(val => cellValue?.includes(val))
-}
-
-
 const columns = [
-  columnHelper.accessor('title', { header: 'Title' }),
-  columnHelper.accessor('productCode', { header: 'Product Code' }),
-  columnHelper.accessor('targetLang', { header: 'Language' }),
+  columnHelper.accessor('title', {
+    header: 'Title',
+  }),
+  columnHelper.accessor('productCode', {
+    header: 'Product Code',
+  }),
+  columnHelper.accessor('targetLang', {
+    header: 'Language',
+  }),
   columnHelper.accessor('mediaType', {
     header: 'Media Type',
     cell: (info) => {
       const mediaTypes = info.getValue() ?? []
       return mediaTypes.map((type) => groupDisplayNames[type] || type).join(', ')
     },
-    filterFn: includesMediaType, 
+    enableSorting: false,
   }),
   columnHelper.accessor('datePublished', {
     header: 'Date Published',
@@ -43,115 +39,141 @@ const columns = [
   })
 ]
 
+const PAGE_SIZE = 50
+
 export function CompletionsTable({ onRowClick }) {
-  const { data = [], isLoading, isError } = useQuery({
-    queryKey: ['completions'],
-    queryFn: fetchAdminCompletions
+  const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: PAGE_SIZE })
+  const [sorting, setSorting] = useState([{ id: 'datePublished', desc: true }])
+  const [groupFilter, setGroupFilter] = useState(null)
+
+  const [titleInput, setTitleInput] = useState('')
+  const [codeInput, setCodeInput] = useState('')
+  const [langInput, setLangInput] = useState('')
+  const [debouncedTextFilters, setDebouncedTextFilters] = useState({ title: '', code: '', lang: '' })
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedTextFilters({ title: titleInput, code: codeInput, lang: langInput })
+      setPagination(prev => ({ ...prev, pageIndex: 0 }))
+    }, 300)
+    return () => clearTimeout(timer)
+  }, [titleInput, codeInput, langInput])
+
+  const sortState = sorting[0]
+  const queryFilters = {
+    page: pagination.pageIndex + 1,
+    pageSize: pagination.pageSize,
+    title: debouncedTextFilters.title || undefined,
+    code: debouncedTextFilters.code || undefined,
+    lang: debouncedTextFilters.lang || undefined,
+    group: groupFilter || undefined,
+    sortBy: sortState?.id,
+    sortDir: sortState?.desc === false ? 'asc' : 'desc',
+  }
+
+  const { data: response = { data: [], totalCount: 0 }, isLoading, isError } = useQuery({
+    queryKey: ['completions', queryFilters],
+    queryFn: () => fetchAdminCompletions(queryFilters),
+    placeholderData: keepPreviousData,
   })
 
-  const [sorting, setSorting] = useState([])
-  const [columnFilters, setColumnFilters] = useState([])
-  const tableContainerRef = useRef(null)
+  const { data = [], totalCount = 0 } = response
+  const pageCount = Math.ceil(totalCount / pagination.pageSize) || 1
 
   const table = useReactTable({
     data,
-    columns, // Reference to the array above
-    state: { sorting, columnFilters },
+    columns,
+    state: { sorting, pagination },
     onSortingChange: setSorting,
-    onColumnFiltersChange: setColumnFilters,
+    onPaginationChange: setPagination,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+    manualPagination: true,
+    manualSorting: true,
+    pageCount,
   })
 
-  const { rows } = table.getRowModel()
+  const handleTabClick = (val) => {
+    setGroupFilter(val ? val[0] : null)
+    setPagination(prev => ({ ...prev, pageIndex: 0 }))
+  }
 
-  const rowVirtualizer = useVirtualizer({
-    count: rows.length,
-    estimateSize: () => 54,
-    getScrollElement: () => tableContainerRef.current,
-    overscan: 10,
-  })
+  const filterInputs = {
+    title: [titleInput, setTitleInput],
+    productCode: [codeInput, setCodeInput],
+    targetLang: [langInput, setLangInput],
+  }
 
-  const virtualRows = rowVirtualizer.getVirtualItems()
-  const totalSize = rowVirtualizer.getTotalSize()
-
-  const paddingTop = virtualRows.length > 0 ? virtualRows[0]?.start || 0 : 0
-  const paddingBottom =
-    virtualRows.length > 0
-      ? totalSize - (virtualRows[virtualRows.length - 1]?.end || 0)
-      : 0
-
-  if (isLoading) return <p>Loading...</p>
-  if (isError) return <p>Error loading products.</p>
+  if (isLoading && data.length === 0) return <p>Loading...</p>
+  if (isError) return <p>Error loading completions.</p>
 
   return (
     <>
       <h2 id='completions-page-title'>Completions</h2>
-      <ClickFilter onTabClick={(val) => table.getColumn('mediaType').setFilterValue(val)}/>
-      
-      <div 
-        ref={tableContainerRef} 
-        style={{ height: '80vh', overflow: 'auto', position: 'relative' }} 
-      >
+      <ClickFilter onTabClick={handleTabClick}/>
+      <div className="pagination-controls">
+        <button className="pagination-button" onClick={() => table.previousPage()} disabled={!table.getCanPreviousPage()}>
+          Previous
+        </button>
+        <span>Page {pagination.pageIndex + 1} of {pageCount}</span>
+        <span>({totalCount} records)</span>
+        <button className="pagination-button" onClick={() => table.nextPage()} disabled={!table.getCanNextPage()}>
+          Next
+        </button>
+      </div>
+
+      <div style={{ overflow: 'auto', position: 'relative' }}>
         <table id="completions-table" style={{ width: '100%' }}>
           <thead id="completions-table-head">
             {table.getHeaderGroups().map(headerGroup => (
               <tr key={headerGroup.id}>
-                {headerGroup.headers.map(header => (
-                  <th key={header.id}>
-                    <div
-                      className="table-sort-div"
-                      onClick={header.column.getToggleSortingHandler()}
-                      style={{ cursor: 'pointer' }}
-                    >
-                      {flexRender(header.column.columnDef.header, header.getContext())}
-                      {{ asc: ' ↑', desc: ' ↓' }[header.column.getIsSorted()] ?? null}
-                    </div>
-                    <input
-                      className="table-filter"
-                      placeholder="Filter..."
-                      value={header.column.getFilterValue() ?? ''}
-                      onChange={e => header.column.setFilterValue(e.target.value)}
-                    />
-                  </th>
-                ))}
+                {headerGroup.headers.map(header => {
+                  const filterEntry = filterInputs[header.column.id]
+                  return (
+                    <th key={header.id}>
+                      <div
+                        className="table-sort-div"
+                        onClick={header.column.getToggleSortingHandler()}
+                        style={{ cursor: header.column.getCanSort() ? 'pointer' : 'default' }}
+                      >
+                        {flexRender(header.column.columnDef.header, header.getContext())}
+                        {{ asc: ' ↑', desc: ' ↓' }[header.column.getIsSorted()] ?? null}
+                      </div>
+                      {filterEntry && (
+                        <input
+                          className="table-filter"
+                          placeholder="Filter..."
+                          value={filterEntry[0]}
+                          onChange={e => filterEntry[1](e.target.value)}
+                        />
+                      )}
+                    </th>
+                  )
+                })}
               </tr>
             ))}
           </thead>
-          
+
           <tbody id="completions-table-body">
-            {paddingTop > 0 && (
-              <tr>
-                <td style={{ height: `${paddingTop}px` }} colSpan={columns.length} />
+            {table.getRowModel().rows.map(row => (
+              <tr
+                key={row.id}
+                className="table-row"
+                onClick={() => onRowClick(row.original)}
+              >
+                {row.getVisibleCells().map(cell => (
+                  <td className="table-data" key={cell.id}>
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  </td>
+                ))}
               </tr>
-            )}
-
-            {virtualRows.map(virtualRow => {
-              const row = rows[virtualRow.index]
-              return (
-                <tr 
-                  key={row.id}
-                  className="table-row" 
-                  onClick={() => onRowClick(row.original)}
-                >
-                  {row.getVisibleCells().map(cell => (
-                    <td className="table-data" key={cell.id}>
-                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                    </td>
-                  ))}
-                </tr>
-              )
-            })}
-
-            {paddingBottom > 0 && (
-              <tr>
-                <td style={{ height: `${paddingBottom}px` }} colSpan={columns.length} />
-              </tr>
-            )}
+            ))}
           </tbody>
         </table>
       </div>
+
+      
     </>
   )
 }
