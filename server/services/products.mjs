@@ -39,13 +39,21 @@ export async function getActiveCards() {
     }
 }
 
-export async function getArchivedCards() {
+export async function getArchivedCards(since = null) {
+    
+    if (since) {
+        try {
+            const sinceDate = new Date(since)
+        } catch (error) {
+            console.log(`Invalid date format for 'since': ${since}`)
+        }
+    }
     const date = new Date();
     date.setDate(date.getDate() -1)
     const yesterday = date.toISOString().split('T')[0];
     try {
         const response = await fetch(
-            `https://api.trello.com/1/boards/${trelloBoardId}/cards?key=${trelloKey}&token=${trelloToken}&filter=closed&fields=name,idLabels,labels,due,dateLastActivity,url,isTemplate&attachments=true&attachment_fields=name,url&customFieldItems=true&since=${yesterday}`,
+            `https://api.trello.com/1/boards/${trelloBoardId}/cards?key=${trelloKey}&token=${trelloToken}&filter=closed&fields=name,idLabels,labels,due,dateLastActivity,url,isTemplate&attachments=true&attachment_fields=name,url&customFieldItems=true&since=${since ? since : yesterday}`,
             { method: 'GET' }
         )
         return response.json()
@@ -56,120 +64,121 @@ export async function getArchivedCards() {
 
 // Shared card parsing logic for both active and archived cards
 export function getTrelloProducts(cards) {
+    let productData = []
+
     const productCodePattern = '^([A-Z-]*)([0-9]*[A-Z]*)(?=_)';
     const wordcountPattern = '(?<=-)(?:[A-Z+]*)([0-9]{1,})(?=_)';
+    const editionCode = '^([A-Z-]*)([0-9]*[A-Z]*)(_[A-Z]{2})'
 
-    if (!cards) return []
-
-    try {
-        const productData = []
-
-        for (const card of cards) {
-            const title = card.name;
-            const productCode = title.match(productCodePattern)?.[1];
-
-            // Skip if product code absent, invalid, or if card is a template
-            const skipCard = (card) => {
-                let exclude = false
-                if (card.customFieldItems) {
-                    exclude = card.customFieldItems.some(
-                        item => item.idCustomField === customFields.exclude 
-                        && item.value.checked === 'true'
-                    )
-                }
-                
-                if (!productCode || !productCodes.includes(productCode) || card.isTemplate === true || exclude) {
-                    return true
-                } else {
-                    return false
-                }
-            }
-            
-            if (skipCard(card)) {
-              console.log(`skipped: ${card.name}`)
-              continue
-            } else {
-              console.log(`accepted: ${card.name}`)
-            }
-
-            // Get ID of accepted card
-            const id = card.id
-
-            // Get custom fields
-            let published = null, crowdinProjectId = null, crowdinFileId = null
+    for (const card of cards) {
         
-            published = card.customFieldItems.some(
-                item => item.idCustomField === customFields.published 
-                && item.value.checked === 'true'
-            ) || null
+        const title = card.name
+        const productCode = () => (
+            title.match(productCodePattern) ? title.match(productCodePattern)[1] : null
+        )
 
-            crowdinProjectId = card.customFieldItems.find(
-                item => item.idCustomField === customFields.crowdinProj
-            )?.value.text ?? null
-
-            crowdinFileId = card.customFieldItems.find(
-                item => item.idCustomField === customFields.crowdinFile
-            )?.value.text ?? null
-            
-            
-            
-            
-            const wordCountMatch = title.match(wordcountPattern)
-            const wordCount = wordCountMatch ? parseInt(wordCountMatch[1]) : null
-            
-            const due = card.due;
-            const lastActivity = card.dateLastActivity;
-            const dateArchived = card.dateClosed
-            const trelloUrl = card.url;
-
-            // Target language via label ID
-            const targetLang = (() => {
-                const match = Object.entries(trelloLangIds).find(
-                    ([, id]) => card.idLabels?.includes(id)
+        // Exclusion logic
+        // Skip if product code absent, invalid, or if card is a template
+        const skipCard = (card) => {
+            let exclude = false
+            if (card.customFieldItems) {
+                exclude = card.customFieldItems.some(
+                    item => item.idCustomField === customFields.exclude 
+                    && item.value.checked === 'true'
                 )
-                return match ? match[0] : null
-            })()
-
-            // Attachments: Crowdin, editor and article URL
-            let crowdinUrl = null, editorUrl = null, articleUrl = null
-            for (const attachment of card.attachments ?? []) {
-                attachment.name.includes("Crowdin") ? crowdinUrl = attachment.url : null
-                attachment.name.includes("Edit Article") ? editorUrl = attachment.url : null
-                attachment.name.match("Article") ? articleUrl = attachment.url : null
             }
-
-            // Media type from product code and labels
-            const productMediaType = groupLookup.get(productCode) || []
-            const labelMediaTypes = (card.labels ?? []).flatMap(label => 
-                groupLookup.get(label.name) ?? []
-            )
-            const mediaType = [...new Set([...productMediaType, ...labelMediaTypes])]
-
-            productData.push({
-                id,
-                title,
-                productCode,
-                targetLang,
-                trelloUrl,
-                articleUrl,
-                editorUrl,
-                crowdinUrl,
-                due,
-                lastActivity,
-                published,
-                crowdinProjectId,
-                crowdinFileId,
-                mediaType,
-                wordCount,
-                dateArchived
-            })
+            
+            if (!productCode() || !productCodes.includes(productCode()) || card.isTemplate === true || exclude) {
+                return true
+            } else {
+                return false
+            }
+        }
+        
+        if (skipCard(card)) {
+            console.log(`skipped: ${card.name}`)
+            continue
+        } else {
+            console.log(`accepted: ${card.name}`)
         }
 
-        return productData
+        // Custom fields
+        let published = null, crowdinProjectId = null, crowdinFileId = null
+        published = card.customFieldItems.some(
+            item => item.idCustomField === customFields.published 
+                && item.value.checked === 'true'
+        ) || null
 
-    } catch (error) {
-        console.log(`getTrelloProducts: ${error.stack}`)
+        crowdinProjectId = card.customFieldItems.find(
+            item => item.idCustomField === customFields.crowdinProj
+        )?.value.text ?? null
+
+        crowdinFileId = card.customFieldItems.find(
+            item => item.idCustomField === customFields.crowdinFile
+        )?.value.text ?? null
+
+
+
+        const id = card.id
+        const wordCount = title.match(wordcountPattern) ? parseInt(title.match(wordcountPattern)[1]) : null
+        const due = card.due;
+        const lastActivity = card.dateLastActivity;
+        const dateArchived = card.dateClosed ? new Date(card.dateClosed) : null;
+        const trelloUrl = card.url;
+
+        const targetLang = () => {
+            const match = Object.entries(trelloLangIds).find(
+                ([, id]) => card.idLabels?.includes(id)
+            )
+            return match ? match[0] : null
+        }
+
+        const wordcount = () => (
+
+            title.match(wordcountPattern) ? title.match(wordcountPattern)[1] : null
+        )
+        const edition = () => (
+            title.match(editionCode) ? title.match(editionCode)[2] : null
+        )
+
+        const mediaGroup = () => {
+            const isMagazine = edition()
+            const productMediaType = groupLookup.get(productCode()) || []
+            const labelMediaType = (card.labels ?? []).flatMap(label => 
+                groupLookup.get(label.name) ?? []
+            )
+            const mediaType = [...new Set([...productMediaType, ...labelMediaType, ...(isMagazine ? ['magazine'] : [])])]
+            return mediaType
+        }
+
+        // Attachments: Crowdin, editor and article URL
+        let crowdinUrl = null, editorUrl = null, articleUrl = null
+        for (const attachment of card.attachments ?? []) {
+            attachment.name.includes("Crowdin") ? crowdinUrl = attachment.url : null
+            attachment.name.includes("Edit Article") ? editorUrl = attachment.url : null
+            attachment.name.match("Article") ? articleUrl = attachment.url : null
+        }
+        
+        productData.push({
+            id,
+            title,
+            productCode: productCode(),
+            targetLang: targetLang(),
+            trelloUrl,
+            articleUrl,
+            editorUrl,
+            crowdinUrl,
+            due,
+            lastActivity,
+            published,
+            crowdinProjectId,
+            crowdinFileId,
+            mediaGroup: mediaGroup(),
+            wordCount,
+            dateArchived
+        })
     }
+    return productData
 }
 
 // =====================

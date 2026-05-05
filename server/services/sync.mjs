@@ -7,7 +7,7 @@ import { getActiveCards,
     upsertArchivedProducts,
     archiveProducts,
 
-} from '../services/products.mjs'
+} from './products.mjs'
 
 
 export async function syncProducts() {
@@ -103,5 +103,5 @@ export async function syncProducts() {
   }
 }
 
-// Run every 30 minutes
-cron.schedule('*/30 * * * *', syncProducts)
+// Run every 5 minutes
+cron.schedule('*/5 * * * *', syncProducts)

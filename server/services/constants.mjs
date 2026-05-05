@@ -17,6 +17,7 @@ export const productCodes = [
     'LIT-S',
     'LSS',
     'MB',
+    'PN',
     'POD',
     'PT',
     'PTVID',
@@ -40,7 +41,7 @@ export const mediaGroups = {
     website: ['LIT-S', 'PT', 'TB', 'MB', 'KOD', 'POD'],
     audio_video: ['KOD', 'TW', 'POD', 'PTVID', 'WW', 'OTHER'],
     pcgChurch: ['PCG.CHURCH'],
-    magazines: ['Royal Vision', 'Let the Stones Speak', 'The Philadelphia Trumpet']
+    //DEPRECATED: magazines: ['Royal Vision', 'Let the Stones Speak', 'The Philadelphia Trumpet']
 }
 
 // Abstraction to display UI-friendly product group names
