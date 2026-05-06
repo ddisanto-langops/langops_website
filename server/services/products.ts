@@ -1,3 +1,4 @@
+import { ActiveProduct, ArchivedProduct, RawTrelloCard } from "../../shared/types.js"
 import fetch from 'node-fetch'
 import { TranslationStatus } from '@crowdin/crowdin-api-client';
 import { 
@@ -5,8 +6,8 @@ import {
     trelloLangIds, 
     productCodes, 
     mediaGroups 
-} from './constants.mjs';
-import pool from '../database/databaseConfig.mjs';
+} from '../../shared/constants.js';
+import pool from '../database/databaseConfig.js';
 
 const trelloBoardId = process.env.TrelloBoardId;
 const trelloKey = process.env.TrelloKey;
@@ -30,7 +31,7 @@ for (const [groupName, codes] of Object.entries(mediaGroups)) {
 export async function getActiveCards() {
     try {
         const response = await fetch(
-            `https://api.trello.com/1/boards/${trelloBoardId}/cards?key=${trelloKey}&token=${trelloToken}&fields=all&attachments=true&attachment_fields=all&customFieldItems=true`,
+            `https://api.trello.com/1/boards/${trelloBoardId}/cards?key=${trelloKey}&token=${trelloToken}&fields=all&attachments=true&attachment_fields=all&customFieldItems=true&actions=all`,
             { method: 'GET' }
         )
         return response.json()
@@ -63,8 +64,8 @@ export async function getArchivedCards(since = null) {
 }
 
 // Shared card parsing logic for both active and archived cards
-export function getTrelloProducts(cards) {
-    let productData = []
+export function getTrelloProducts(cards: RawTrelloCard[]) {
+    let productData: ActiveProduct[] = []
 
     const productCodePattern = '^([A-Z-]*)([0-9]*[A-Z]*)(?=_)';
     const wordcountPattern = '(?<=-)(?:[A-Z+]*)([0-9]{1,})(?=_)';
@@ -79,7 +80,7 @@ export function getTrelloProducts(cards) {
 
         // Exclusion logic
         // Skip if product code absent, invalid, or if card is a template
-        const skipCard = (card) => {
+        const skipCard = (card: RawTrelloCard) => {
             let exclude = false
             if (card.customFieldItems) {
                 exclude = card.customFieldItems.some(
@@ -159,6 +160,21 @@ export function getTrelloProducts(cards) {
             attachment.name.match("Article") ? articleUrl = attachment.url : null
         }
         
+        const datePublished = () => {
+            if (published) {
+                for (const item of card.actions) {
+                    if (
+                        item.type === 'updateCheckItemStateOnCard' &&
+                        item.data?.checkItem?.name?.toLowerCase().includes('[published]') &&
+                        item.data?.checkItem?.state === 'complete'
+                    ) {
+                        return item.date
+                    }
+                }
+            }
+        }
+        
+        
         productData.push({
             id,
             title,
@@ -171,6 +187,7 @@ export function getTrelloProducts(cards) {
             due,
             lastActivity,
             published,
+            datePublished: datePublished(),
             crowdinProjectId,
             crowdinFileId,
             mediaGroup: mediaGroup(),
@@ -263,9 +280,9 @@ export async function upsertProducts(products) {
                 id, title, productCode, targetLang, productStatus,
                 crowdinUrl, trelloUrl, article_url,
                 editor_url, due, lastActivity,
-                published, translationProg, approvalProg,
+                published, datePublished, translationProg, approvalProg,
                 mediaType, wordCount
-            ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15, $16)
+            ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17)
             ON CONFLICT (id) DO UPDATE SET
                 id              = EXCLUDED.id,
                 productCode     = EXCLUDED.productCode,
@@ -278,6 +295,7 @@ export async function upsertProducts(products) {
                 due             = EXCLUDED.due,
                 lastActivity    = EXCLUDED.lastActivity,
                 published       = EXCLUDED.published,
+                datePublished   = EXCLUDED.datePublished,
                 translationProg = EXCLUDED.translationProg,
                 approvalProg    = EXCLUDED.approvalProg,
                 mediaType       = EXCLUDED.mediaType,
@@ -295,6 +313,7 @@ export async function upsertProducts(products) {
             product.due ?? null,
             product.lastActivity ?? null,
             product.published,
+            product.datePublished ?? null,
             product.translationProg ?? null,
             product.approvalProg ?? null,
             product.mediaType ?? null,
@@ -305,6 +324,7 @@ export async function upsertProducts(products) {
 
 export async function upsertArchivedProducts(archivedProducts) {
     for (const product of archivedProducts) {
+        if (!product.published) continue
         await pool.query(`
             INSERT INTO completions (
                 id, title, productCode, targetLang,
@@ -335,16 +355,16 @@ export async function upsertArchivedProducts(archivedProducts) {
     }
 }
 
-export async function archiveProducts(activeTitles) {
+export async function archiveProducts(activeIds) {
     await pool.query(`
         DELETE FROM products
-        WHERE title != ALL($1)
-    `, [activeTitles])
+        WHERE id != ALL($1)
+    `, [activeIds])
 
     await pool.query(`
         UPDATE completions
         SET dateArchived = NOW()
         WHERE dateArchived IS NULL
-        AND title != ALL($1)
-    `, [activeTitles])
+        AND id != ALL($1)
+    `, [activeIds])
 }

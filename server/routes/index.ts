@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import pool from '../database/databaseConfig.mjs';
+import pool from '../database/databaseConfig.js';
 
 const router = Router();
 
@@ -20,6 +20,7 @@ router.get("/api/data", async (req, res) => {
             due,
             lastactivity AS "lastActivity",
             published,
+            date_published AS "datePublished",
             translationprog AS "translationProg",
             approvalprog AS "approvalProg",
             mediatype AS "mediaType",

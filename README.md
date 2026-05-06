@@ -8,6 +8,7 @@
 
 ## Data Structure  
 There are two tables within the PostgreSQL database: one for transient data ("product"), the other for permanent data ("completions"). The latter does not include translation/approval progress, due dates and other such information, since they're no longer relevant after completion.  
+
 **The transient data (products) data table captures:**  
 - Title
 - Product Code

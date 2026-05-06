@@ -69,10 +69,10 @@ export async function syncProducts() {
 
     /*
       Delete products from the 'products' databse,
-      if their title isn't found in the latest API data.
+      if their id isn't found in the latest API data.
     */ 
-    const activeTitles = enrichedProducts.map(p => p.title)
-    await archiveProducts(activeTitles)
+    const activeIds = enrichedProducts.map(p => p.id)
+    await archiveProducts(activeIds)
     console.log(`Synced ${enrichedProducts.length} products`)
 
 

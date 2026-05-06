@@ -1,10 +1,10 @@
 import express from 'express';
-import router from './routes/index.mjs'
+import router from './routes/index.js'
 import helmet from 'helmet'
 import cors from 'cors'
 import path from 'path'
 import { fileURLToPath } from 'url'
-import { syncProducts } from './services/sync.mjs';
+import { syncProducts } from './services/sync.js';
 
 // sync every time the server restarts
 syncProducts()
