@@ -1,8 +1,12 @@
-{"compilerOptions": {
+{
+  "extends": "../tsconfig.base.json",
+  "compilerOptions": {
     "module": "NodeNext",
-    "strict": true
-},
- "moduleResolution": "NodeNext",
- "strict": true, 
- "outDir": "dist"
+    "moduleResolution": "NodeNext",
+    "allowJs": true,
+    "checkJs": false,
+    "esModuleInterop": true,
+    "noEmit": true
+  },
+  "include": ["./**/*.ts", "./**/*.js", "../shared/**/*.ts"]
 }

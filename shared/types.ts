@@ -1,19 +1,21 @@
 export interface ActiveProduct {
     /*
     * Defined as a card on the LangOps Trello Board
-    * whose title contains a valid product code, and
-    * is not archived, though may be published.
+    * whose title contains a valid product code, 
+    * target language, and is not archived, 
+    * though it may be published.
     */
     id: string
     title: string
     productCode: string
-    targetLang: string
+    targetLanguage: string
     productStatus: string
-    mediaType: string[]
+    mediaGroups: string[]
     published: boolean
-    datePublished: string | null
     dateLastActivity: string
+    trelloUrl: string,
     dueDate: string | null
+    datePublished: string | null
     editorUrl: string | null
     crowdinUrl: string | null
     articleUrl: string | null
@@ -24,18 +26,19 @@ export interface ActiveProduct {
 
 export interface ArchivedProduct {
     /*
-    * Defined as a closed card on the LangOps Trello board
-    * which has been published. If not published, it is not
-    * considered archivived.
+    * Defined as a closed (archived) card on the LangOps Trello board
+    * which has also been published. If not published, it is not
+    * considered archived.
     */
-    id: number
+    id: string
     title: string
     productCode: string
     targetLang: string
     mediaType: string[]
     datePublished: string | null
+    dateArchived: string
+    trelloUrl: string
     editorUrl: string | null
-    crowdinUrl: string | null
     articleUrl: string | null
     wordCount: number | null
 }

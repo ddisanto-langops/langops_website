@@ -1,4 +1,4 @@
-import { ActiveProduct, ArchivedProduct, RawTrelloCard } from "../../shared/types.js"
+import type { ActiveProduct, ArchivedProduct, RawTrelloCard } from "../../shared/types.js"
 import fetch from 'node-fetch'
 import { TranslationStatus } from '@crowdin/crowdin-api-client';
 import { 
@@ -8,7 +8,6 @@ import {
     mediaGroups 
 } from '../../shared/constants.js';
 import pool from '../database/databaseConfig.js';
-import { assert } from "node:console";
 
 const trelloBoardId = process.env.TrelloBoardId;
 const trelloKey = process.env.TrelloKey;
@@ -37,7 +36,8 @@ export async function getActiveCards() {
         )
         return response.json()
     } catch (error) {
-        console.log(`getAllCards: ${error.message}`)
+        error instanceof Error ? console.log(`Get Active Cards: ${error.message}`) : 
+            console.log("Get Active Cards: Unkown error")
     }
 }
 
@@ -60,12 +60,13 @@ export async function getArchivedCards(since = null) {
         )
         return response.json()
     } catch (error) {
-        console.log(`getArchivedCards: ${error.message}`)
+        error instanceof Error ? console.log(`Get Arhived Cards: ${error.message}`) :
+        console.log("Get Archived Cards: Unknown  error")
     }
 }
 
 // Shared card parsing logic for both active and archived cards
-export function getTrelloProducts(cards: RawTrelloCard[]) {
+export async function parseActiveCards(cards: RawTrelloCard[]) {
     let productData: ActiveProduct[] = []
 
     const productCodePattern = '^([A-Z-]*)([0-9]*[A-Z]*)(?=_)'
@@ -75,7 +76,7 @@ export function getTrelloProducts(cards: RawTrelloCard[]) {
     for (const card of cards) {
         const title = card.name
         // Custom fields
-        const customFieldsParse = (card: RawTrelloCard) => {
+        const parseCustomFields = () => {
             let published = false, crowdinProjectId = null, crowdinFileId = null, exclude = false
             if (card.customFieldItems) {
                 for (const field of card.customFieldItems) {
@@ -97,8 +98,9 @@ export function getTrelloProducts(cards: RawTrelloCard[]) {
                 exclude: exclude
             }
         }
+        const cardCustomFields = parseCustomFields()
         
-        const targetLang = () => {
+        const getTargetLanguage = () => {
             const match = Object.entries(trelloLangIds).find(
                 ([, id]) => card.idLabels?.includes(id)
             ) || null
@@ -108,31 +110,39 @@ export function getTrelloProducts(cards: RawTrelloCard[]) {
                 return null
             }
         }
+        const targetLanguage = getTargetLanguage()
 
         /*
         * Exclusion logic
         * Skip if product code absent, invalid, card is a template, exclude is checked, or no target langugae
         */
         const regexProductCode = title.match(productCodePattern)
-        if (
-            !regexProductCode ||
-            !productCodes.includes(regexProductCode[0]) || 
-            card.isTemplate === 'true' || 
-            customFieldsParse(card).exclude ||
-            !targetLang
-            ) {
-            console.log(`skipped: ${card.name} | Reason: Missing `)
+        if (!regexProductCode){
+            console.log(`skipped: ${card.name} | Reason: Missing product code`)
             continue
-        } else {
+        } else if (!productCodes.includes(regexProductCode[0])) {
+            console.log(`skipped: ${card.name} | Reason: Product code invalid or not yet supported`)
+            continue
+        } else if (card.isTemplate === 'true') {
+            console.log(`Skipped: ${card.name} | Reason: Card is a template`)
+            continue
+        } else if (cardCustomFields.exclude) {
+            console.log(`Skipped: ${card.name} | Reason: 'Exclude' box is checked`)
+            continue
+        } else if (!targetLanguage) {
+            console.log(`Skipped: ${card.name} | Reason: Missing target language`)
+            continue
+        }
+        else {
             console.log(`accepted: ${card.name}`)
         }
 
         const id = card.id
         const regexWordCount = title.match(wordcountPattern) 
-        const wordCount = regexWordCount ? parseInt(regexWordCount[0]) : null
-        const due = card.due;
+        const wordCount = regexWordCount ? parseInt(regexWordCount[1]) : null
+        const due = card.due ?? null;
         const lastActivity = card.dateLastActivity;
-        const dateArchived = card.dateClosed ? new Date(card.dateClosed) : null;
+        const dateArchived = card.dateClosed ? card.dateClosed : null;
         const trelloUrl = card.url;
 
         const regexEdition = title.match(editionCode)
@@ -155,133 +165,111 @@ export function getTrelloProducts(cards: RawTrelloCard[]) {
             attachment.name.match("Article") ? articleUrl = attachment.url : null
         }
         
-        const datePublished = () => {
-            if (customFieldsParse(card).published) {
-                for (const item of card.actions) {
-                    if (
-                        item.type === 'updateCheckItemStateOnCard' &&
-                        item.data?.checkItem?.name?.toLowerCase().includes('[published]') &&
-                        item.data?.checkItem?.state === 'complete'
-                    ) {
-                        return item.date
-                    }
+        const getDatePublished = () => {
+            if (!cardCustomFields || !card.actions) return null
+            for (const item of card.actions) {
+                if (
+                    item.type === 'updateCheckItemStateOnCard' &&
+                    item.data?.checkItem?.name?.toLowerCase().includes('[published]') &&
+                    item.data?.checkItem?.state === 'complete'
+                ) {
+                    return item.date
+                } else {
+                    continue
                 }
             }
+            return null
         }
+        const datePublished = getDatePublished()
         
+        const getCrowdinData = async () => {
+            const token = process.env.crowdintoken
+            if (!token ||
+                !cardCustomFields.crowdinProjectId ||
+                !cardCustomFields.crowdinFileId
+            ) return null;
+            
+            try {
+                const translationStatusApi = new TranslationStatus({
+                    token: token
+                });
+                const response = await translationStatusApi.getFileProgress(
+                    Number(cardCustomFields.crowdinProjectId),
+                    Number(cardCustomFields.crowdinFileId)
+                );
+                const translationProgress = response.data[0].data.translationProgress
+                const approvalProgress = response.data[0].data.approvalProgress
+                return { translationProgress: translationProgress, approvalProgress: approvalProgress }
+
+            } catch (error) {
+                error instanceof Error ? console.error(`
+                    Error fetching file progress: 
+                        ${card.name}
+                        ${error.message}
+                    `): 
+                console.error("Unknown error getting Crowdin file info.");
+                return null
+            }
+        }
+        const crowdinData = await getCrowdinData() ?? {translationProgress: null, approvalProgress: null}
+
+        const getProductStatus = () => {
+            if (cardCustomFields.published) return 'published'
+            const sevenDaysAgo = new Date()
+            sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7)
+            const hasRecentActivity = new Date(lastActivity) >= sevenDaysAgo
+            if (crowdinData || hasRecentActivity) return 'pending'
+            return 'unknown'
+        }
+        const productStatus = getProductStatus()
         
         productData.push({
-            id,
-            title,
+            id: id,
+            title: title,
             productCode: regexProductCode[0],
-            targetLang: targetLang(),
-            trelloUrl,
-            articleUrl,
-            editorUrl,
-            crowdinUrl,
-            due,
-            lastActivity,
-            published: customFieldsParse(card).published,
-            datePublished: datePublished(),
-            translationProgress,
-            approvalProgress,
-            mediaGroup: mediaGroup(),
-            wordCount,
-            dateArchived
+            targetLanguage: targetLanguage,
+            productStatus: productStatus,
+            mediaGroups: mediaGroup(),
+            published: cardCustomFields.published,
+            dateLastActivity: lastActivity,
+            trelloUrl: trelloUrl,
+            articleUrl: articleUrl,
+            editorUrl: editorUrl,
+            crowdinUrl: crowdinUrl,
+            dueDate: due,
+            datePublished: datePublished,
+            translationProgress: crowdinData.translationProgress,
+            approvalProgress: crowdinData.approvalProgress,
+            wordCount: wordCount,
         })
     }
     return productData
 }
 
-// =====================
-// ENRICHMENT
-// =====================
 
-async function getCrowdinFileProgress(projectId, fileId) {
-    if (!projectId || !fileId) return null;
-    try {
-        const translationStatusApi = new TranslationStatus({
-            token: process.env.crowdinToken
-        });
-
-        const response = await translationStatusApi.getFileProgress(projectId, fileId);
-        const translationProgress = response.data[0].data.translationProgress
-        const approvalProgress = response.data[0].data.approvalProgress
-        return { translationProgress, approvalProgress }
-
-    } catch (error) {
-        console.error("Error fetching file progress:", error.message);
-        return { translationProgress: 0, approvalProgress: 0 };
-    }
+export function parseArchivedCards(cards: RawTrelloCard[]) {
+    let productData: ActiveProduct[] = []
 }
 
-
-function getProductStatus(product) {
-    if (product.published) return 'published'
-
-    const sevenDaysAgo = new Date()
-    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7)
-    const hasRecentActivity = new Date(product.lastActivity) >= sevenDaysAgo
-    const hasTranslationProgress = product.translationProg > 0
-
-    if (hasTranslationProgress || hasRecentActivity) return 'pending'
-    return 'unknown'
-}
-
-export async function getProductData(trelloData) {
-    try {
-        const enrichedProducts = await Promise.all(
-            trelloData.map(async (product) => {
-                if (!product.crowdinProjectId || !product.crowdinFileId) {
-                    return {
-                        ...product,
-                        translationProg: null,
-                        approvalProg: null,
-                        productStatus: getProductStatus({...product, translationProg: null})
-                    }
-                }
-
-                const crowdinProgress = await getCrowdinFileProgress(
-                    product.crowdinProjectId,
-                    product.crowdinFileId,
-                )
-
-                return {
-                    ...product,
-                    translationProg: crowdinProgress.translationProgress,
-                    approvalProg: crowdinProgress.approvalProgress,
-                    productStatus: getProductStatus({
-                        ...product, 
-                        translationProg: crowdinProgress.translationProgress
-                    }),
-                }
-            })
-        )
-        return enrichedProducts
-
-    } catch (error) {
-        console.log(`getProductData: ${error.stack}`)
-    }
-}
 
 // =====================
 // DATABASE
 // =====================
 
-export async function upsertProducts(products) {
+export async function upsertProducts(products: ActiveProduct[]) {
     for (const product of products) {
         await pool.query(`
             INSERT INTO products (
-                id, title, productCode, targetLang, productStatus,
-                crowdinUrl, trelloUrl, article_url,
-                editor_url, due, lastActivity,
-                published, datePublished, translationProg, approvalProg,
-                mediaType, wordCount
+                id, title, productcode, targetlang, productstatus,
+                crowdinurl, trellourl, article_url,
+                editor_url, due, lastactivity,
+                published, datepublished, translationprog, approvalprog,
+                mediatype, wordcount
             ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17)
             ON CONFLICT (id) DO UPDATE SET
-                id              = EXCLUDED.id,
+                title           = EXCLUDED.title,
                 productCode     = EXCLUDED.productCode,
-                targetLang      = EXCLUDED.targetLang,
+                targetLanguage      = EXCLUDED.targetLanguage,
                 productStatus   = EXCLUDED.productStatus,
                 crowdinUrl      = EXCLUDED.crowdinUrl,
                 trelloUrl       = EXCLUDED.trelloUrl,
@@ -299,27 +287,27 @@ export async function upsertProducts(products) {
             product.id,
             product.title,
             product.productCode,
-            product.targetLang,
+            product.targetLanguage,
             product.productStatus,
             product.crowdinUrl ?? null,
             product.trelloUrl,
             product.editorUrl ?? null,
             product.articleUrl ?? null,
-            product.due ?? null,
-            product.lastActivity ?? null,
+            product.dueDate ?? null,
+            product.dateLastActivity ?? null,
             product.published,
             product.datePublished ?? null,
-            product.translationProg ?? null,
-            product.approvalProg ?? null,
-            product.mediaType ?? null,
+            product.translationProgress ?? null,
+            product.approvalProgress ?? null,
+            product.mediaGroups ?? null,
             product.wordCount ?? null
         ])
     }
 }
 
-export async function upsertArchivedProducts(archivedProducts) {
+export async function upsertArchivedProducts(archivedProducts: ArchivedProduct[]) {
     for (const product of archivedProducts) {
-        if (!product.published) continue
+        if (!product.datePublished) continue
         await pool.query(`
             INSERT INTO completions (
                 id, title, productCode, targetLang,
@@ -341,7 +329,6 @@ export async function upsertArchivedProducts(archivedProducts) {
             product.targetLang,
             product.mediaType ?? null,
             product.wordCount ?? null,
-            product.lastActivity ?? null,
             product.trelloUrl,
             product.articleUrl ?? null,
             product.editorUrl ?? null,

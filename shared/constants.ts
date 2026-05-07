@@ -88,7 +88,7 @@ export const friendlyLanguages: string[] = [
 export const friendlyFieldNames: { [key: string]: string } = {
     title: "Title",
     productCode: "Product Code",
-    targetLang: "Target Language",
+    targetLanguage: "Target Language",
     mediaType: "Media Type",
     wordCount: "Word Count",
     datePublished: "Date Published",

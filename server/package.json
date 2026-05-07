@@ -1,12 +1,13 @@
 {
-  "name": "langops_website",
+  "name": "langops_website_server",
   "version": "1.0.0",
   "description": "",
-  "main": "server.mjs",
+  "main": "server.js",
   "scripts": {
-    "start": "node dist/server.ts",
-    "dev": "tsx watch server.ts && set NODE_ENV=development",
-    "test": "node ../tests/test.ts"
+    "dev": "tsx watch server.ts",
+    "build": "tsc -p tsconfig.build.json",
+    "start": "node ../dist/server/server.js",
+    "check": "tsc -p tsconfig.json --noEmit"
   },
   "repository": {
     "type": "git",

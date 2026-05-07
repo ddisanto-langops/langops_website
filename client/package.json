@@ -1,5 +1,5 @@
 {
-  "name": "langops_website",
+  "name": "langops_website_client",
   "private": true,
   "version": "0.0.0",
   "type": "module",
