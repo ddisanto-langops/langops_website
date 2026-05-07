@@ -4,7 +4,7 @@ export interface ActiveProduct {
     * whose title contains a valid product code, and
     * is not archived, though may be published.
     */
-    id: number
+    id: string
     title: string
     productCode: string
     targetLang: string
@@ -42,7 +42,7 @@ export interface ArchivedProduct {
 
 export interface ApiResponse<T> {
     status: string
-    data: T
+    data: T[]
     error?: {
         message: string
         code: string
@@ -61,9 +61,9 @@ export interface RawTrelloCard {
   due?: string
   dateLastActivity: string
   url: string
-  isTemplate: boolean
+  isTemplate: string
   dateClosed?: string
-  actions?: [
+  actions: [
     {
         data: {
             checkItem?: {
@@ -84,8 +84,12 @@ export interface RawTrelloCard {
   ]
   customFieldItems?: [
     {
-        id: string
-        checked: boolean
+        idCustomField: string
+        value: {
+            checked?: string
+            text?: string
+        }
     }
   ]
+  idLabels: string[]
 }
