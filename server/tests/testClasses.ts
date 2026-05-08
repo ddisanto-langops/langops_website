@@ -1,9 +1,21 @@
-import { BaseCard } from "../../shared/classes.js"
+import { BaseCard, ActiveCard, ArchivedCard } from "../classes.js"
 import type { RawTrelloCard } from "../../shared/types.js"
 import response from "../../response.json" with { type: 'json'}
 
 const cards = response as unknown as RawTrelloCard[]
 
-const card = new BaseCard(cards[15])
+/*
+const activeProducts = []
+for (const card of cards) {
+    const newCard = await new ActiveCard(card).parseActiveCard()
+    activeProducts.push(newCard)
+}
+console.log(activeProducts)
+*/
 
-console.log(JSON.stringify(card.parse()))
+const archivedProducts = []
+for (const card of cards) {
+    const newCard = new ArchivedCard(card).parseArchivedCard()
+    archivedProducts.push(newCard)
+}
+console.log(archivedProducts)

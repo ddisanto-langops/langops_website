@@ -3,14 +3,13 @@ export interface BaseProduct {
     title: string
     productCode: string
     targetLanguage: string
+    datePublished: string | null
     mediaGroups: string[]
     labels?: [{ id: string; name: string; }]
-    customFields?: {
-        published: boolean,
-        crowdinProjectId: string | null,
-        crowdinFileId: string | null,
-        exclude: boolean
-    }
+    published: boolean
+    crowdinProjectId: string | null
+    crowdinFileId: string | null
+    exclude: boolean
     wordCount: number
     trelloUrl: string
 }
@@ -30,15 +29,16 @@ export interface ActiveProduct {
     productStatus: string
     mediaGroups: string[]
     published: boolean
+    excluded: boolean
     dateLastActivity: string
-    trelloUrl: string,
     dueDate: string | null
     datePublished: string | null
+    trelloUrl: string,
     editorUrl: string | null
     crowdinUrl: string | null
     articleUrl: string | null
-    translationProgress: number | null
-    approvalProgress: number | null
+    translationProgress: number
+    approvalProgress: number
     wordCount: number | null
 }
 
@@ -51,7 +51,7 @@ export interface ArchivedProduct {
     id: string
     title: string
     productCode: string
-    targetLang: string
+    targetLanguage: string
     mediaGroups: string[]
     datePublished: string | null
     dateArchived: string
@@ -79,7 +79,7 @@ export interface RawTrelloCard {
         name: string
     }
   ]
-  due?: string
+  due?: string | null
   dateLastActivity: string
   url: string
   isTemplate: string
