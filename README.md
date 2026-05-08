@@ -2,7 +2,7 @@
 *pcglangops.com*
 
 ## Pages  
-- Dashboard: total words, filterable by product code, group and language
+- Dashboard: total words, including published active products and all archived products. filterable by product code, media group, language, and dates (from - to).
 - Products: all Trello products whose titles match a pre-defined regex pattern and which are not archived
 - Completions: all Trello products which 1. have 'PUBLISHED' checked off, or 2. are archived on Trello
 

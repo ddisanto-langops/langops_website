@@ -7,7 +7,7 @@ import { getActiveCards,
     upsertArchivedProducts,
     archiveProducts,
 
-} from './products.mjs'
+} from './products.js'
 
 
 export async function syncProducts() {
