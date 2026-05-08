@@ -13,6 +13,9 @@ const trelloBoardId = process.env.TrelloBoardId;
 const trelloKey = process.env.TrelloKey;
 const trelloToken = process.env.TrelloToken;
 
+const productCodePattern = '^([A-Z-]*)([0-9]*[A-Z]*)(?=_)'
+const wordcountPattern = '(?<=-)(?:[A-Z+]*)([0-9]{1,})(?=_)'
+
 // Pre-processes the groups into a Map of arrays
 const groupLookup = new Map();
 for (const [groupName, codes] of Object.entries(mediaGroups)) {
@@ -41,18 +44,11 @@ export async function getActiveCards() {
     }
 }
 
-export async function getArchivedCards(since = null) {
-    
-    if (since) {
-        try {
-            const sinceDate = new Date(since)
-        } catch (error) {
-            console.log(`Invalid date format for 'since': ${since}`)
-        }
-    }
+export async function getArchivedCards(since: string | null) {
     const date = new Date();
     date.setDate(date.getDate() -1)
-    const yesterday = date.toISOString().split('T')[0];
+    const yesterday = date.toISOString().split('T')[0]
+
     try {
         const response = await fetch(
             `https://api.trello.com/1/boards/${trelloBoardId}/cards?key=${trelloKey}&token=${trelloToken}&filter=closed&fields=name,idLabels,labels,due,dateLastActivity,url,isTemplate&attachments=true&attachment_fields=name,url&customFieldItems=true&since=${since ? since : yesterday}`,
@@ -69,8 +65,6 @@ export async function getArchivedCards(since = null) {
 export async function parseActiveCards(cards: RawTrelloCard[]) {
     let productData: ActiveProduct[] = []
 
-    const productCodePattern = '^([A-Z-]*)([0-9]*[A-Z]*)(?=_)'
-    const wordcountPattern = '(?<=-)(?:[A-Z+]*)([0-9]{1,})(?=_)'
     const editionCode = '^([A-Z-]*)([0-9]*[A-Z]*)(_[A-Z]{2})'
 
     for (const card of cards) {
@@ -142,7 +136,6 @@ export async function parseActiveCards(cards: RawTrelloCard[]) {
         const wordCount = regexWordCount ? parseInt(regexWordCount[1]) : null
         const due = card.due ?? null;
         const lastActivity = card.dateLastActivity;
-        const dateArchived = card.dateClosed ? card.dateClosed : null;
         const trelloUrl = card.url;
 
         const regexEdition = title.match(editionCode)
@@ -249,6 +242,12 @@ export async function parseActiveCards(cards: RawTrelloCard[]) {
 
 export function parseArchivedCards(cards: RawTrelloCard[]) {
     let productData: ActiveProduct[] = []
+
+    for (const card of cards) {
+        const title = card.name
+        const dateArchived = card.dateClosed ? card.dateClosed : null;
+        
+    }
 }
 
 

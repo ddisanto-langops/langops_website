@@ -1,3 +1,21 @@
+export interface BaseProduct {
+    id: string
+    title: string
+    productCode: string
+    targetLanguage: string
+    mediaGroups: string[]
+    labels?: [{ id: string; name: string; }]
+    customFields?: {
+        published: boolean,
+        crowdinProjectId: string | null,
+        crowdinFileId: string | null,
+        exclude: boolean
+    }
+    wordCount: number
+    trelloUrl: string
+}
+
+
 export interface ActiveProduct {
     /*
     * Defined as a card on the LangOps Trello Board
@@ -34,7 +52,7 @@ export interface ArchivedProduct {
     title: string
     productCode: string
     targetLang: string
-    mediaType: string[]
+    mediaGroups: string[]
     datePublished: string | null
     dateArchived: string
     trelloUrl: string
