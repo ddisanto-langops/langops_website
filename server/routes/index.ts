@@ -1,7 +1,11 @@
 import { Router } from 'express';
-import pool from '../database/databaseConfig.mjs';
+import pool from '../database/databaseConfig.js';
 
 const router = Router();
+
+function getQueryString(value: unknown): string | undefined {
+    return typeof value === 'string' ? value : undefined
+}
 
 router.get("/api/data", async (req, res) => {
     console.log("Querying transient data...")
@@ -10,31 +14,31 @@ router.get("/api/data", async (req, res) => {
         SELECT 
             id,
             title,
-            productcode AS "productCode",
-            targetlang AS "targetLang",
-            productstatus AS "productStatus",
-            crowdinurl AS "crowdinUrl",
-            trellourl AS "trelloUrl",
+            product_code,
+            target_language AS "targetLanguage",
+            product_status AS "productStatus",
+            crowdin_url AS "crowdinUrl",
+            trello_url AS "trelloUrl",
             article_url AS "articleUrl",
             editor_url AS "editorUrl",
-            due,
-            lastactivity AS "lastActivity",
+            due_date AS "dueDate",
+            date_last_activity AS "dateLastActivity",
             published,
-            translationprog AS "translationProg",
-            approvalprog AS "approvalProg",
-            mediatype AS "mediaType",
+            date_published AS "datePublished",
+            translation_progress AS "translationProgress",
+            approval_progress AS "approvalProgress",
+            media_groups AS "mediaGroups",
             wordcount AS "wordCount"
         FROM products
-        ORDER BY lastactivity DESC NULLS LAST
+        ORDER BY date_last_activity DESC NULLS LAST
         `)
         res.json(result.rows)
 
     } catch (error) {
-        res.status(500).json({ error: error.message })
+        error instanceof Error ? res.status(500).json({ error: error.message }) :
+            res.status(500).json({ error: "GET /api/data: Unknown error" })
     }
 })
-
-
 
 /*
     This is the route for the dashboard page,
@@ -43,7 +47,11 @@ router.get("/api/data", async (req, res) => {
     the completions page.
 */
 router.get('/api/completions', async (req, res) => {
-    const { lang, code, group, from, to } = req.query
+    const lang = getQueryString(req.query.lang)
+    const code = getQueryString(req.query.code)
+    const group = getQueryString(req.query.group)
+    const from = getQueryString(req.query.from)
+    const to = getQueryString(req.query.to)
     console.log(`"Querying completions: Lang: ${lang}, Code: ${code}, Media Group: ${group}, From: ${from}, To: ${to}`)
 
     try {
@@ -68,13 +76,18 @@ router.get('/api/completions', async (req, res) => {
     res.json(responseData);
         
     } catch (error) {
-        res.status(500).json({error: error.message})
+        error instanceof Error ? res.status(500).json({ error: error.message }) :
+            res.status(500).json({ error: "GET /api/completions: Unknown error" })
     }
 })
 
 
 router.get("/api/data/completions/byproduct", async (req, res) => {
-    const { lang, code, group, from, to } = req.query
+    const lang = getQueryString(req.query.lang)
+    const code = getQueryString(req.query.code)
+    const group = getQueryString(req.query.group)
+    const from = getQueryString(req.query.from)
+    const to = getQueryString(req.query.to)
     try {
         const result = await pool.query(`
             SELECT productcode, count(*) AS occurence_count
@@ -92,7 +105,8 @@ router.get("/api/data/completions/byproduct", async (req, res) => {
         res.json(result.rows);
 
     } catch (error) {
-        res.status(500).json({error: error.message})
+        error instanceof Error ? res.status(500).json({ error: error.message }) :
+            res.status(500).json({ error: "GET /api/data/completions/byproduct: Unknown error" })
     }
 })
 
@@ -102,7 +116,16 @@ router.get("/api/data/completions/byproduct", async (req, res) => {
     queries the completions database.
 */
 router.get('/api/admin/completions', async (req, res) => {
-    const { lang, code, group, from, to, title, page = '1', limit = '50', sortBy, sortDir } = req.query
+    const lang = getQueryString(req.query.lang)
+    const code = getQueryString(req.query.code)
+    const group = getQueryString(req.query.group)
+    const from = getQueryString(req.query.from)
+    const to = getQueryString(req.query.to)
+    const title = getQueryString(req.query.title)
+    const page = getQueryString(req.query.page) ?? '1'
+    const limit = getQueryString(req.query.limit) ?? '50'
+    const sortBy = getQueryString(req.query.sortBy)
+    const sortDir = getQueryString(req.query.sortDir)
 
     const pageNum = Math.max(1, parseInt(page, 10) || 1)
     const limitNum = Math.min(200, Math.max(1, parseInt(limit, 10) || 50))
@@ -114,8 +137,10 @@ router.get('/api/admin/completions', async (req, res) => {
         targetLang: 'targetlang',
         datePublished: 'datepublished',
         wordCount: 'wordcount',
-    }
-    const sortColumn = allowedSortColumns[sortBy] ?? 'datepublished'
+    } as const
+    const sortColumn = sortBy && sortBy in allowedSortColumns
+        ? allowedSortColumns[sortBy as keyof typeof allowedSortColumns]
+        : 'datepublished'
     const sortDirection = sortDir === 'asc' ? 'ASC' : 'DESC'
 
     try {
@@ -123,23 +148,23 @@ router.get('/api/admin/completions', async (req, res) => {
             SELECT
                 id,
                 title,
-                productcode AS "productCode",
-                targetlang AS "targetLang",
-                mediatype AS "mediaType",
-                wordcount AS "wordCount",
-                datepublished AS "datePublished",
-                datearchived AS "dateArchived",
+                product_code as "productCode",
+                target_language as "targetLanguage",
+                media_groups as "mediaGroups",
+                wordcount as "wordCount",
+                date_published AS "datePublished",
+                date_archived AS "dateArchived",
                 trello_url AS "trelloUrl",
                 editor_url as "editorUrl",
                 article_url as "articleUrl",
                 COUNT(*) OVER() AS total_count
             FROM completions
             WHERE
-                ($1::text IS NULL OR targetlang ILIKE '%' || $1 || '%')
-                AND ($2::text IS NULL OR productcode ILIKE '%' || $2 || '%')
-                AND ($3::text IS NULL OR $3 = ANY(mediatype))
-                AND ($4::date IS NULL OR datepublished >= $4)
-                AND ($5::date IS NULL OR datepublished <= $5)
+                ($1::text IS NULL OR target_language ILIKE '%' || $1 || '%')
+                AND ($2::text IS NULL OR product_code ILIKE '%' || $2 || '%')
+                AND ($3::text IS NULL OR $3 = ANY(mediaGroups))
+                AND ($4::date IS NULL OR date_published >= $4)
+                AND ($5::date IS NULL OR date_published <= $5)
                 AND ($6::text IS NULL OR title ILIKE '%' || $6 || '%')
             ORDER BY ${sortColumn} ${sortDirection} NULLS LAST
             LIMIT $7 OFFSET $8
@@ -151,31 +176,32 @@ router.get('/api/admin/completions', async (req, res) => {
         res.json({ data, totalCount, page: pageNum, pageSize: limitNum })
 
     } catch (error) {
-        res.status(500).json({ error: error.message })
+        error instanceof Error ? res.status(500).json({ error: error.message }) :
+            res.status(500).json({ error: "GET /api/admin/completions: Unknown error" })
     }
 })
 
 router.put('/api/admin/completions/:id', async (req, res) => {
     const { id } = req.params
-    const { title, productCode, targetLang, mediaType, wordCount, datePublished, dateArchived } = req.body
+    const { title, productCode, targetLanguage, mediaGroups, wordCount, datePublished, dateArchived } = req.body
     
-     const mediaTypeArray = Array.isArray(mediaType) && mediaType.length > 0
-        ? mediaType.filter(Boolean)
+     const mediaTypeArray = Array.isArray(mediaGroups) && mediaGroups.length > 0
+        ? mediaGroups.filter(Boolean)
         : null
     
     try {
         const result = await pool.query(`
             UPDATE completions
             SET title = $1,
-                productcode = $2,
-                targetlang = $3,
-                mediatype = $4::text[],
+                product_code = $2,
+                target_language = $3,
+                mediaGroups = $4::text[],
                 wordcount = $5,
-                datepublished = $6,
-                datearchived = $7
+                date_published = $6,
+                date_archived = $7
             WHERE id = $8
             RETURNING *
-        `, [title, productCode, targetLang, mediaTypeArray, wordCount, datePublished, dateArchived, id])
+        `, [title, productCode, targetLanguage, mediaTypeArray, wordCount, datePublished, dateArchived, id])
 
         if (result.rows.length === 0) {
             return res.status(404).json({ error: 'Record not found' })
@@ -184,7 +210,8 @@ router.put('/api/admin/completions/:id', async (req, res) => {
         res.json(result.rows[0])
 
     } catch (error) {
-        res.status(500).json({ error: error.message })
+        error instanceof Error ? res.status(500).json({ error: error.message }) :
+            res.status(500).json({ error: "PUT /api/admin/completions/:id: Unknown error" })
     }
 })
 
@@ -206,7 +233,8 @@ router.delete('/api/admin/completions/:id', async (req, res) => {
         res.json({ message: 'Deleted successfully', record: result.rows[0] })
 
     } catch (error) {
-        res.status(500).json({ error: error.message })
+        error instanceof Error ? res.status(500).json({ error: error.message }) :
+            res.status(500).json({ error: "DEL /api/admin/completions/:id: Unknown error" })
     }
 })
 

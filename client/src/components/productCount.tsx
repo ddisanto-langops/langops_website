@@ -1,7 +1,12 @@
+import type { ApiFilters } from "../../../shared/types"
 import { useQuery } from "@tanstack/react-query"
 import { fetchCompletionsByProduct } from "../../services/api"
 
-export function ProductCount({filters}) {
+interface ProductCountProps {
+	filters: ApiFilters
+}
+
+export function ProductCount({filters}: ProductCountProps) {
 
 	const { data, isLoading, isError, error } = useQuery({
 	queryKey: ['byproduct', filters],

@@ -1,5 +1,5 @@
 import fetch from 'node-fetch'
-import { getTrelloProducts, getArchivedCards, upsertArchivedProducts } from './products.mjs'
+import { parseProducts, getArchivedCards, upsertArchivedProducts } from './syncFunctions.js'
 
 const trelloBoardId = process.env.TrelloBoardId;
 const trelloKey = process.env.TrelloKey;
@@ -11,16 +11,17 @@ console.log(`  TrelloKey: ${trelloKey ? '✓ set' : '✗ missing'}`)
 console.log(`  TrelloToken: ${trelloToken ? '✓ set' : '✗ missing'}`)
 
 const since = prompt('Enter the date (YYYY-MM-DD) to backfill archived products since (default: yesterday): ')
+
 console.log(`Backfilling archived products since: ${since || 'yesterday'}`)
 
-const archivedCards = await getArchivedCards(since)
+const archivedCards = await getArchivedCards(since ?? undefined)
 console.log(`Fetched ${archivedCards.length} archived cards from board.`)
 
 /*
   The same logic as above determines which archived cards
   represent valid products, as opposed to clutter.
 */
-const archivedTrelloProducts = getTrelloProducts(archivedCards)
+const archivedTrelloProducts = await parseProducts(archivedCards, "archived")
 console.log(`Found ${archivedTrelloProducts.length} archived products.`)
 
 /*

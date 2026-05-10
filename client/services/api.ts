@@ -1,10 +1,12 @@
+import type { ApiFilters, ArchivedProduct } from "../../shared/types"
+
 export async function fetchProducts() {
     const response = await fetch("/api/data")
     if (!response.ok) throw new Error('Failed to fetch products')
     return response.json()
 }
 
-export async function fetchCompletions(filters) {
+export async function fetchCompletions(filters: ApiFilters) {
     const params = new URLSearchParams()
 
     if (filters.lang) params.append('lang', filters.lang)
@@ -21,7 +23,7 @@ export async function fetchCompletions(filters) {
     return response.json()
 }
 
-export async function fetchAdminCompletions(filters = {}) {
+export async function fetchAdminCompletions(filters: ApiFilters) {
     const params = new URLSearchParams()
 
     if (filters.lang) params.append('lang', filters.lang)
@@ -30,8 +32,8 @@ export async function fetchAdminCompletions(filters = {}) {
     if (filters.from) params.append('from', filters.from)
     if (filters.to) params.append('to', filters.to)
     if (filters.title) params.append('title', filters.title)
-    if (filters.page != null) params.append('page', filters.page)
-    if (filters.pageSize != null) params.append('limit', filters.pageSize)
+    if (filters.page != null) params.append('page', String(filters.page))
+    if (filters.pageSize != null) params.append('limit', String(filters.pageSize))
     if (filters.sortBy) params.append('sortBy', filters.sortBy)
     if (filters.sortDir) params.append('sortDir', filters.sortDir)
 
@@ -43,7 +45,7 @@ export async function fetchAdminCompletions(filters = {}) {
     return await response.json()
 }
 
-export async function fetchCompletionsByProduct(filters = {}) {
+export async function fetchCompletionsByProduct(filters: ApiFilters) {
     const params = new URLSearchParams()
 
     if (filters.lang) params.append('lang', filters.lang)
@@ -60,7 +62,7 @@ export async function fetchCompletionsByProduct(filters = {}) {
     return await response.json()
 }
 
-export async function updateCompletion(record) {
+export async function updateCompletion(record: ArchivedProduct) {
     const response = await fetch(`/api/admin/completions/${record.id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
@@ -71,7 +73,7 @@ export async function updateCompletion(record) {
     return response.json()
 }
 
-export async function deleteCompletion(id) {
+export async function deleteCompletion(id: string) {
     if (confirm("Are you sure you want to delete this record? This action cannot be undone.")) {
         const response = await fetch(`/api/admin/completions/${id}`, {
         method: 'DELETE',

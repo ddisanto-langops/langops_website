@@ -1,3 +1,5 @@
+import type { ArchivedProduct } from "../../../shared/types";
+
 import { fetchAdminCompletions } from "../../services/api"
 import { ClickFilter } from "./clickFilter";
 import { useQuery, keepPreviousData } from "@tanstack/react-query"
@@ -11,9 +13,9 @@ import {
   flexRender
 } from '@tanstack/react-table'
 import { formatDate } from "../../services/formatDate"
-import { groupDisplayNames } from "../../../server/services/constants.mjs"
+import { groupDisplayNames } from "../../../shared/constants"
 
-const columnHelper = createColumnHelper()
+const columnHelper = createColumnHelper<ArchivedProduct>()
 
 const columns = [
   columnHelper.accessor('title', {
@@ -22,10 +24,10 @@ const columns = [
   columnHelper.accessor('productCode', {
     header: 'Product Code',
   }),
-  columnHelper.accessor('targetLang', {
+  columnHelper.accessor('targetLanguage', {
     header: 'Language',
   }),
-  columnHelper.accessor('mediaType', {
+  columnHelper.accessor('mediaGroups', {
     header: 'Media Type',
     cell: (info) => {
       const mediaTypes = info.getValue() ?? []
@@ -41,10 +43,14 @@ const columns = [
 
 const PAGE_SIZE = 50
 
-export function CompletionsTable({ onRowClick }) {
+interface CompletionTableProps {
+  onRowClick: (row: ArchivedProduct) => void
+}
+
+export function CompletionTable({ onRowClick }: CompletionTableProps) {
   const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: PAGE_SIZE })
   const [sorting, setSorting] = useState([{ id: 'datePublished', desc: true }])
-  const [groupFilter, setGroupFilter] = useState(null)
+  const [groupFilter, setGroupFilter] = useState<string | null>(null)
 
   const [titleInput, setTitleInput] = useState('')
   const [codeInput, setCodeInput] = useState('')
@@ -94,12 +100,12 @@ export function CompletionsTable({ onRowClick }) {
     pageCount,
   })
 
-  const handleTabClick = (val) => {
+  const handleTabClick = (val: string | null) => {
     setGroupFilter(val ? val[0] : null)
     setPagination(prev => ({ ...prev, pageIndex: 0 }))
   }
 
-  const filterInputs = {
+  const filterInputs: Record<string, [string, React.Dispatch<React.SetStateAction<string>>]> = {
     title: [titleInput, setTitleInput],
     productCode: [codeInput, setCodeInput],
     targetLang: [langInput, setLangInput],
@@ -138,7 +144,7 @@ export function CompletionsTable({ onRowClick }) {
                         style={{ cursor: header.column.getCanSort() ? 'pointer' : 'default' }}
                       >
                         {flexRender(header.column.columnDef.header, header.getContext())}
-                        {{ asc: ' ↑', desc: ' ↓' }[header.column.getIsSorted()] ?? null}
+                        {{ asc: ' ↑', desc: ' ↓' }[header.column.getIsSorted() as 'asc' | 'desc'] ?? null}
                       </div>
                       {filterEntry && (
                         <input

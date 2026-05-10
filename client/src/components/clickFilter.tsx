@@ -1,4 +1,8 @@
-export function ClickFilter({ onTabClick }) {
+interface ClickFilterProps {
+    onTabClick: CallableFunction
+}
+
+export function ClickFilter({ onTabClick }: ClickFilterProps) {
     return (
         <div id="click-filter">
             <button className="click-filter-button" onClick={() => onTabClick(null)}>All</button>
