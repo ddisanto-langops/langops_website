@@ -1,14 +1,16 @@
+import type { ActiveProduct, ArchivedProduct, RawTrelloCard } from '../../shared/types.js'
+import { ActiveCard, ArchivedCard } from '../classes.js'
+import { productCodes, targetLanguages } from '../../shared/constants.js'
+import {
+  getActiveCards,
+  getArchivedCards,
+  upsertProducts,
+  upsertArchivedProducts,
+  removeFromProducts,
+  parseProducts,
+} from './syncFunctions.js'
 import cron from 'node-cron'
-import { getActiveCards,
-    getArchivedCards,
-    getTrelloProducts,
-    getProductData,
-    upsertProducts,
-    upsertArchivedProducts,
-    archiveProducts,
-
-} from './products.js'
-
+import { parse } from 'node:path'
 
 export async function syncProducts() {
   try {
@@ -16,64 +18,26 @@ export async function syncProducts() {
     console.log('Syncing products...')
 
     /*
-      Download all active cards on board,
-      regardless of date or any status.
-      Filtering is done in following steps.
+    * Download all active cards on board,
+    *  regardless of date.
+    * Filtering is done in following steps.
     */
-    const activeCards = await getActiveCards()
+    const activeCards: RawTrelloCard[] = await getActiveCards()
     console.log(`Fetched ${activeCards.length} active cards from board.`)
-    
 
-    /*
-      function getTrelloProducts acts as a filter.
-      It determines which downloaded (active) cards are products.
-      See products.mjs to inspect the logic directly.
-      Product code and word count are derived from the title via regex matching.
-      A card will be skipped under the following conditions:
-        1) no product code exists;
-        2) product code doesn't match those in constants.js;
-        3) the card is set as a template in Trello
-      Due date, last activity and Trello URL are then extracted directly from card JSON.
-      Target language is then derived by iterating through the IDs of the card labels.
-      Crowdin URL is derived from card attachments, if present.
-      Published (bool) and Crowdin file and project IDs (number) are established by
-      inspecting the card's custom fields for an ID defined in constants.
-      Finally, media type is determined by comparing:
-        1) product code (from title);
-        2) card labels to the groups defined in the mediaGroups constant.
-    */
-    const trelloProducts = getTrelloProducts(activeCards)
-    console.log(`Found ${trelloProducts.length} products.`)
+    const activeTrelloProducts = await parseProducts(activeCards, "active")
+    console.log(`Found ${activeTrelloProducts.length} active products.`)
 
-
-
-    /*
-      function getProductData determines the product 'status' seen in the UI,
-      and adds translation progress data when available.
-      It calls getCrowdinFileProgress() and getProductStatus(), respectively.
-      If either Crowdin file or project ID are missing, getCrowdinFileProgress() is never called.
-      getProductStatus() can return one of 3 statuses:
-        1) Product is marked as published: returns 'published';
-        2) Product has Trello activitly within the last 7 days, 
-          or translation progress greater than 0: 'pending';
-        3) Neither of the above: 'unknown'
-    */
-    const enrichedProducts = await getProductData(trelloProducts)
-    console.log(`Added data to ${enrichedProducts.length} products.`)
-
-    /*
-      After filtering, active products are added to 'products' database.
-    */ 
-    await upsertProducts(enrichedProducts)
+    await upsertProducts(activeTrelloProducts)
     console.log("Active products added to database.")
 
     /*
       Delete products from the 'products' databse,
       if their id isn't found in the latest API data.
     */ 
-    const activeIds = enrichedProducts.map(p => p.id)
-    await archiveProducts(activeIds)
-    console.log(`Synced ${enrichedProducts.length} products`)
+    const activeIds: string[] = activeTrelloProducts.map(p => p.id)
+    await removeFromProducts(activeIds)
+    console.log(`Removed ${activeIds.length} items from products database.`)
 
 
     /*
@@ -81,25 +45,22 @@ export async function syncProducts() {
       This is a second Trello API call, 
       filtering for cards archived up to one day ago.
     */
-    const archivedCards = await getArchivedCards()
+    const archivedCards: RawTrelloCard[] = await getArchivedCards()
     console.log(`Fetched ${archivedCards.length} archived cards from board.`)
 
-    /*
-      The same logic as above determines which archived cards
-      represent valid products, as opposed to clutter.
-    */
-    const archivedTrelloProducts = getTrelloProducts(archivedCards)
+    const archivedTrelloProducts = await parseProducts(archivedCards, "archived")
     console.log(`Found ${archivedTrelloProducts.length} archived products.`)
 
     /*
-      All valid products added to 'completions' database
+    * All valid products added to 'completions' database
     */ 
     await upsertArchivedProducts(archivedTrelloProducts)
     console.log("Archived products added to database.")
 
 
   } catch (error) {
-    console.error(`Sync failed: ${error.message}`)
+    error instanceof Error ? console.error(`Sync failed: ${error.message}`) :
+      console.error("Sync archived products: unknown error")
   }
 }
 

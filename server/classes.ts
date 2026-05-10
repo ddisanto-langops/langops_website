@@ -3,7 +3,8 @@ import type { BaseProduct, ActiveProduct, ArchivedProduct, RawTrelloCard } from 
 import { 
     customFields,
     productCodes, 
-    mediaGroups 
+    mediaGroups,
+    targetLanguages
 } from '../shared/constants.js';
 import { TranslationStatus } from '@crowdin/crowdin-api-client';
 
@@ -49,7 +50,9 @@ export class BaseCard {
     static productCodePattern = /^([A-Z-]*)([0-9]*[A-Z]*)(?=_)/
     static targetLangPattern = /[A-Z]{2}$/
 
-    
+    get isTemplate() {
+        return Boolean(this.rawData.isTemplate)
+    }
 
     get id() {
         return this.rawData.id
@@ -61,14 +64,32 @@ export class BaseCard {
 
     get productCode() {
         const productCodeMatch = this.title.match(BaseCard.productCodePattern)
-        const productCode = productCodeMatch ? productCodeMatch[0] : "INVALID"
-        return productCode
+
+        if (productCodeMatch && productCodes.includes(productCodeMatch[0])) {
+            const productCode = productCodeMatch[0]
+            return productCode
+        } else if (productCodeMatch && !productCodes.includes(productCodeMatch[0])) {
+            return "INVALID"
+        } else if (!productCodeMatch) {
+            return "MISSING"
+        } else {
+            return "ERROR"
+        }
     }
 
     get targetLanguage() {
         const targetLangMatch = this.title.match(BaseCard.targetLangPattern)
-        const targetLanguage = targetLangMatch ? targetLangMatch[0] : "INVALID"
-        return targetLanguage
+
+        if (targetLangMatch && targetLanguages.includes(targetLangMatch[0])) {
+            const targetLanguage = targetLangMatch[0]
+            return targetLanguage
+        } else if (targetLangMatch && !targetLanguages.includes(targetLangMatch[0])) {
+            return "INVALID"
+        } else if (!targetLangMatch) {
+            return "MISSING"
+        } else {
+            return "ERROR"
+        }
     }
 
     get trelloUrl() {
@@ -138,7 +159,7 @@ export class BaseCard {
         return mediaGroup()
     }
 
-    protected getCustomFields() {
+    public getCustomFields() {
         const cardCustomFields = this.rawData.customFieldItems ?? null
         let published = false, crowdinProjectId = null, crowdinFileId = null, exclude = false
         if (cardCustomFields) {

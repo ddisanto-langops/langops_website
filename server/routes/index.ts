@@ -10,7 +10,7 @@ router.get("/api/data", async (req, res) => {
         SELECT 
             id,
             title,
-            productcode AS "productCode",
+            product_code,
             targetlang AS "targetLang",
             productstatus AS "productStatus",
             crowdinurl AS "crowdinUrl",

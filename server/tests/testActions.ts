@@ -1,7 +1,7 @@
 import type { RawTrelloCard } from "../../shared/types.js"
 import {
     parseActiveCards
-} from "../services/products.js"
+} from "../services/syncFunctions.js"
 import response from "../../response.json" with { type: 'json'}
 
 const cards = response as unknown as RawTrelloCard[]

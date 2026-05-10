@@ -28,7 +28,6 @@ export const productCodes: string[] = [
     'TW'
 ]
 
-
 /*
 mediaGroups defines which product codes (extracted from card title) 
 and labels (extracted from card idLabels field) belong to which group(s).
@@ -65,6 +64,21 @@ export const friendlyLanguages: string[] = [
     'Afrikaans',
     'Finnish',
     'Hebrew',
+]
+
+/*Supported target languges
+* ISO-639-1 format
+*/
+export const targetLanguages = [
+    "FR",
+    "DE",
+    "ES",
+    "PT",
+    "NL",
+    "IT",
+    "AF",
+    "FI",
+    "HE"
 ]
 
 // Abstraction for product fields display in UI
