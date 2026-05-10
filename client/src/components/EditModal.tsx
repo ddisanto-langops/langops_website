@@ -1,10 +1,17 @@
+import type { ArchivedProduct } from "../../../shared/types"
+
 import { useState, useEffect } from "react"
-import { friendlyFieldNames, friendlyLanguages } from "../../../server/services/constants.mjs"
+import { friendlyFieldNames, friendlyLanguages, mediaGroups, groupDisplayNames } from "../../../shared/constants"
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { updateCompletion, deleteCompletion } from '../../services/api'
-import { mediaGroups, groupDisplayNames } from "../../../server/services/constants.mjs"
 
-export function EditModal({record, isOpen, onClose}) {
+interface EditModalProps {
+    record: ArchivedProduct,
+    isOpen: boolean,
+    onClose: () => void
+}
+
+export function EditModal({record, isOpen, onClose}: EditModalProps) {
     const queryClient = useQueryClient()
     const [formData, setFormData] = useState(record)
 
@@ -15,15 +22,15 @@ export function EditModal({record, isOpen, onClose}) {
     const saveMutation = useMutation({
         mutationFn: updateCompletion,
         onSuccess: () => {
-            queryClient.invalidateQueries(['completions'])
+            queryClient.invalidateQueries({queryKey: ['completions']})
             onClose()
         }
     })
 
     const deleteMutation = useMutation({
-        mutationFn: (id) => deleteCompletion(id),
+        mutationFn: (id: string) => deleteCompletion(id),
         onSuccess: () => {
-            queryClient.invalidateQueries(['completions'])
+            queryClient.invalidateQueries({queryKey: ['completions']})
             onClose()
         }
     })
@@ -31,7 +38,7 @@ export function EditModal({record, isOpen, onClose}) {
     if (!isOpen) return null
 
     const allMediaTypes = Object.keys(mediaGroups)
-    const editableFields = ['title', 'productCode', 'targetLang', 'wordCount', 'datePublished', 'dateArchived']
+    const editableFields = ['title', 'productCode', 'targetLanguage', 'wordCount', 'datePublished', 'dateArchived']
 
     return (
         <div className="modal-overlay">
@@ -88,11 +95,11 @@ export function EditModal({record, isOpen, onClose}) {
                         .map(([key, value]) => (
                             <div key={key} className="modal-field">
                                 <label key={key} className="modal-label">{friendlyFieldNames[key] || key}:</label>
-                                {key === 'targetLang' ? 
+                                {key === 'targetLanguage' ? 
                                     <select
                                         className="modal-input"
                                         value={value}
-                                        onChange={e => setFormData({...formData, [key]: e.target.value})}
+                                        onChange={e => setFormData({...formData, [key as keyof ArchivedProduct]: e.target.value})}
                                     >
                                         {friendlyLanguages.map(lang => 
                                             <option>{lang}</option>
@@ -113,17 +120,17 @@ export function EditModal({record, isOpen, onClose}) {
                         <label className="modal-label">Media Type:</label>
                         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
                             {allMediaTypes.map(type => {
-                                const isSelected = formData.mediaType?.includes(type) ?? false
+                                const isSelected = formData.mediaGroups?.includes(type) ?? false
                                 return (
                                     <button
                                         key={type}
                                         type="button"
                                         onClick={() => {
-                                            const current = formData.mediaType ?? []
+                                            const current = formData.mediaGroups ?? []
                                             const updated = isSelected
                                                 ? current.filter(t => t !== type)
                                                 : [...current, type]
-                                            setFormData({...formData, mediaType: updated})
+                                            setFormData({...formData, mediaGroups: updated})
                                         }}
                                         style={{
                                             padding: '4px 12px',

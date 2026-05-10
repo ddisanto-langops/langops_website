@@ -1,11 +1,13 @@
+import type { ActiveProduct } from '../../../shared/types'
+
 import { useState } from 'react'
-import { ProductsTable } from '../components/productsTable'
+import { ProductTable } from '../components/productTable'
 import { TableDetail } from '../components/tableDetail'
 import { NavBar } from '../components/NavBar'
 
 export function ProductsPage() {
 
-  const [selectedRow, setSelectedRow] = useState(null)
+  const [selectedRow, setSelectedRow] = useState<ActiveProduct>()
 
   return (
   <div id='main-container'>
@@ -16,7 +18,7 @@ export function ProductsPage() {
     </div>
     <div className='table-layout-container'>
       <div className='table-container'>
-        <ProductsTable onRowClick={setSelectedRow} />
+        <ProductTable onRowClick={setSelectedRow} />
       </div>
       <div className='table-detail-container'>
         <TableDetail row={selectedRow} />

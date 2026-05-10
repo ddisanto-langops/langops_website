@@ -1,7 +1,12 @@
+import type { ApiFilters } from "../../../shared/types"
+
 import { useQuery } from "@tanstack/react-query"
 import { fetchCompletions } from "../../services/api"
 
-export function TotalWords({filters}) {
+interface TotalWordsProps {
+  filters: ApiFilters
+}
+export function TotalWords({filters}: TotalWordsProps) {
 
     const { data, isLoading } = useQuery({
     queryKey: ['completions', filters],

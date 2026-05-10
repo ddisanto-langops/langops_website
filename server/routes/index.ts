@@ -148,12 +148,12 @@ router.get('/api/admin/completions', async (req, res) => {
             SELECT
                 id,
                 title,
-                productcode AS "productCode",
-                targetlang AS "targetLang",
-                mediatype AS "mediaType",
-                wordcount AS "wordCount",
-                datepublished AS "datePublished",
-                datearchived AS "dateArchived",
+                product_code as "productCode",
+                target_language as "targetLanguage",
+                media_groups as "mediaGroups",
+                wordcount as "wordCount",
+                date_published AS "datePublished",
+                date_archived AS "dateArchived",
                 trello_url AS "trelloUrl",
                 editor_url as "editorUrl",
                 article_url as "articleUrl",
@@ -183,25 +183,25 @@ router.get('/api/admin/completions', async (req, res) => {
 
 router.put('/api/admin/completions/:id', async (req, res) => {
     const { id } = req.params
-    const { title, productCode, targetLang, mediaType, wordCount, datePublished, dateArchived } = req.body
+    const { title, productCode, targetLanguage, mediaGroups, wordCount, datePublished, dateArchived } = req.body
     
-     const mediaTypeArray = Array.isArray(mediaType) && mediaType.length > 0
-        ? mediaType.filter(Boolean)
+     const mediaTypeArray = Array.isArray(mediaGroups) && mediaGroups.length > 0
+        ? mediaGroups.filter(Boolean)
         : null
     
     try {
         const result = await pool.query(`
             UPDATE completions
             SET title = $1,
-                productcode = $2,
-                targetlang = $3,
-                mediatype = $4::text[],
+                product_code = $2,
+                target_language = $3,
+                mediaGroups = $4::text[],
                 wordcount = $5,
-                datepublished = $6,
-                datearchived = $7
+                date_published = $6,
+                date_archived = $7
             WHERE id = $8
             RETURNING *
-        `, [title, productCode, targetLang, mediaTypeArray, wordCount, datePublished, dateArchived, id])
+        `, [title, productCode, targetLanguage, mediaTypeArray, wordCount, datePublished, dateArchived, id])
 
         if (result.rows.length === 0) {
             return res.status(404).json({ error: 'Record not found' })

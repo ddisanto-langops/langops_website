@@ -1,4 +1,4 @@
-export function formatDate(isoString, timezone = 'America/Chicago') {
+export function formatDate(isoString: string | null, timezone = 'America/Chicago') {
     if (!isoString) return null
     return new Intl.DateTimeFormat('en-US', {
         year: 'numeric',

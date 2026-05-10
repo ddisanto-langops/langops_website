@@ -1,4 +1,6 @@
-/* eslint-disable no-unused-vars */
+import type { ActiveProduct } from "../../../shared/types";
+import type { SortingState, ColumnFiltersState, Row, VisibilityState } from "@tanstack/react-table"
+
 import { fetchProducts } from "../../services/api"
 import { ClickFilter } from "./clickFilter";
 import { useQuery } from "@tanstack/react-query"
@@ -13,7 +15,7 @@ import {
 } from '@tanstack/react-table'
 import { formatDate } from "../../services/formatDate";
 
-const includesMediaType = (row, columnId, filterValue) => {
+const includesMediaType = (row: Row<ActiveProduct>, columnId: string, filterValue: string) => {
   if (!filterValue || (Array.isArray(filterValue) && filterValue.length === 0)) return true
   const cellValue = row.getValue(columnId)
   if (cellValue == null) return false
@@ -24,21 +26,21 @@ const includesMediaType = (row, columnId, filterValue) => {
   )
 }
 
-const caseInsensitiveFilter = (row, columnId, filterValue) => {
+const caseInsensitiveFilter = (row: Row<ActiveProduct>, columnId: string, filterValue: string) => {
   if (!filterValue) return true;
   const cellValue = row.getValue(columnId);
   if (!cellValue) return false;
   return cellValue.toString().toLowerCase().includes(filterValue.toLowerCase());
 };
 
-const columnHelper = createColumnHelper()
+const columnHelper = createColumnHelper<ActiveProduct>()
 
 const columns = [
   columnHelper.accessor('title', {
     header: 'Title',
     filterFn: caseInsensitiveFilter 
   }),
-  columnHelper.accessor('targetLang', {
+  columnHelper.accessor('targetLanguage', {
     header: 'Language',
     filterFn: caseInsensitiveFilter
   }),
@@ -46,19 +48,22 @@ const columns = [
     header: 'Status',
     filterFn: caseInsensitiveFilter
   }),
-  columnHelper.accessor('due', {
+  columnHelper.accessor('dueDate', {
     header: 'Due',
     cell: info => formatDate(info.getValue())
   }),
-  columnHelper.accessor('mediaType', {
+  columnHelper.accessor('mediaGroups', {
   id: 'mediaType',
   enableHiding: true,
   filterFn: includesMediaType,
   })
 ]
 
+interface ProductTableProps {
+  onRowClick: (row: ActiveProduct) => void
+}
 
-export function ProductsTable({ onRowClick }) {
+export function ProductTable({ onRowClick }: ProductTableProps) {
  
   const { data = [], isLoading, isError } = useQuery({
     queryKey: ['products'],
@@ -66,10 +71,10 @@ export function ProductsTable({ onRowClick }) {
   })
 
 
-  const [sorting, setSorting] = useState([])
-  const [columnFilters, setColumnFilters] = useState([])
-  const [activeTab, setActiveTab] = useState(null)
-  const [columnVisibility, setColumnVisibility] = useState({ mediaType: false })
+  const [sorting, setSorting] = useState<SortingState>([])
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
+  const [activeTab, setActiveTab] = useState<string[] | null>(null)
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({ mediaType: false })
 
   // eslint-disable-next-line react-hooks/incompatible-library
   const table = useReactTable({
@@ -84,14 +89,16 @@ export function ProductsTable({ onRowClick }) {
     getFilteredRowModel: getFilteredRowModel(),
   })
 
-  const handleTabClick = (value) => {
+  const handleTabClick = (value: string[] | null) => {
     setActiveTab(value)
-    table.getColumn('mediaType').setFilterValue(value)
+    table.getColumn('mediaGroups')?.setFilterValue(value)
 
-    if (isLoading) return <p>Loading...</p>
-    if (isError) return <p>Error loading products.</p>
+    
   }
 
+  if (isLoading) return <p>Loading...</p>
+  if (isError) return <p>Error loading products.</p>
+  
   return (
   <>
   <h2 id='products-page-title'>Products</h2>
@@ -117,7 +124,7 @@ export function ProductsTable({ onRowClick }) {
                 <input
                   className="table-filter"
                   placeholder="Filter..."
-                  value={header.column.getFilterValue() ?? ''}
+                  value={header.column.getFilterValue() as string}
                   onChange={e => header.column.setFilterValue(e.target.value)}
                 />
                 </th>

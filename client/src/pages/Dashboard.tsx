@@ -1,17 +1,19 @@
+import type { ApiFilters } from '../../../shared/types'
+
 import { NavBar } from '../components/NavBar'
 import { useState } from 'react'
 import { TotalWords } from '../components/totalWords'
-import { DashboardFilters } from '../components/dashboardFilters'
+import { DashboardFilter } from '../components/dashboardFilters'
 import { ProductCount } from '../components/productCount'
 
 export function Dashboard() {
 
-  const [ filters, setFilters ] = useState({
-    lang: null,
-    code: null,
-    group: null,
-    from: null,
-    to: null,
+  const [ filters, setFilters ] = useState<ApiFilters>({
+    lang: undefined,
+    code: undefined,
+    group: undefined,
+    from: undefined,
+    to: undefined,
   })
 
   return (
@@ -22,7 +24,7 @@ export function Dashboard() {
       <h2 id="dashboard-page-title">Dashboard</h2>
       <div id='dashboard-container'>
         <div id='dashboard-filter-container'>
-          <DashboardFilters filters={filters} onFilterChange={setFilters} />
+          <DashboardFilter filters={filters} onFilterChange={setFilters} />
         </div>
         <div id='total-words-container'>
           <TotalWords filters={filters}/>

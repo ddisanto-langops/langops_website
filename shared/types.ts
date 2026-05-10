@@ -70,6 +70,19 @@ export interface ApiResponse<T> {
     }
 }
 
+export interface ApiFilters {
+    lang?: string | undefined
+    code?: string | undefined
+    group?: string | undefined
+    from?: string | undefined
+    to?: string | undefined
+    title?: string | undefined
+    page?: number | undefined
+    pageSize?: number | undefined
+    sortBy?: string | undefined
+    sortDir?: string | undefined
+}
+
 export interface RawTrelloCard {
   id: string
   name: string

@@ -1,6 +1,12 @@
-import { productCodes, friendlyLanguages, groupDisplayNames } from "../../../server/services/constants.mjs"
+import type { ApiFilters } from "../../../shared/types"
+import { productCodes, friendlyLanguages, groupDisplayNames } from "../../../shared/constants"
 
-export function DashboardFilters({filters, onFilterChange}) {
+interface DashboardFilterProps {
+  filters: ApiFilters
+  onFilterChange: CallableFunction
+}
+
+export function DashboardFilter({filters, onFilterChange}: DashboardFilterProps) {
     return (
     
     <>
@@ -53,7 +59,7 @@ export function DashboardFilters({filters, onFilterChange}) {
         type="date"
         id="from"
         name="filter-start"
-        value={filters.from ?? null}
+        value={filters.from ?? undefined}
         onChange={e => onFilterChange({
           ...filters,
           from: e.target.value || null
@@ -68,7 +74,7 @@ export function DashboardFilters({filters, onFilterChange}) {
         type="date"
         id="to"
         name="filter-end"
-        value={filters.to ?? null}
+        value={filters.to ?? undefined}
         onChange={e => onFilterChange({
           ...filters,
           to: e.target.value || null
