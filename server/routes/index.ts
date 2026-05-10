@@ -3,6 +3,10 @@ import pool from '../database/databaseConfig.js';
 
 const router = Router();
 
+function getQueryString(value: unknown): string | undefined {
+    return typeof value === 'string' ? value : undefined
+}
+
 router.get("/api/data", async (req, res) => {
     console.log("Querying transient data...")
     try {
@@ -31,11 +35,10 @@ router.get("/api/data", async (req, res) => {
         res.json(result.rows)
 
     } catch (error) {
-        res.status(500).json({ error: error.message })
+        error instanceof Error ? res.status(500).json({ error: error.message }) :
+            res.status(500).json({ error: "GET /api/data: Unknown error" })
     }
 })
-
-
 
 /*
     This is the route for the dashboard page,
@@ -44,7 +47,11 @@ router.get("/api/data", async (req, res) => {
     the completions page.
 */
 router.get('/api/completions', async (req, res) => {
-    const { lang, code, group, from, to } = req.query
+    const lang = getQueryString(req.query.lang)
+    const code = getQueryString(req.query.code)
+    const group = getQueryString(req.query.group)
+    const from = getQueryString(req.query.from)
+    const to = getQueryString(req.query.to)
     console.log(`"Querying completions: Lang: ${lang}, Code: ${code}, Media Group: ${group}, From: ${from}, To: ${to}`)
 
     try {
@@ -69,13 +76,18 @@ router.get('/api/completions', async (req, res) => {
     res.json(responseData);
         
     } catch (error) {
-        res.status(500).json({error: error.message})
+        error instanceof Error ? res.status(500).json({ error: error.message }) :
+            res.status(500).json({ error: "GET /api/completions: Unknown error" })
     }
 })
 
 
 router.get("/api/data/completions/byproduct", async (req, res) => {
-    const { lang, code, group, from, to } = req.query
+    const lang = getQueryString(req.query.lang)
+    const code = getQueryString(req.query.code)
+    const group = getQueryString(req.query.group)
+    const from = getQueryString(req.query.from)
+    const to = getQueryString(req.query.to)
     try {
         const result = await pool.query(`
             SELECT productcode, count(*) AS occurence_count
@@ -93,7 +105,8 @@ router.get("/api/data/completions/byproduct", async (req, res) => {
         res.json(result.rows);
 
     } catch (error) {
-        res.status(500).json({error: error.message})
+        error instanceof Error ? res.status(500).json({ error: error.message }) :
+            res.status(500).json({ error: "GET /api/data/completions/byproduct: Unknown error" })
     }
 })
 
@@ -103,7 +116,16 @@ router.get("/api/data/completions/byproduct", async (req, res) => {
     queries the completions database.
 */
 router.get('/api/admin/completions', async (req, res) => {
-    const { lang, code, group, from, to, title, page = '1', limit = '50', sortBy, sortDir } = req.query
+    const lang = getQueryString(req.query.lang)
+    const code = getQueryString(req.query.code)
+    const group = getQueryString(req.query.group)
+    const from = getQueryString(req.query.from)
+    const to = getQueryString(req.query.to)
+    const title = getQueryString(req.query.title)
+    const page = getQueryString(req.query.page) ?? '1'
+    const limit = getQueryString(req.query.limit) ?? '50'
+    const sortBy = getQueryString(req.query.sortBy)
+    const sortDir = getQueryString(req.query.sortDir)
 
     const pageNum = Math.max(1, parseInt(page, 10) || 1)
     const limitNum = Math.min(200, Math.max(1, parseInt(limit, 10) || 50))
@@ -115,8 +137,10 @@ router.get('/api/admin/completions', async (req, res) => {
         targetLang: 'targetlang',
         datePublished: 'datepublished',
         wordCount: 'wordcount',
-    }
-    const sortColumn = allowedSortColumns[sortBy] ?? 'datepublished'
+    } as const
+    const sortColumn = sortBy && sortBy in allowedSortColumns
+        ? allowedSortColumns[sortBy as keyof typeof allowedSortColumns]
+        : 'datepublished'
     const sortDirection = sortDir === 'asc' ? 'ASC' : 'DESC'
 
     try {
@@ -152,7 +176,8 @@ router.get('/api/admin/completions', async (req, res) => {
         res.json({ data, totalCount, page: pageNum, pageSize: limitNum })
 
     } catch (error) {
-        res.status(500).json({ error: error.message })
+        error instanceof Error ? res.status(500).json({ error: error.message }) :
+            res.status(500).json({ error: "GET /api/admin/completions: Unknown error" })
     }
 })
 
@@ -185,7 +210,8 @@ router.put('/api/admin/completions/:id', async (req, res) => {
         res.json(result.rows[0])
 
     } catch (error) {
-        res.status(500).json({ error: error.message })
+        error instanceof Error ? res.status(500).json({ error: error.message }) :
+            res.status(500).json({ error: "PUT /api/admin/completions/:id: Unknown error" })
     }
 })
 
@@ -207,7 +233,8 @@ router.delete('/api/admin/completions/:id', async (req, res) => {
         res.json({ message: 'Deleted successfully', record: result.rows[0] })
 
     } catch (error) {
-        res.status(500).json({ error: error.message })
+        error instanceof Error ? res.status(500).json({ error: error.message }) :
+            res.status(500).json({ error: "DEL /api/admin/completions/:id: Unknown error" })
     }
 })
 

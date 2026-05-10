@@ -1,4 +1,4 @@
-import express from 'express';
+import express, { type ErrorRequestHandler } from 'express';
 import router from './routes/index.js'
 import helmet from 'helmet'
 import cors from 'cors'
@@ -27,8 +27,12 @@ app.get('/{*path}', (req, res) => {
   res.sendFile(path.join(__dirname, '../client/dist/index.html'))
 })
 
-app.use((err, req, res, next) => {
-  res.status(500).json({ message: err.message });
-});
+
+const errorHandler: ErrorRequestHandler = (err, req, res, next) => {
+  const message = err instanceof Error ? err.message : 'Internal server error';
+  res.status(500).json({ message });
+};
+
+app.use(errorHandler)
 
 app.listen(PORT, () => console.log(`server running on port ${PORT}`));
