@@ -23,12 +23,16 @@ app.use(cors({
 app.use(express.json())
 app.use(router)
 
-app.use(express.static(path.join(__dirname,'../client/dist')))
+const clientDist =
+  __dirname.endsWith(path.join('dist', 'server'))
+    ? path.join(__dirname, '../../client/dist')
+    : path.join(__dirname, '../client/dist')
+
+app.use(express.static(clientDist))
 
 app.get('/{*path}', (req, res) => {
-  res.sendFile(path.join(__dirname, '../client/dist/index.html'))
+  res.sendFile(path.join(clientDist, 'index.html'))
 })
-
 
 const errorHandler: ErrorRequestHandler = (err, req, res, next) => {
   const message = err instanceof Error ? err.message : 'Internal server error';
