@@ -15,22 +15,22 @@ router.get("/api/data", async (req, res) => {
             id,
             title,
             product_code,
-            targetlang AS "targetLang",
-            productstatus AS "productStatus",
-            crowdinurl AS "crowdinUrl",
-            trellourl AS "trelloUrl",
+            target_language AS "targetLanguage",
+            product_status AS "productStatus",
+            crowdin_url AS "crowdinUrl",
+            trello_url AS "trelloUrl",
             article_url AS "articleUrl",
             editor_url AS "editorUrl",
-            due,
-            lastactivity AS "lastActivity",
+            due_date AS "dueDate",
+            date_last_activity AS "dateLastActivity",
             published,
             date_published AS "datePublished",
-            translationprog AS "translationProg",
-            approvalprog AS "approvalProg",
-            mediatype AS "mediaType",
+            translation_progress AS "translationProgress",
+            approval_progress AS "approvalProgress",
+            media_groups AS "mediaGroups",
             wordcount AS "wordCount"
         FROM products
-        ORDER BY lastactivity DESC NULLS LAST
+        ORDER BY date_last_activity DESC NULLS LAST
         `)
         res.json(result.rows)
 
@@ -160,11 +160,11 @@ router.get('/api/admin/completions', async (req, res) => {
                 COUNT(*) OVER() AS total_count
             FROM completions
             WHERE
-                ($1::text IS NULL OR targetlang ILIKE '%' || $1 || '%')
-                AND ($2::text IS NULL OR productcode ILIKE '%' || $2 || '%')
-                AND ($3::text IS NULL OR $3 = ANY(mediatype))
-                AND ($4::date IS NULL OR datepublished >= $4)
-                AND ($5::date IS NULL OR datepublished <= $5)
+                ($1::text IS NULL OR target_language ILIKE '%' || $1 || '%')
+                AND ($2::text IS NULL OR product_code ILIKE '%' || $2 || '%')
+                AND ($3::text IS NULL OR $3 = ANY(mediaGroups))
+                AND ($4::date IS NULL OR date_published >= $4)
+                AND ($5::date IS NULL OR date_published <= $5)
                 AND ($6::text IS NULL OR title ILIKE '%' || $6 || '%')
             ORDER BY ${sortColumn} ${sortDirection} NULLS LAST
             LIMIT $7 OFFSET $8

@@ -15,7 +15,9 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 app.use(helmet())
 app.use(cors({
-  origin: 'https://pcglangops.com',
+  origin: process.env.NODE_ENV === 'Dev'
+    ? 'http://localhost:5173'
+    : 'https://pcglangops.com',
   methods: ['GET', 'PUT', 'DELETE']
 }))
 app.use(express.json())

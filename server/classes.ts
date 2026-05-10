@@ -65,10 +65,10 @@ export class BaseCard {
     get productCode() {
         const productCodeMatch = this.title.match(BaseCard.productCodePattern)
 
-        if (productCodeMatch && productCodes.includes(productCodeMatch[0])) {
-            const productCode = productCodeMatch[0]
+        if (productCodeMatch && productCodes.includes(productCodeMatch[1])) {
+            const productCode = productCodeMatch[1]
             return productCode
-        } else if (productCodeMatch && !productCodes.includes(productCodeMatch[0])) {
+        } else if (productCodeMatch && !productCodes.includes(productCodeMatch[1])) {
             return "INVALID"
         } else if (!productCodeMatch) {
             return "MISSING"

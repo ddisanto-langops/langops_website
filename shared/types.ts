@@ -61,15 +61,6 @@ export interface ArchivedProduct {
     wordCount: number | null
 }
 
-export interface ApiResponse<T> {
-    status: string
-    data: T[]
-    error?: {
-        message: string
-        code: string
-    }
-}
-
 export interface ApiFilters {
     lang?: string | undefined
     code?: string | undefined

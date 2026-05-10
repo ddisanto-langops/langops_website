@@ -14,9 +14,11 @@ const trelloToken = process.env.TrelloToken;
 */
 
 export async function getActiveCards(): Promise<RawTrelloCard[]> {
+    if (!trelloBoardId || !trelloKey || !trelloToken) throw new Error("Missing credentials!")
+        
     try {
         const response = await fetch(
-            `https://api.trello.com/1/boards/${trelloBoardId}/cards?key=${trelloKey}&token=${trelloToken}&fields=all&attachments=true&attachment_fields=all&customFieldItems=true&actions=all`,
+            `https://api.trello.com/1/boards/${trelloBoardId}/cards?key=${trelloKey}&token=${trelloToken}&fields=all&attachments=true&attachment_fields=all&customFieldItems=true&actions=all&since=2026-05-05`,
             { method: 'GET' }
         )
         if (!response.ok) {
@@ -27,11 +29,13 @@ export async function getActiveCards(): Promise<RawTrelloCard[]> {
     } catch (error) {
         error instanceof Error ? console.log(`Get Active Cards: ${error.message}`) : 
             console.log("Get Active Cards: Unkown error")
-         return []
+        return []
     }
 }
 
 export async function getArchivedCards(since?: string) {
+    if (!trelloBoardId || !trelloKey || !trelloToken) throw new Error("Missing credentials!")
+
     const date = new Date();
     date.setDate(date.getDate() -1)
     const yesterday = date.toISOString().split('T')[0]
@@ -54,16 +58,16 @@ export async function getArchivedCards(since?: string) {
 }
 
 /*
-* Product Factory
-* This function creates products from raw cards.
-* It also applies logical tests to filter out 
-* cards which do not meet business logic requirements.
-* A card will be skipped under the following conditions:
-*   1) no product code exists;
-*   2) product code isn't supported;
-*   3) the card is a template;
-*   4) the target language is not one of the supported languages;
-*   5) the "Exclude" checkbox is checked.
+ * Product Factory
+ * This function creates products from raw cards.
+ * It also applies logical tests to filter out 
+ * cards which do not meet business logic requirements.
+ * A card will be skipped under the following conditions:
+ *   1) no product code exists;
+ *   2) product code isn't supported;
+ *   3) the card is a template;
+ *   4) the target language is not one of the supported languages;
+ *   5) the "Exclude" checkbox is checked.
 */
 export async function parseProducts(rawCards: RawTrelloCard[], mode: "active"): Promise<ActiveProduct[]>
 export async function parseProducts(rawCards: RawTrelloCard[], mode: "archived"): Promise<ArchivedProduct[]>
@@ -201,8 +205,8 @@ export async function removeFromProducts(activeIds: string[]) {
 
     await pool.query(`
         UPDATE completions
-        SET dateArchived = NOW()
-        WHERE dateArchived IS NULL
+        SET date_archived = NOW()
+        WHERE date_archived IS NULL
         AND id != ALL($1)
     `, [activeIds])
 }

@@ -32,8 +32,8 @@ export async function fetchAdminCompletions(filters: ApiFilters) {
     if (filters.from) params.append('from', filters.from)
     if (filters.to) params.append('to', filters.to)
     if (filters.title) params.append('title', filters.title)
-    if (filters.page != null) params.append('page', filters.page)
-    if (filters.pageSize != null) params.append('limit', filters.pageSize)
+    if (filters.page != null) params.append('page', String(filters.page))
+    if (filters.pageSize != null) params.append('limit', String(filters.pageSize))
     if (filters.sortBy) params.append('sortBy', filters.sortBy)
     if (filters.sortDir) params.append('sortDir', filters.sortDir)
 

@@ -1,6 +1,4 @@
-import type { ActiveProduct, ArchivedProduct, RawTrelloCard } from '../../shared/types.js'
-import { ActiveCard, ArchivedCard } from '../classes.js'
-import { productCodes, targetLanguages } from '../../shared/constants.js'
+import type { RawTrelloCard } from '../../shared/types.js'
 import {
   getActiveCards,
   getArchivedCards,
@@ -10,7 +8,6 @@ import {
   parseProducts,
 } from './syncFunctions.js'
 import cron from 'node-cron'
-import { parse } from 'node:path'
 
 export async function syncProducts() {
   try {
