@@ -51,11 +51,11 @@ export function CompletionTable({ onRowClick }: CompletionTableProps) {
   const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: PAGE_SIZE })
   const [sorting, setSorting] = useState([{ id: 'datePublished', desc: true }])
   const [groupFilter, setGroupFilter] = useState<string | null>(null)
-
   const [titleInput, setTitleInput] = useState('')
   const [codeInput, setCodeInput] = useState('')
   const [langInput, setLangInput] = useState('')
   const [debouncedTextFilters, setDebouncedTextFilters] = useState({ title: '', code: '', lang: '' })
+  const [activeTab, setActiveTab] = useState<string | null>(null)
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -100,8 +100,9 @@ export function CompletionTable({ onRowClick }: CompletionTableProps) {
     pageCount,
   })
 
-  const handleTabClick = (val: string[] | null) => {
-    setGroupFilter(val ? val[0] : null)
+  const handleTabClick = (value: string | null) => {
+    setActiveTab(value)
+    setGroupFilter(value ? value : null)
     setPagination(prev => ({ ...prev, pageIndex: 0 }))
   }
 
@@ -117,7 +118,7 @@ export function CompletionTable({ onRowClick }: CompletionTableProps) {
   return (
     <>
       <h2 id='completions-page-title'>Completions</h2>
-      <ClickFilter onTabClick={handleTabClick}/>
+      <ClickFilter activeTab={activeTab} onTabClick={handleTabClick}/>
       <div className="pagination-controls">
         <button className="pagination-button" onClick={() => table.previousPage()} disabled={!table.getCanPreviousPage()}>
           Previous
@@ -160,7 +161,6 @@ export function CompletionTable({ onRowClick }: CompletionTableProps) {
               </tr>
             ))}
           </thead>
-
           <tbody id="completions-table-body">
             {table.getRowModel().rows.map(row => (
               <tr
@@ -178,8 +178,6 @@ export function CompletionTable({ onRowClick }: CompletionTableProps) {
           </tbody>
         </table>
       </div>
-
-      
     </>
   )
 }

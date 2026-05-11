@@ -73,7 +73,7 @@ export function ProductTable({ onRowClick }: ProductTableProps) {
 
   const [sorting, setSorting] = useState<SortingState>([])
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
-  const [activeTab, setActiveTab] = useState<string[] | null>(null)
+  const [activeTab, setActiveTab] = useState<string | null>(null)
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({ mediaType: false })
 
   // eslint-disable-next-line react-hooks/incompatible-library
@@ -89,11 +89,9 @@ export function ProductTable({ onRowClick }: ProductTableProps) {
     getFilteredRowModel: getFilteredRowModel(),
   })
 
-  const handleTabClick = (value: string[] | null) => {
+  const handleTabClick = (value: string | null) => {
     setActiveTab(value)
     table.getColumn('mediaType')?.setFilterValue(value)
-
-    
   }
 
   if (isLoading) return <p>Loading...</p>
@@ -102,7 +100,7 @@ export function ProductTable({ onRowClick }: ProductTableProps) {
   return (
   <>
   <h2 id='products-page-title'>Products</h2>
-  <ClickFilter onTabClick={handleTabClick}/>
+  <ClickFilter activeTab={activeTab} onTabClick={handleTabClick}/>
   <table id="product-table">
     <thead id="product-table-head">
         {table.getHeaderGroups().map(headerGroup => (
