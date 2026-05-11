@@ -65,13 +65,19 @@ export function CompletionTable({ onRowClick }: CompletionTableProps) {
     return () => clearTimeout(timer)
   }, [titleInput, codeInput, langInput])
 
+  const normalizedTextFilters = {
+    title: debouncedTextFilters.title.trim(),
+    code: debouncedTextFilters.code.trim(),
+    lang: debouncedTextFilters.lang.trim(),
+  }
+
   const sortState = sorting[0]
   const queryFilters = {
     page: pagination.pageIndex + 1,
     pageSize: pagination.pageSize,
-    title: debouncedTextFilters.title || undefined,
-    code: debouncedTextFilters.code || undefined,
-    lang: debouncedTextFilters.lang || undefined,
+    title: normalizedTextFilters.title || undefined,
+    code: normalizedTextFilters.code || undefined,
+    lang: normalizedTextFilters.lang || undefined,
     group: groupFilter || undefined,
     sortBy: sortState?.id,
     sortDir: sortState?.desc === false ? 'asc' : 'desc',
@@ -109,7 +115,7 @@ export function CompletionTable({ onRowClick }: CompletionTableProps) {
   const filterInputs: Record<string, [string, React.Dispatch<React.SetStateAction<string>>]> = {
     title: [titleInput, setTitleInput],
     productCode: [codeInput, setCodeInput],
-    targetLang: [langInput, setLangInput],
+    targetLanguage: [langInput, setLangInput],
   }
 
   if (isLoading && data.length === 0) return <p>Loading...</p>

@@ -30,7 +30,7 @@ const caseInsensitiveFilter = (row: Row<ActiveProduct>, columnId: string, filter
   if (!filterValue) return true;
   const cellValue = row.getValue(columnId);
   if (!cellValue) return false;
-  return cellValue.toString().toLowerCase().includes(filterValue.toLowerCase());
+  return cellValue.toString().toLowerCase().trim().includes(filterValue.toLowerCase().trim());
 };
 
 const columnHelper = createColumnHelper<ActiveProduct>()
