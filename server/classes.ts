@@ -144,7 +144,7 @@ export class BaseCard {
     protected getMediaGroups() {
         const mediaGroup = () => {
             const editionMatch = this.title.match(BaseCard.editionPattern)
-            const edition = editionMatch ? editionMatch[2] : null
+            const edition = editionMatch ? editionMatch[0] : null
             if (edition) return ['magazine']
             const productMediaType = groupLookup.get(this.productCode) || []
             const labelMediaType = (this.labels ?? []).flatMap(label => 
