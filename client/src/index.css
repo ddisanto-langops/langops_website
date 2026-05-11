@@ -203,7 +203,7 @@ h2 { overflow-wrap: break-word; }
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    box-shadow: 0 2px 20px coral;
+    box-shadow: 0 2px 20px hsl(165, 92%, 65%);
     transition: transform 0.2s, box-shadow 0.2s;
     margin: 5px;
 }
