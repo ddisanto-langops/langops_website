@@ -91,7 +91,7 @@ export function ProductTable({ onRowClick }: ProductTableProps) {
 
   const handleTabClick = (value: string[] | null) => {
     setActiveTab(value)
-    table.getColumn('mediaGroups')?.setFilterValue(value)
+    table.getColumn('mediaType')?.setFilterValue(value)
 
     
   }
