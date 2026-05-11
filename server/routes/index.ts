@@ -61,11 +61,11 @@ router.get('/api/completions', async (req, res) => {
             COUNT(*) AS "totalProducts"
         FROM completions
         WHERE
-            ($1::text IS NULL OR targetlang = $1)
-            AND ($2::text IS NULL OR productcode = $2)
+            ($1::text IS NULL OR target_language = $1)
+            AND ($2::text IS NULL OR product_code = $2)
             AND ($3::text IS NULL OR $3::text = ANY(media_groups))
-            AND ($4::date IS NULL OR datepublished >= $4)
-            AND ($5::date IS NULL OR datepublished <= $5)
+            AND ($4::date IS NULL OR date_published >= $4)
+            AND ($5::date IS NULL OR date_published <= $5)
     `, [lang ?? null, code ?? null, group, from ?? null, to ?? null]);
     
     const data = result.rows[0];
@@ -93,12 +93,12 @@ router.get("/api/data/completions/byproduct", async (req, res) => {
             SELECT productcode, count(*) AS occurence_count
             FROM completions
             WHERE
-                ($1::text IS NULL OR targetlang = $1)
-                AND ($2::text IS NULL OR productcode = $2)
-                AND ($3::text IS NULL OR $3::text = ANY(mediatype))
-                AND ($4::date IS NULL OR datepublished >= $4)
-                AND ($5::date IS NULL OR datepublished <= $5)
-            GROUP BY productcode;`,
+                ($1::text IS NULL OR target_language = $1)
+                AND ($2::text IS NULL OR product_code = $2)
+                AND ($3::text IS NULL OR $3::text = ANY(media_groups))
+                AND ($4::date IS NULL OR date_published >= $4)
+                AND ($5::date IS NULL OR date_published <= $5)
+            GROUP BY product_code;`,
             [lang ?? null, code ?? null, group, from ?? null, to ?? null]
         );
         
@@ -133,9 +133,9 @@ router.get('/api/admin/completions', async (req, res) => {
 
     const allowedSortColumns = {
         title: 'title',
-        productCode: 'productcode',
-        targetLang: 'targetlang',
-        datePublished: 'datepublished',
+        productCode: 'product_code',
+        targetLang: 'target_language',
+        datePublished: 'date_published',
         wordCount: 'wordcount',
     } as const
     const sortColumn = sortBy && sortBy in allowedSortColumns
@@ -162,7 +162,7 @@ router.get('/api/admin/completions', async (req, res) => {
             WHERE
                 ($1::text IS NULL OR target_language ILIKE '%' || $1 || '%')
                 AND ($2::text IS NULL OR product_code ILIKE '%' || $2 || '%')
-                AND ($3::text IS NULL OR $3 = ANY(mediaGroups))
+                AND ($3::text IS NULL OR $3 = ANY(media_groups))
                 AND ($4::date IS NULL OR date_published >= $4)
                 AND ($5::date IS NULL OR date_published <= $5)
                 AND ($6::text IS NULL OR title ILIKE '%' || $6 || '%')
