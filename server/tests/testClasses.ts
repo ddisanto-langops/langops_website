@@ -1,6 +1,6 @@
 import { BaseCard, ActiveCard, ArchivedCard } from "../classes.js"
 import type { RawTrelloCard } from "../../shared/types.js"
-import response from "../../response.json" with { type: 'json'}
+//import response from "../../response.json" with { type: 'json'}
 import { parseProducts, getActiveCards, getArchivedCards } from "../services/syncFunctions.js"
 
 //const cards = response as unknown as RawTrelloCard[]
