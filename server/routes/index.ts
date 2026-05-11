@@ -57,15 +57,17 @@ router.get('/api/completions', async (req, res) => {
     try {
         const result = await pool.query(`
         SELECT 
-            SUM(wordcount) AS "totalWords",
-            COUNT(*) AS "totalProducts"
-        FROM completions
+            SUM(c.wordcount) AS "totalWords",
+            COUNT(c.*) AS "totalProducts",
+            SUM(p.wordcount) FILTER (WHERE p.published IS TRUE) AS "totalPublishedProductWords"
+        FROM completions c
+        LEFT JOIN products p ON c.product_code = p.product_code
         WHERE
-            ($1::text IS NULL OR target_language = $1)
-            AND ($2::text IS NULL OR product_code = $2)
-            AND ($3::text IS NULL OR $3::text = ANY(media_groups))
-            AND ($4::date IS NULL OR date_published >= $4)
-            AND ($5::date IS NULL OR date_published <= $5)
+            ($1::text IS NULL OR c.target_language = $1)
+            AND ($2::text IS NULL OR c.product_code = $2)
+            AND ($3::text IS NULL OR $3::text = ANY(c.media_groups))
+            AND ($4::date IS NULL OR c.date_published >= $4)
+            AND ($5::date IS NULL OR c.date_published <= $5)
     `, [lang ?? null, code ?? null, group, from ?? null, to ?? null]);
     
     const data = result.rows[0];
@@ -90,14 +92,29 @@ router.get("/api/data/completions/byproduct", async (req, res) => {
     const to = getQueryString(req.query.to)
     try {
         const result = await pool.query(`
-            SELECT product_code, count(*) AS occurence_count
-            FROM completions
-            WHERE
-                ($1::text IS NULL OR target_language = $1)
-                AND ($2::text IS NULL OR product_code = $2)
-                AND ($3::text IS NULL OR $3::text = ANY(media_groups))
-                AND ($4::date IS NULL OR date_published >= $4)
-                AND ($5::date IS NULL OR date_published <= $5)
+            SELECT product_code, COUNT(*) AS occurence_count
+            FROM (
+                SELECT product_code
+                FROM completions
+                WHERE
+                    ($1::text IS NULL OR target_language = $1)
+                    AND ($2::text IS NULL OR product_code = $2)
+                    AND ($3::text IS NULL OR $3::text = ANY(media_groups))
+                    AND ($4::date IS NULL OR date_published >= $4)
+                    AND ($5::date IS NULL OR date_published <= $5)
+
+                UNION ALL
+
+                SELECT product_code
+                FROM products
+                WHERE
+                    published IS TRUE
+                    AND ($1::text IS NULL OR target_language = $1)
+                    AND ($2::text IS NULL OR product_code = $2)
+                    AND ($3::text IS NULL OR $3::text = ANY(media_groups))
+                    AND ($4::date IS NULL OR date_published >= $4)
+                    AND ($5::date IS NULL OR date_published <= $5)
+            ) AS matching_records
             GROUP BY product_code;`,
             [lang ?? null, code ?? null, group, from ?? null, to ?? null]
         );

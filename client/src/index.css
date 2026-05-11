@@ -195,7 +195,7 @@ h2 { overflow-wrap: break-word; }
 }
 
 .click-filter-button-selected {
-    background: linear-gradient(135deg, hsla(204, 85%, 56%, 0.747), hsl(202, 94%, 69%));
+    background: linear-gradient(135deg, hsla(170, 85%, 56%, 0.747), hsl(167, 77%, 52%));
     color: white;
     border: none;
     padding: 10px 20px;
@@ -203,8 +203,8 @@ h2 { overflow-wrap: break-word; }
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    box-shadow: 0 2px 20px hsl(165, 92%, 65%);
-    transition: transform 0.2s, box-shadow 0.2s;
+    box-shadow: 0 2px 15px hsl(165, 92%, 65%);
+    
     margin: 5px;
 }
 

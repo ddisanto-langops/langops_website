@@ -1,5 +1,5 @@
 import type { ActiveProduct, ArchivedProduct, RawTrelloCard } from "../../shared/types.js"
-import { productCodes, targetLanguages } from "../../shared/constants.js"
+import { productCodes } from "../../shared/constants.js"
 import { ActiveCard, ArchivedCard } from "../classes.js";
 import pool from '../database/databaseConfig.js';
 import fetch from 'node-fetch'
@@ -91,9 +91,6 @@ export async function parseProducts(rawCards: RawTrelloCard[], mode: "active" | 
             continue
             } else if (card.isTemplate) {
             console.log(`Skipped: ${card.title} | Reason: Card is a template`)
-            continue
-            } else if (!card.targetLanguage || !targetLanguages.includes(card.targetLanguage)) {
-            console.log(`Skipped: ${card.title} | Reason: Missing target language`)
             continue
             } else if (cardCustomFields.exclude) {
             console.log(`Skipped: ${card.title} | Reason: 'Exclude' box is checked`)

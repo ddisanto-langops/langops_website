@@ -69,17 +69,6 @@ export const friendlyLanguages: string[] = [
 /*Supported target languges
 * ISO-639-1 format
 */
-export const targetLanguages = [
-    "FR",
-    "DE",
-    "ES",
-    "PT",
-    "NL",
-    "IT",
-    "AF",
-    "FI",
-    "HE"
-]
 
 // Abstraction for product fields display in UI
 export const friendlyFieldNames: { [key: string]: string } = {

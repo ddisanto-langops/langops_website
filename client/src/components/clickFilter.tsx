@@ -1,5 +1,3 @@
-import { mediaGroups } from "../../../shared/constants"
-
 interface ClickFilterProps {
     activeTab: string | null
     onTabClick: (mediaGroups: string | null) => void

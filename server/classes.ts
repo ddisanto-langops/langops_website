@@ -4,9 +4,9 @@ import {
     customFields,
     productCodes, 
     mediaGroups,
-    targetLanguages
 } from '../shared/constants.js';
 import { TranslationStatus } from '@crowdin/crowdin-api-client';
+import ISO6391 from "iso-639-1"
 
 
 const groupLookup = new Map();
@@ -81,16 +81,13 @@ export class BaseCard {
     get targetLanguage() {
         const targetLangMatch = this.title.match(BaseCard.targetLangPattern)
 
-        if (targetLangMatch && targetLanguages.includes(targetLangMatch[0])) {
-            const targetLanguage = targetLangMatch[0]
-            return targetLanguage
-        } else if (targetLangMatch && !targetLanguages.includes(targetLangMatch[0])) {
-            return "INVALID"
-        } else if (!targetLangMatch) {
-            return "MISSING"
+        if (targetLangMatch) {
+            const code = targetLangMatch[0].toLowerCase()
+            const friendlyName = ISO6391.getName(code)
+            return friendlyName
         } else {
             return "ERROR"
-        }
+        } 
     }
 
     get trelloUrl() {

@@ -83,7 +83,5 @@ export function DashboardFilter({filters, onFilterChange}: DashboardFilterProps)
       </label>
     </div>
     </>
-
-    // TODO: Add date filters
   )
 }
