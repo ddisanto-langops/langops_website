@@ -100,7 +100,7 @@ export function CompletionTable({ onRowClick }: CompletionTableProps) {
     pageCount,
   })
 
-  const handleTabClick = (val: string | null) => {
+  const handleTabClick = (val: string[] | null) => {
     setGroupFilter(val ? val[0] : null)
     setPagination(prev => ({ ...prev, pageIndex: 0 }))
   }
