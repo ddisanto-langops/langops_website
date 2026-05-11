@@ -1,5 +1,5 @@
 interface ClickFilterProps {
-    onTabClick: CallableFunction
+    onTabClick: (mediaGroups: string[] | null) => void
 }
 
 export function ClickFilter({ onTabClick }: ClickFilterProps) {
@@ -11,7 +11,7 @@ export function ClickFilter({ onTabClick }: ClickFilterProps) {
             <button className="click-filter-button" onClick={() => onTabClick(['website'])}>Website</button>
             <button className="click-filter-button" onClick={() => onTabClick(['interpretation'])}>Interpretation</button>
             <button className="click-filter-button" onClick={() => onTabClick(['pcgChurch'])}>PCG.church</button>
-            <button className="click-filter-button" onClick={() => onTabClick(['magazines'])}>Magazines</button>
+            <button className="click-filter-button" onClick={() => onTabClick(['magazine'])}>Magazines</button>
         </div>
     )
 }

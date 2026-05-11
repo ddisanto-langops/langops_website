@@ -140,7 +140,7 @@ router.get('/api/admin/completions', async (req, res) => {
     } as const
     const sortColumn = sortBy && sortBy in allowedSortColumns
         ? allowedSortColumns[sortBy as keyof typeof allowedSortColumns]
-        : 'datepublished'
+        : 'date_published'
     const sortDirection = sortDir === 'asc' ? 'ASC' : 'DESC'
 
     try {

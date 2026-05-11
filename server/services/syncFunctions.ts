@@ -18,7 +18,7 @@ export async function getActiveCards(): Promise<RawTrelloCard[]> {
         
     try {
         const response = await fetch(
-            `https://api.trello.com/1/boards/${trelloBoardId}/cards?key=${trelloKey}&token=${trelloToken}&fields=all&attachments=true&attachment_fields=all&customFieldItems=true&actions=all&since=2026-05-05`,
+            `https://api.trello.com/1/boards/${trelloBoardId}/cards?key=${trelloKey}&token=${trelloToken}&fields=all&attachments=true&attachment_fields=all&customFieldItems=true&actions=all&since=2026-05-07`,
             { method: 'GET' }
         )
         if (!response.ok) {
@@ -35,14 +35,14 @@ export async function getActiveCards(): Promise<RawTrelloCard[]> {
 
 export async function getArchivedCards(since?: string) {
     if (!trelloBoardId || !trelloKey || !trelloToken) throw new Error("Missing credentials!")
-
+    
     const date = new Date();
     date.setDate(date.getDate() -1)
     const yesterday = date.toISOString().split('T')[0]
 
     try {
         const response = await fetch(
-            `https://api.trello.com/1/boards/${trelloBoardId}/cards?key=${trelloKey}&token=${trelloToken}&filter=closed&fields=name,idLabels,labels,due,dateLastActivity,url,isTemplate&attachments=true&attachment_fields=name,url&customFieldItems=true&since=${since ? since : yesterday}`,
+            `https://api.trello.com/1/boards/${trelloBoardId}/cards?key=${trelloKey}&token=${trelloToken}&filter=closed&fields=name,idLabels,labels,due,dateLastActivity,url,isTemplate&attachments=true&attachment_fields=name,url&customFieldItems=true&actions=all&since=${since ? since : yesterday}`,
             { method: 'GET' }
         )
         if (!response.ok) {
@@ -98,6 +98,8 @@ export async function parseProducts(rawCards: RawTrelloCard[], mode: "active" | 
             } else if (cardCustomFields.exclude) {
             console.log(`Skipped: ${card.title} | Reason: 'Exclude' box is checked`)
             continue
+            } else {
+                console.log(`Accepted: ${card.title}`)
             }
         
         if (card instanceof ActiveCard) {
@@ -189,6 +191,7 @@ export async function upsertArchivedProducts(archivedProducts: ArchivedProduct[]
             product.targetLanguage,
             product.mediaGroups ?? null,
             product.wordCount ?? null,
+            product.datePublished,
             product.trelloUrl,
             product.articleUrl ?? null,
             product.editorUrl ?? null,
@@ -198,15 +201,38 @@ export async function upsertArchivedProducts(archivedProducts: ArchivedProduct[]
 }
 
 export async function removeFromProducts(activeIds: string[]) {
-    await pool.query(`
-        DELETE FROM products
-        WHERE id != ALL($1)
-    `, [activeIds])
+    const client = await pool.connect();
 
-    await pool.query(`
-        UPDATE completions
-        SET date_archived = NOW()
-        WHERE date_archived IS NULL
-        AND id != ALL($1)
-    `, [activeIds])
+    try {
+        await client.query('BEGIN');
+
+        const deleteRes = await client.query(`
+            DELETE FROM products
+            WHERE id != ALL($1)
+            RETURNING id
+        `, [activeIds]);
+
+        const updateRes = await client.query(`
+            UPDATE completions
+            SET date_archived = NOW()
+            WHERE date_archived IS NULL
+            AND id != ALL($1)
+            RETURNING id
+        `, [activeIds]);
+
+        await client.query('COMMIT');
+
+        return {
+            deletedCount: deleteRes.rowCount,
+            archivedCount: updateRes.rowCount
+        };
+
+    } catch (error) {
+        await client.query('ROLLBACK');
+        console.error('Transaction failed, changes rolled back:', error);
+        throw error;
+    } finally {
+        // Always release the client back to the pool
+        client.release();
+    }
 }

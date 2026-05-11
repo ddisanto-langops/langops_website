@@ -11,30 +11,28 @@ import cron from 'node-cron'
 
 export async function syncProducts() {
   try {
-
-    console.log('Syncing products...')
-
     /*
     * Download all active cards on board,
     *  regardless of date.
     * Filtering is done in following steps.
     */
+    console.log('\nSyncing active products...')
     const activeCards: RawTrelloCard[] = await getActiveCards()
-    console.log(`Fetched ${activeCards.length} active cards from board.`)
+    console.log(`\nFetched ${activeCards.length} active cards from board.`)
 
     const activeTrelloProducts = await parseProducts(activeCards, "active")
-    console.log(`Found ${activeTrelloProducts.length} active products.`)
+    console.log(`\nFound ${activeTrelloProducts.length} active products.`)
 
     await upsertProducts(activeTrelloProducts)
-    console.log("Active products added to database.")
+    console.log("\nActive products added to database.")
 
     /*
       Delete products from the 'products' databse,
       if their id isn't found in the latest API data.
     */ 
     const activeIds: string[] = activeTrelloProducts.map(p => p.id)
-    await removeFromProducts(activeIds)
-    console.log(`Removed ${activeIds.length} items from products database.`)
+    const removed = await removeFromProducts(activeIds)
+    console.log(`\nRemoved ${removed.deletedCount} items from products database and moved ${removed.archivedCount} to completions.`)
 
 
     /*
@@ -42,22 +40,23 @@ export async function syncProducts() {
       This is a second Trello API call, 
       filtering for cards archived up to one day ago.
     */
+    console.log("\nSyncing archived products...")
     const archivedCards: RawTrelloCard[] = await getArchivedCards()
     console.log(`Fetched ${archivedCards.length} archived cards from board.`)
 
     const archivedTrelloProducts = await parseProducts(archivedCards, "archived")
-    console.log(`Found ${archivedTrelloProducts.length} archived products.`)
+    console.log(`\nFound ${archivedTrelloProducts.length} archived products.`)
 
     /*
     * All valid products added to 'completions' database
     */ 
     await upsertArchivedProducts(archivedTrelloProducts)
-    console.log("Archived products added to database.")
+    console.log("\nArchived products added to database.")
 
 
   } catch (error) {
     error instanceof Error ? console.error(`Sync failed: ${error.message}`) :
-      console.error("Sync archived products: unknown error")
+      console.error("\nSync archived products: unknown error")
   }
 }
 

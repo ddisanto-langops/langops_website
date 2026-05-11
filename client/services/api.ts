@@ -45,7 +45,7 @@ export async function fetchAdminCompletions(filters: ApiFilters) {
     return await response.json()
 }
 
-export async function fetchCompletionsByProduct(filters: ApiFilters) {
+export async function fetchCompletionsByProduct(filters: ApiFilters): Promise<{product_code: string, occurence_count: number}[]> {
     const params = new URLSearchParams()
 
     if (filters.lang) params.append('lang', filters.lang)
