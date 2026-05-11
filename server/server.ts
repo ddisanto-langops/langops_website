@@ -25,7 +25,7 @@ app.use(router)
 
 const clientDist =
   __dirname.endsWith(path.join('dist', 'server'))
-    ? path.join(__dirname, '../../client/dist')
+    ? path.join(__dirname, '../../../client/dist')
     : path.join(__dirname, '../client/dist')
 
 app.use(express.static(clientDist))
