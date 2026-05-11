@@ -90,7 +90,7 @@ router.get("/api/data/completions/byproduct", async (req, res) => {
     const to = getQueryString(req.query.to)
     try {
         const result = await pool.query(`
-            SELECT productcode, count(*) AS occurence_count
+            SELECT product_code, count(*) AS occurence_count
             FROM completions
             WHERE
                 ($1::text IS NULL OR target_language = $1)
