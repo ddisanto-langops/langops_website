@@ -53,8 +53,12 @@ export const groupDisplayNames: { [key: string]: string } = {
     magazines: "Magazines"
 }
 
-// Abstraction for language display in UI
-export const friendlyLanguages: string[] = [
+/*
+ * List of supported languages in user-friendly format.
+ * Where necessary an ISO-639-1 code can be obtained 
+ * by using the ISO6391 library.
+*/ 
+export const supportedLanguages: string[] = [
     'French',
     'German',
     'Spanish',
@@ -78,5 +82,7 @@ export const friendlyFieldNames: { [key: string]: string } = {
     mediaType: "Media Type",
     wordCount: "Word Count",
     datePublished: "Date Published",
-    dateArchived: "Date Archived"
+    dateArchived: "Date Archived",
+    editorUrl: "Editor URL",
+    articleUrl: "Article URL"
 }

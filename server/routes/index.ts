@@ -238,29 +238,26 @@ router.delete('/api/admin/completions/:id', async (req, res) => {
 
     try {
         const result = await pool.query(`
-            BEGIN TRANSACTION;
-            INSERT INTO deletions (
-                id, title, product_code, 
-                target_language, media_groups,
-                wordcount, date_published, 
-                date_archived, trello_url, 
-                article_url, editor_url
-                ) 
-            SELECT 
+            WITH moved_record AS (
+                DELETE FROM completions
+                WHERE id = $1
+                RETURNING 
                 id, title, product_code, 
                 target_language, media_groups, 
                 wordcount, date_published, date_archived, 
-                trello_url, article_url, editor_url 
-            FROM completions
-            WHERE id = $1;
-            
-            DELETE FROM completions
-            WHERE id = $1;
-
-            COMMIT;
+                trello_url, article_url, editor_url
+            )
+            INSERT INTO deletions (
+                id, title, product_code, 
+                target_language, media_groups, 
+                wordcount, date_published, date_archived, 
+                trello_url, article_url, editor_url
+            ) 
+            SELECT * FROM moved_record
+            RETURNING *;
         `, [id])
 
-        if (result.rows.length === 0) {
+        if (result.rowCount === 0) {
             return res.status(404).json({ error: 'Record not found' })
         }
 

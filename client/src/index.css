@@ -437,6 +437,25 @@ td {
     gap: 10px;
 }
 
+.modal-mediagroups-div {
+    display: 'flex';
+    flex-wrap: 'wrap';
+    gap: '8px';
+}
+
+.media-button {
+    border-radius: 6px;
+    border: solid 2px white;
+    background: transparent;
+    color: white;
+    cursor: pointer;
+    font-size: 0.85rem;
+}
+
+.media-button.active {
+    background-color: coral;
+}
+
 #btn-close { 
     border: 1px solid transparent;
     border-radius: 4px;

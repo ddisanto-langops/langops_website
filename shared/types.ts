@@ -1,3 +1,9 @@
+/*
+ *
+ * Shared server/client
+ *
+ */
+
 export interface BaseProduct {
     id: string
     title: string
@@ -117,4 +123,24 @@ export interface RawTrelloCard {
     }
   ]
   idLabels: string[]
+}
+
+/*
+ *
+ * Client Side
+ *
+*/
+
+interface EditModalFields {
+    title: string
+    productCode: string
+    targetLanguage: string
+    mediaGroups: string[]
+    datePublished: string | null
+    dateArchived: string
+    trelloUrl: string
+    editorUrl: string | null
+    articleUrl: string | null
+    wordCount: number | null
+
 }
