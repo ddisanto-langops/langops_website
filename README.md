@@ -1,13 +1,20 @@
-# LangOps Dashboard Website
-*pcglangops.com*
+# LangOps Website
 
-## Pages  
-- Dashboard: total words, including published active products and all archived products. filterable by product code, media group, language, and dates (from - to).
-- Products: all Trello products whose titles match a pre-defined regex pattern and which are not archived
-- Completions: all Trello products which 1. have 'PUBLISHED' checked off, or 2. are archived on Trello
+## Key Concepts
+### Pages  
+- Dashboard: total words, including published active products and all archived products. filterable by product code, media group, language, and date.
+- Products: all Trello cards where the title provides a valid product code, a valid target language, and where the "Exclude" custom field is not checked.
+- Completions: all Trello products which have 'PUBLISHED' checked off and are archived on Trello
+- Global search: coming soon
 
-## Data Structure  
-There are two tables within the PostgreSQL database: one for transient data ("product"), the other for permanent data ("completions"). The latter does not include translation/approval progress, due dates and other such information, since they're no longer relevant after completion.  
+### Media Groups
+All products are classified as belonging to one of the media group subsets, e.g. website or audio/video. These can be filtered in the Dashboard, as well as in Products and Completions.
+
+### Editing Records
+If information about any completed product is incorrect, or the product record needs to be deleted, this can be done by clicking on it in Completions. A modal window will open, allowing edits and deletion. NOTE: archived products are fetched from within the last day. If the product re-appears, this is becuase it was archived within that time. It is necessary to wait.
+
+### Data Structure  
+There are two tables within the PostgreSQL "langops" database: one for transient data ("product"), the other for permanent data ("completions"). The latter does not include translation/approval progress, due dates and other such information, since they're no longer relevant after completion.  
 
 **The transient data (products) data table captures:**  
 - Title
