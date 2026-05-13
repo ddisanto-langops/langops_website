@@ -2,7 +2,7 @@ import type { ArchivedProduct } from "../../../shared/types"
 
 import { EditableLink} from "./EditableLink"
 import React, { useState, useEffect } from "react"
-import { friendlyFieldNames, supportedLanguages, mediaGroups, groupDisplayNames, productCodes } from "../../../shared/constants"
+import { supportedLanguages, mediaGroups, groupDisplayNames, productCodes } from "../../../shared/constants"
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { updateCompletion, deleteCompletion } from '../../services/api'
 
@@ -13,6 +13,8 @@ interface EditModalProps {
 }
 
 export function EditModal({record, isOpen, onClose}: EditModalProps) {
+    if (!isOpen) return null
+
     const queryClient = useQueryClient()
     const [formData, setFormData] = useState(record)
 
@@ -37,7 +39,9 @@ export function EditModal({record, isOpen, onClose}: EditModalProps) {
         }
     })
 
-    if (!isOpen) return null
+    const handleLinkEdit = (newLink: string) => {
+
+    }
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target
@@ -49,14 +53,22 @@ export function EditModal({record, isOpen, onClose}: EditModalProps) {
         setFormData((prev) => ({...prev, [name]: value}))
     }
 
-    const handleMediaButtonClick = (e: React.ChangeEvent<HTMLButtonElement>) => {
-        const { name, value } = e.target
-        setFormData((prev) => ({...prev, [name]: value}))
+    const handleMediaButtonClick = (key: string) => {
+        const exists = formData.mediaGroups.includes(key)
+        if (exists) {
+            const newMediaGroups = formData.mediaGroups.filter(item => item !== key)
+            setFormData((prev) => ({...prev, mediaGroups: newMediaGroups})) 
+        }
+        else {
+            setFormData((prev) => ({...prev, mediaGroups: [...formData.mediaGroups, key]}))
+        }
+
     }
 
     return (
         <div className="modal-overlay">
             <form 
+                name="editModal"
                 className="modal-content"
             >
                 <h2 className="modal-title">Edit Record</h2>
@@ -161,15 +173,20 @@ export function EditModal({record, isOpen, onClose}: EditModalProps) {
                             onChange={handleInputChange}
                         >
                         </input>
-                        <div className="modal-mediagroups-div">
+                        
+                    </div>
+                    <div className="modal-mediagroups-div">
                             { 
                                 Object.entries(groupDisplayNames).map(([key, value]) => {
                                     const selected = formData.mediaGroups.includes(key)
                                     return (
                                         <button
                                             name="mediaGroups"
+                                            type="button"
                                             className={selected ? "media-button active" : "media-button"}
-                                            onClick={handleMediaButtonClick}
+                                            onClick={() => handleMediaButtonClick(key)}
+
+                                     
                                         >
                                         {value}
                                         </button>
@@ -178,8 +195,31 @@ export function EditModal({record, isOpen, onClose}: EditModalProps) {
                                     
                                 })
                             }
-                        </div>
-                        
+                    </div>
+                    <div className="modal-actions">
+                        <button 
+                            type="button"
+                            id="btn-save" 
+                            onClick={() => {
+                                saveMutation.mutate(formData); 
+                                onClose()
+                                }
+                            }>
+                            {saveMutation.isPending ? 'Saving...' : 'Save'}
+                        </button>
+                        <button
+                            type="button"
+                            id="btn-delete"
+                            onClick={() => deleteMutation.mutate(record.id)}
+                        >
+                            {deleteMutation.isPending ? 'Deleting...' : 'Delete'}
+                        </button>
+                        <button 
+                            type="button"
+                            id="btn-close" 
+                            onClick={onClose}
+                        >Cancel
+                        </button>
                     </div>
                 </div>
             </form>

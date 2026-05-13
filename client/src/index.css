@@ -176,6 +176,7 @@ h2 { overflow-wrap: break-word; }
 }
 
 .click-filter-button {
+    cursor: pointer;
     background: linear-gradient(135deg, hsla(204, 85%, 56%, 0.747), hsl(202, 94%, 69%));
     color: white;
     border: none;
@@ -438,22 +439,28 @@ td {
 }
 
 .modal-mediagroups-div {
-    display: 'flex';
-    flex-wrap: 'wrap';
-    gap: '8px';
+    justify-content: center;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 20px;
+    margin-bottom: 20px;
 }
 
 .media-button {
+    font-size: 1.2rem;
     border-radius: 6px;
-    border: solid 2px white;
+    border: solid 1px white;
     background: transparent;
     color: white;
     cursor: pointer;
-    font-size: 0.85rem;
 }
 
 .media-button.active {
     background-color: coral;
+    box-shadow: 0px 0px 4px coral;
+    border: solid 1px transparent ;
 }
 
 #btn-close { 

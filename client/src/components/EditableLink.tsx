@@ -1,7 +1,7 @@
 import { useState } from "react";
 
 interface EditableLinkProps {
-    value: string
+    value: string | undefined
     onChange: (value: string) => void
 }
 
@@ -14,7 +14,7 @@ export function EditableLink({ value, onChange }: EditableLinkProps) {
         <>
           <input
             type="url"
-            value={value}
+            value={value ?? undefined}
             onChange={(e) => onChange(e.target.value)}
             className="border p-1 rounded w-full text-sm"
             placeholder="https://example.com"
