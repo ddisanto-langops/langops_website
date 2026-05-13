@@ -169,20 +169,24 @@ export async function upsertProducts(products: ActiveProduct[]) {
 export async function upsertArchivedProducts(archivedProducts: ArchivedProduct[]) {
     for (const product of archivedProducts) {
         if (!product.datePublished) continue //WARNING: products archived but not published will disappear.
-        await pool.query(`
+        const response = await pool.query(`
             INSERT INTO completions (
                 id, title, product_code, target_language,
                 media_groups, wordcount, date_published, trello_url,
                 article_url, editor_url, date_archived
-            ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9, $10, $11)
+            )
+            SELECT $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11
+            WHERE NOT EXISTS (
+                SELECT 1 FROM deletions WHERE deletions.id = $1
+            )
             ON CONFLICT (id) DO UPDATE SET
-                id               = EXCLUDED.id,
                 target_language  = EXCLUDED.target_language,
                 product_code     = EXCLUDED.product_code,
                 article_url      = EXCLUDED.article_url,
                 editor_url       = EXCLUDED.editor_url,
                 trello_url       = EXCLUDED.trello_url,
                 date_archived    = EXCLUDED.date_archived
+            RETURNING id, (xmax = 0) AS is_insert
         `, [
             product.id,
             product.title,
@@ -196,6 +200,9 @@ export async function upsertArchivedProducts(archivedProducts: ArchivedProduct[]
             product.editorUrl ?? null,
             product.dateArchived ?? null
         ])
+        if (response.rowCount === 0) {
+            console.log(`Skipped insertion: ${product.title} | Reason: is deleted`)
+        }
     }
 }
 
@@ -425,6 +432,30 @@ export async function deleteCompletion(id: string) {
             trello_url, article_url, editor_url
         )
         INSERT INTO deletions (
+            id, title, product_code, 
+            target_language, media_groups, 
+            wordcount, date_published, date_archived, 
+            trello_url, article_url, editor_url
+        ) 
+        SELECT * FROM moved_record
+        RETURNING *;
+    `, [id])
+
+    return response
+}
+
+export async function restoreCompletion(id: string) {
+    const response = await pool.query(`
+        WITH moved_record AS (
+            DELETE FROM deletions
+            WHERE id = $1
+            RETURNING 
+            id, title, product_code, 
+            target_language, media_groups, 
+            wordcount, date_published, date_archived, 
+            trello_url, article_url, editor_url
+        )
+        INSERT INTO completions (
             id, title, product_code, 
             target_language, media_groups, 
             wordcount, date_published, date_archived, 
