@@ -48,7 +48,7 @@ export class BaseCard {
 
     static wordcountPattern = /(?<=-)(?:[A-Z+]*)([0-9]{1,})(?=_)/
     static productCodePattern = /^([A-Z-]*)([0-9]*[A-Z]*)(?=_)/
-    static editionPattern = /^[A-Z]{2}([0-9]{6})*/
+    static magazinePattern = /^[A-Z]{2}([0-9]{6})_([A-Z]{2}$)/
     static targetLangPattern = /[A-Z]{2}$/
 
     get isTemplate() {
@@ -143,9 +143,9 @@ export class BaseCard {
 
     protected getMediaGroups() {
         const mediaGroup = () => {
-            const editionMatch = this.title.match(BaseCard.editionPattern)
-            const edition = editionMatch ? editionMatch[1] : null
-            if (edition) return ['magazine']
+            const magazineMatch = this.title.match(BaseCard.magazinePattern)
+            const magazine = magazineMatch ? magazineMatch[1] : null
+            if (magazine) return ['magazine']
             const productMediaType = groupLookup.get(this.productCode) || []
             const labelMediaType = (this.labels ?? []).flatMap(label => 
                 groupLookup.get(label.name) ?? []
