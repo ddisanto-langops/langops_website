@@ -106,7 +106,7 @@ router.get('/api/completions', async (req, res) => {
 
 router.put('/api/completions/:id', async (req, res) => {
     const { id } = req.params
-    const { title, productCode, targetLanguage, mediaGroups, wordCount, datePublished, dateArchived } = req.body
+    const { title, productCode, targetLanguage, mediaGroups, wordCount, datePublished, dateArchived, editorUrl, articleUrl } = req.body
     const record: Partial<ArchivedProduct> = {
         title: title,
         productCode: productCode,
@@ -114,7 +114,9 @@ router.put('/api/completions/:id', async (req, res) => {
         mediaGroups: mediaGroups,
         wordCount: wordCount,
         datePublished: datePublished,
-        dateArchived: dateArchived
+        dateArchived: dateArchived,
+        editorUrl: editorUrl,
+        articleUrl: articleUrl
     }
      
     try {

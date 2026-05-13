@@ -1,39 +1,56 @@
-import { useState } from "react";
+import React, { useState } from "react";
 
 interface EditableLinkProps {
-    value: string | undefined
-    onChange: (value: string) => void
+    accessor: string
+    currentLink: string
+    onChange: (accessor: string, newLink: string) => void
 }
 
-export function EditableLink({ value, onChange }: EditableLinkProps) {
+export function EditableLink({accessor, currentLink, onChange }: EditableLinkProps) {
   const [isEditing, setIsEditing] = useState(false);
+  const [editValue, setEditValue] = useState(currentLink);
+
+  const handleEdit = () => {
+    setIsEditing(true);
+  };
+
+  const handleDone = () => {
+    onChange(accessor, editValue);
+    setIsEditing(false);
+  };
 
   return (
-    <div className="flex items-center gap-2 min-h-[40px]">
+    <div>
       {isEditing ? (
         <>
           <input
-            type="url"
-            value={value ?? undefined}
-            onChange={(e) => onChange(e.target.value)}
-            className="border p-1 rounded w-full text-sm"
+            className="modal-link-input"
+            name={accessor}
+            type="text"
+            value={editValue ?? ""}
+            onChange={(e) => setEditValue(e.target.value)}
             placeholder="https://example.com"
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                handleDone();
+              }
+            }}
             autoFocus
           />
-          <button type="button" onClick={() => setIsEditing(false)} className="text-xs text-green-600 font-bold">
+          <button className="link-edit-done-button" type="button" onClick={handleDone}>
             Done
           </button>
         </>
       ) : (
         <>
-          {value ? (
-            <a href={value} target="_blank" rel="noreferrer" className="text-blue-600 underline text-sm truncate max-w-xs">
-              {value}
+          {currentLink ? (
+            <a href={currentLink} target="_blank" rel="noreferrer" style={{color: 'coral'}}>
+              {currentLink}
             </a>
           ) : (
-            <span className="text-gray-400 text-sm italic">No link added</span>
+            <span>No link added</span>
           )}
-          <button type="button" onClick={() => setIsEditing(true)} className="text-xs text-gray-500 ml-auto hover:underline">
+          <button className="link-edit-button" type="button" onClick={handleEdit}>
             Edit
           </button>
         </>

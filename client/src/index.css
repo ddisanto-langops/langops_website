@@ -451,7 +451,7 @@ td {
 .media-button {
     font-size: 1.2rem;
     border-radius: 6px;
-    border: solid 1px white;
+    border: solid 1px coral;
     background: transparent;
     color: white;
     cursor: pointer;
@@ -461,6 +461,32 @@ td {
     background-color: coral;
     box-shadow: 0px 0px 4px coral;
     border: solid 1px transparent ;
+}
+
+.link-edit-button {
+    background: linear-gradient(135deg, hsla(204, 85%, 56%, 0.747), hsl(202, 94%, 69%));
+    border-radius: 8px;
+    font-size: 1rem;
+    border: solid 1px transparent ;
+    margin-left: 10px;
+}
+
+.link-edit-done-button {
+    background: linear-gradient(135deg, hsla(204, 85%, 56%, 0.747), hsl(202, 94%, 69%));
+    border-radius: 8px;
+    font-size: 1rem;
+    border: solid 1px transparent ;
+    margin-left: 15px;
+}
+
+.modal-link-input {
+    background-color: hsl(211, 38%, 15%);
+    color: white;
+    padding: 0.5rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 1rem;
+    width: 85%;
 }
 
 #btn-close { 

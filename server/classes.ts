@@ -142,21 +142,18 @@ export class BaseCard {
     }
 
     protected getMediaGroups() {
-        const mediaGroup = () => {
-            const magazineMatch = this.title.match(BaseCard.magazinePattern)
-            const magazine = magazineMatch ? magazineMatch[1] : null
-            if (magazine) {
-                return ['magazine']
-            } else {
-                const productMediaType = groupLookup.get(this.productCode) || []
-                const labelMediaType = (this.labels ?? []).flatMap(label => 
-                    groupLookup.get(label.name) ?? []
-                )
-                const mediaType = [...new Set([...productMediaType, ...labelMediaType])]
-                return mediaType
-            }
+        const magazineMatch = this.title.match(BaseCard.magazinePattern)
+        const magazine = magazineMatch ? magazineMatch[1] : null
+        if (magazine) {
+            return ['Magazine']
+        } else {
+            const productMediaType = groupLookup.get(this.productCode) ?? []
+            const labelMediaType = (this.labels ?? []).flatMap(label => 
+                groupLookup.get(label.name) ?? []
+            )
+            const mediaType = [...new Set([...productMediaType, ...labelMediaType])]
+            return mediaType
         }
-        return mediaGroup()
     }
 
     public getCustomFields() {

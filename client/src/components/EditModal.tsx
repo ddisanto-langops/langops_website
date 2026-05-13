@@ -2,7 +2,7 @@ import type { ArchivedProduct } from "../../../shared/types"
 
 import { EditableLink} from "./EditableLink"
 import React, { useState, useEffect } from "react"
-import { supportedLanguages, mediaGroups, groupDisplayNames, productCodes } from "../../../shared/constants"
+import { supportedLanguages, groupDisplayNames, productCodes } from "../../../shared/constants"
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { updateCompletion, deleteCompletion } from '../../services/api'
 
@@ -13,11 +13,8 @@ interface EditModalProps {
 }
 
 export function EditModal({record, isOpen, onClose}: EditModalProps) {
-    if (!isOpen) return null
-
     const queryClient = useQueryClient()
     const [formData, setFormData] = useState(record)
-
 
     useEffect(() => {
         setFormData(record)
@@ -39,7 +36,8 @@ export function EditModal({record, isOpen, onClose}: EditModalProps) {
         }
     })
 
-    const handleLinkEdit = (newLink: string) => {
+    const handleLinkEdit = (accessor: string, newLink: string) => {
+        setFormData((prev) => ({...prev, [accessor]: newLink}))
 
     }
 
@@ -65,6 +63,7 @@ export function EditModal({record, isOpen, onClose}: EditModalProps) {
 
     }
 
+    if (!isOpen) return null
     return (
         <div className="modal-overlay">
             <form 
@@ -87,38 +86,13 @@ export function EditModal({record, isOpen, onClose}: EditModalProps) {
                 </p>
                 : null
                 }
-                {formData.editorUrl ? 
-                <p
-                    className="trello-link-completions"
-                    style={{justifySelf: 'center'}}
-                >
-                    <a
-                        id="completions-link"
-                        style={{color: 'coral'}} 
-                        href={formData.editorUrl} target="_blank"
-                    >
-                        Edit in Refinery
-                    </a>
-                </p>
-                : null
-                }
-                {formData.articleUrl ? 
-                <p
-                    className="trello-link-completions"
-                    style={{justifySelf: 'center'}}
-                >
-                    <a
-                        id="completions-link"
-                        style={{color: 'coral'}} 
-                        href={formData.articleUrl} target="_blank"
-                    >
-                        View article
-                    </a>
-                </p>
-                : null
-                }
+               
                 <div className="modal-body">
                     <div className="modal-field">
+                        <label className="modal-label">Editor URL:</label>
+                        <EditableLink accessor="editorUrl" currentLink={formData.editorUrl ?? ""} onChange={handleLinkEdit} />
+                        <label className="modal-label">Article URL:</label>
+                        <EditableLink accessor="articleUrl" currentLink={formData.articleUrl ?? ""} onChange={handleLinkEdit} />
                         <label className="modal-label">Title:</label>
                         <input
                             name="title" 
@@ -202,7 +176,6 @@ export function EditModal({record, isOpen, onClose}: EditModalProps) {
                             id="btn-save" 
                             onClick={() => {
                                 saveMutation.mutate(formData); 
-                                onClose()
                                 }
                             }>
                             {saveMutation.isPending ? 'Saving...' : 'Save'}

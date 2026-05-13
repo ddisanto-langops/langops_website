@@ -403,8 +403,10 @@ export async function editCompletion(id: string, record: Partial<ArchivedProduct
             media_groups = $4::text[],
             wordcount = $5,
             date_published = $6,
-            date_archived = $7
-        WHERE id = $8
+            date_archived = $7,
+            editor_url = $8,
+            article_url = $9
+        WHERE id = $10
         RETURNING *
         `, [
             record.title, 
@@ -413,7 +415,9 @@ export async function editCompletion(id: string, record: Partial<ArchivedProduct
             record.mediaGroups, 
             record.wordCount, 
             record.datePublished, 
-            record.dateArchived, 
+            record.dateArchived,
+            record.editorUrl,
+            record.articleUrl,
             id
         ]
     )
