@@ -1,7 +1,8 @@
 import type { ArchivedProduct } from "../../../shared/types"
 
-import { useState, useEffect } from "react"
-import { friendlyFieldNames, friendlyLanguages, mediaGroups, groupDisplayNames } from "../../../shared/constants"
+import { EditableLink} from "./EditableLink"
+import React, { useState, useEffect } from "react"
+import { supportedLanguages, mediaGroups, groupDisplayNames, productCodes } from "../../../shared/constants"
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { updateCompletion, deleteCompletion } from '../../services/api'
 
@@ -12,8 +13,11 @@ interface EditModalProps {
 }
 
 export function EditModal({record, isOpen, onClose}: EditModalProps) {
+    if (!isOpen) return null
+
     const queryClient = useQueryClient()
     const [formData, setFormData] = useState(record)
+
 
     useEffect(() => {
         setFormData(record)
@@ -35,14 +39,38 @@ export function EditModal({record, isOpen, onClose}: EditModalProps) {
         }
     })
 
-    if (!isOpen) return null
+    const handleLinkEdit = (newLink: string) => {
 
-    const allMediaTypes = Object.keys(mediaGroups)
-    const editableFields = ['title', 'productCode', 'targetLanguage', 'wordCount', 'datePublished', 'dateArchived']
+    }
+
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const { name, value } = e.target
+        setFormData((prev) => ({...prev, [name]: value}))
+    }
+
+    const handleDropdownChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        const { name, value } = e.target
+        setFormData((prev) => ({...prev, [name]: value}))
+    }
+
+    const handleMediaButtonClick = (key: string) => {
+        const exists = formData.mediaGroups.includes(key)
+        if (exists) {
+            const newMediaGroups = formData.mediaGroups.filter(item => item !== key)
+            setFormData((prev) => ({...prev, mediaGroups: newMediaGroups})) 
+        }
+        else {
+            setFormData((prev) => ({...prev, mediaGroups: [...formData.mediaGroups, key]}))
+        }
+
+    }
 
     return (
         <div className="modal-overlay">
-            <div className="modal-content">
+            <form 
+                name="editModal"
+                className="modal-content"
+            >
                 <h2 className="modal-title">Edit Record</h2>
                 {formData.trelloUrl ? 
                 <p
@@ -90,84 +118,111 @@ export function EditModal({record, isOpen, onClose}: EditModalProps) {
                 : null
                 }
                 <div className="modal-body">
-                    {Object.entries(formData)
-                        .filter(([key]) => editableFields.includes(key))
-                        .map(([key, value]) => (
-                            <div key={key} className="modal-field">
-                                <label key={key} className="modal-label">{friendlyFieldNames[key] || key}:</label>
-                                {key === 'targetLanguage' ? 
-                                    <select
-                                        className="modal-input"
-                                        value={value}
-                                        onChange={e => setFormData({...formData, [key as keyof ArchivedProduct]: e.target.value})}
-                                    >
-                                        {friendlyLanguages.map(lang => 
-                                            <option>{lang}</option>
-                                        )}
-                                    </select>
-                                    : 
-                                    <input
-                                        className="modal-input"
-                                        value={value || ''}
-                                        onChange={e => setFormData({...formData, [key]: e.target.value})}
-                                        readOnly={key === 'productCode'}
-                                    />
-                                }
-                                
-                            </div>
-                    ))}
                     <div className="modal-field">
-                        <label className="modal-label">Media Type:</label>
-                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
-                            {allMediaTypes.map(type => {
-                                const isSelected = formData.mediaGroups?.includes(type) ?? false
-                                return (
-                                    <button
-                                        key={type}
-                                        type="button"
-                                        onClick={() => {
-                                            const current = formData.mediaGroups ?? []
-                                            const updated = isSelected
-                                                ? current.filter(t => t !== type)
-                                                : [...current, type]
-                                            setFormData({...formData, mediaGroups: updated})
-                                        }}
-                                        style={{
-                                            padding: '4px 12px',
-                                            borderRadius: '999px',
-                                            border: '1px solid coral',
-                                            background: isSelected ? 'coral' : 'transparent',
-                                            color: 'white',
-                                            cursor: 'pointer',
-                                            fontSize: '0.85rem'
-                                        }}
-                                    >
-                                        {groupDisplayNames[type]}
-                                    </button>
-                                )
-                            })}
-                        </div>
+                        <label className="modal-label">Title:</label>
+                        <input
+                            name="title" 
+                            className="modal-input" 
+                            value={formData.title}
+                            onChange={handleInputChange}
+                        >
+                        </input>
+                        <label className="modal-label">Product Code:</label>
+                        <select
+                            name="productCode" 
+                            className="modal-input" 
+                            value={formData.productCode}
+                            onChange={handleDropdownChange}
+                        >
+                            {productCodes.map(code => (
+                                <option>{code}</option>
+                            ))}
+                        </select>
+                        <label className="modal-label">Target Language:</label>
+                        <select
+                            name="targetLanguage" 
+                            className="modal-input" 
+                            value={formData.targetLanguage}
+                            onChange={handleDropdownChange}
+                        >
+                            {supportedLanguages.map(language => (
+                                <option>{language}</option>
+                            ))}
+                        </select>
+                        <label className="modal-label">Date Published:</label>
+                        <input
+                            name="datePublished"
+                            className="modal-input" 
+                            value={formData.datePublished ?? ''}
+                            onChange={handleInputChange}
+                        >
+                        </input>
+                        <label className="modal-label">Date Archived:</label>
+                        <input
+                            name="dateArchived"
+                            className="modal-input" 
+                            value={formData.dateArchived ?? ''}
+                            onChange={handleInputChange}
+                        >
+                        </input>
+                        <label className="modal-label">Wordcount:</label>
+                        <input
+                            name="wordCount"
+                            className="modal-input" 
+                            value={formData.wordCount ?? ''}
+                            onChange={handleInputChange}
+                        >
+                        </input>
+                        
+                    </div>
+                    <div className="modal-mediagroups-div">
+                            { 
+                                Object.entries(groupDisplayNames).map(([key, value]) => {
+                                    const selected = formData.mediaGroups.includes(key)
+                                    return (
+                                        <button
+                                            name="mediaGroups"
+                                            type="button"
+                                            className={selected ? "media-button active" : "media-button"}
+                                            onClick={() => handleMediaButtonClick(key)}
+
+                                     
+                                        >
+                                        {value}
+                                        </button>
+                                    )
+                                    
+                                    
+                                })
+                            }
+                    </div>
+                    <div className="modal-actions">
+                        <button 
+                            type="button"
+                            id="btn-save" 
+                            onClick={() => {
+                                saveMutation.mutate(formData); 
+                                onClose()
+                                }
+                            }>
+                            {saveMutation.isPending ? 'Saving...' : 'Save'}
+                        </button>
+                        <button
+                            type="button"
+                            id="btn-delete"
+                            onClick={() => deleteMutation.mutate(record.id)}
+                        >
+                            {deleteMutation.isPending ? 'Deleting...' : 'Delete'}
+                        </button>
+                        <button 
+                            type="button"
+                            id="btn-close" 
+                            onClick={onClose}
+                        >Cancel
+                        </button>
                     </div>
                 </div>
-                <div className="modal-actions">
-                    
-                    <button 
-                        id="btn-save" 
-                        onClick={() => {
-                            saveMutation.mutate(formData); 
-                            onClose()
-                            }
-                        }>
-                        {saveMutation.isPending ? 'Saving...' : 'Save'}
-                    </button>
-                    <button
-                        id="btn-delete"
-                        onClick={() => deleteMutation.mutate(record.id)}>
-                        {deleteMutation.isPending ? 'Deleting...' : 'Delete'}
-                    </button>
-                    <button id="btn-close" onClick={onClose}>Cancel</button>
-                </div>
-            </div>
+            </form>
         </div>
     )
 }

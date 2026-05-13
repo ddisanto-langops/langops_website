@@ -1,3 +1,9 @@
+/*
+ *
+ * Shared server/client
+ *
+ */
+
 export interface BaseProduct {
     id: string
     title: string
@@ -69,6 +75,7 @@ export interface ApiFilters {
     to?: string | undefined
     title?: string | undefined
     page?: number | undefined
+    limit?: number | undefined
     pageSize?: number | undefined
     sortBy?: string | undefined
     sortDir?: string | undefined

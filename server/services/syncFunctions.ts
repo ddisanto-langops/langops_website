@@ -1,5 +1,5 @@
-import type { ActiveProduct, ArchivedProduct, RawTrelloCard } from "../../shared/types.js"
-import { productCodes } from "../../shared/constants.js"
+import type { ActiveProduct, ApiFilters, ArchivedProduct, RawTrelloCard } from "../../shared/types.js"
+import { productCodes, supportedLanguages } from "../../shared/constants.js"
 import { ActiveCard, ArchivedCard } from "../classes.js";
 import pool from '../database/databaseConfig.js';
 import fetch from 'node-fetch'
@@ -95,6 +95,8 @@ export async function parseProducts(rawCards: RawTrelloCard[], mode: "active" | 
             } else if (cardCustomFields.exclude) {
             console.log(`Skipped: ${card.title} | Reason: 'Exclude' box is checked`)
             continue
+            } else if (!card.targetLanguage || !supportedLanguages.includes(card.targetLanguage) ) {
+                console.log(`Skipped: ${card.title} | Reason: Target language missing or not yet supported (got '${card.targetLanguage}')`)
             } else {
                 console.log(`Accepted: ${card.title}`)
             }
@@ -167,20 +169,24 @@ export async function upsertProducts(products: ActiveProduct[]) {
 export async function upsertArchivedProducts(archivedProducts: ArchivedProduct[]) {
     for (const product of archivedProducts) {
         if (!product.datePublished) continue //WARNING: products archived but not published will disappear.
-        await pool.query(`
+        const response = await pool.query(`
             INSERT INTO completions (
                 id, title, product_code, target_language,
                 media_groups, wordcount, date_published, trello_url,
                 article_url, editor_url, date_archived
-            ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9, $10, $11)
+            )
+            SELECT $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11
+            WHERE NOT EXISTS (
+                SELECT 1 FROM deletions WHERE deletions.id = $1
+            )
             ON CONFLICT (id) DO UPDATE SET
-                id               = EXCLUDED.id,
                 target_language  = EXCLUDED.target_language,
                 product_code     = EXCLUDED.product_code,
                 article_url      = EXCLUDED.article_url,
                 editor_url       = EXCLUDED.editor_url,
                 trello_url       = EXCLUDED.trello_url,
                 date_archived    = EXCLUDED.date_archived
+            RETURNING id, (xmax = 0) AS is_insert
         `, [
             product.id,
             product.title,
@@ -194,6 +200,9 @@ export async function upsertArchivedProducts(archivedProducts: ArchivedProduct[]
             product.editorUrl ?? null,
             product.dateArchived ?? null
         ])
+        if (response.rowCount === 0) {
+            console.log(`Skipped insertion: ${product.title} | Reason: is deleted`)
+        }
     }
 }
 
@@ -232,4 +241,229 @@ export async function removeFromProducts(activeIds: string[]) {
         // Always release the client back to the pool
         client.release();
     }
+}
+
+
+// GET /api/products 
+export async function getActiveProducts() {
+    const request = await pool.query(`
+        SELECT 
+            id,
+            title,
+            product_code,
+            target_language AS "targetLanguage",
+            product_status AS "productStatus",
+            crowdin_url AS "crowdinUrl",
+            trello_url AS "trelloUrl",
+            article_url AS "articleUrl",
+            editor_url AS "editorUrl",
+            due_date AS "dueDate",
+            date_last_activity AS "dateLastActivity",
+            published,
+            date_published AS "datePublished",
+            translation_progress AS "translationProgress",
+            approval_progress AS "approvalProgress",
+            media_groups AS "mediaGroups",
+            wordcount AS "wordCount"
+        FROM products
+        ORDER BY date_last_activity DESC NULLS LAST
+        `)
+    
+    return request.rows
+}
+
+
+// GET /api/completions
+export async function getCompletions(filters: ApiFilters) {
+    const pageNum = filters.page ? Math.max(1, filters.page) : 1
+    const limitNum = Math.min(200, Math.max(1, filters.limit || 50))
+    const offset = (pageNum - 1) * limitNum
+
+    const allowedSortColumns = {
+        title: 'title',
+        productCode: 'product_code',
+        targetLang: 'target_language',
+        datePublished: 'date_published',
+        wordCount: 'wordcount',
+    } as const
+    const sortColumn = filters.sortBy && filters.sortBy in allowedSortColumns
+        ? allowedSortColumns[filters.sortBy as keyof typeof allowedSortColumns]
+        : 'date_published'
+    const sortDirection = filters.sortDir === 'asc' ? 'ASC' : 'DESC'
+
+    const response = await pool.query(`
+        SELECT
+            id,
+            title,
+            product_code as "productCode",
+            target_language as "targetLanguage",
+            media_groups as "mediaGroups",
+            wordcount as "wordCount",
+            date_published AS "datePublished",
+            date_archived AS "dateArchived",
+            trello_url AS "trelloUrl",
+            editor_url as "editorUrl",
+            article_url as "articleUrl",
+            COUNT(*) OVER() AS total_count
+        FROM completions
+        WHERE
+            ($1::text IS NULL OR target_language ILIKE '%' || $1 || '%')
+            AND ($2::text IS NULL OR product_code ILIKE '%' || $2 || '%')
+            AND ($3::text IS NULL OR $3 = ANY(media_groups))
+            AND ($4::date IS NULL OR date_published >= $4)
+            AND ($5::date IS NULL OR date_published <= $5)
+            AND ($6::text IS NULL OR title ILIKE '%' || $6 || '%')
+        ORDER BY ${sortColumn} ${sortDirection} NULLS LAST
+        LIMIT $7 OFFSET $8
+    `, [filters.lang ?? null, filters.code ?? null, filters.group ?? null, filters.from ?? null, filters.to ?? null, filters.title ?? null, limitNum, offset])
+
+    const totalCount = response.rows.length > 0 ? parseInt(response.rows[0].total_count, 10) : 0
+    const data = response.rows.map(({ total_count, ...row }) => row)
+    
+    return { data, totalCount, page: pageNum, pageSize: limitNum }
+}
+
+// GET /api/completions/wordcount
+export async function getCount(filters: Partial<ApiFilters>) {
+    const request = await pool.query(`
+        SELECT 
+            SUM(c.wordcount) AS "totalWords",
+            COUNT(c.*) AS "totalProducts",
+            SUM(p.wordcount) FILTER (WHERE p.published IS TRUE) AS "totalPublishedProductWords"
+        FROM completions c
+        LEFT JOIN products p ON c.product_code = p.product_code
+        WHERE
+            ($1::text IS NULL OR c.target_language = $1)
+            AND ($2::text IS NULL OR c.product_code = $2)
+            AND ($3::text IS NULL OR $3::text = ANY(c.media_groups))
+            AND ($4::date IS NULL OR c.date_published >= $4)
+            AND ($5::date IS NULL OR c.date_published <= $5)
+        `, [
+            filters.lang ?? null, 
+            filters.code ?? null, 
+            filters.group, 
+            filters.from ?? null, 
+            filters.to ?? null
+        ]
+    );
+    const count = {
+            totalWords: Number(request.rows[0].totalWords),
+            totalProducts: Number(request.rows[0].totalProducts)
+        };
+    return count
+}
+
+
+// GET /api/completions/byproduct
+export async function getProductCount(filters: Partial<ApiFilters>) {
+    const response = await pool.query(`
+        SELECT product_code, COUNT(*) AS occurence_count
+        FROM (
+            SELECT product_code
+            FROM completions
+            WHERE
+                ($1::text IS NULL OR target_language = $1)
+                AND ($2::text IS NULL OR product_code = $2)
+                AND ($3::text IS NULL OR $3::text = ANY(media_groups))
+                AND ($4::date IS NULL OR date_published >= $4)
+                AND ($5::date IS NULL OR date_published <= $5)
+
+            UNION ALL
+
+            SELECT product_code
+            FROM products
+            WHERE
+                published IS TRUE
+                AND ($1::text IS NULL OR target_language = $1)
+                AND ($2::text IS NULL OR product_code = $2)
+                AND ($3::text IS NULL OR $3::text = ANY(media_groups))
+                AND ($4::date IS NULL OR date_published >= $4)
+                AND ($5::date IS NULL OR date_published <= $5)
+        ) AS matching_records
+        GROUP BY product_code;`,
+        [
+            filters.lang ?? null, 
+            filters.code ?? null, 
+            filters.group, 
+            filters.from ?? null, 
+            filters.to ?? null
+        ]
+    );
+    return response.rows
+}
+
+// PUT /api/completions/:id
+export async function editCompletion(id: string, record: Partial<ArchivedProduct>) {
+    
+    const response = await pool.query(`
+        UPDATE completions
+        SET title = $1,
+            product_code = $2,
+            target_language = $3,
+            media_groups = $4::text[],
+            wordcount = $5,
+            date_published = $6,
+            date_archived = $7
+        WHERE id = $8
+        RETURNING *
+        `, [
+            record.title, 
+            record.productCode, 
+            record.targetLanguage, 
+            record.mediaGroups, 
+            record.wordCount, 
+            record.datePublished, 
+            record.dateArchived, 
+            id
+        ]
+    )
+    return response
+}
+
+export async function deleteCompletion(id: string) {
+    const response = await pool.query(`
+        WITH moved_record AS (
+            DELETE FROM completions
+            WHERE id = $1
+            RETURNING 
+            id, title, product_code, 
+            target_language, media_groups, 
+            wordcount, date_published, date_archived, 
+            trello_url, article_url, editor_url
+        )
+        INSERT INTO deletions (
+            id, title, product_code, 
+            target_language, media_groups, 
+            wordcount, date_published, date_archived, 
+            trello_url, article_url, editor_url
+        ) 
+        SELECT * FROM moved_record
+        RETURNING *;
+    `, [id])
+
+    return response
+}
+
+export async function restoreCompletion(id: string) {
+    const response = await pool.query(`
+        WITH moved_record AS (
+            DELETE FROM deletions
+            WHERE id = $1
+            RETURNING 
+            id, title, product_code, 
+            target_language, media_groups, 
+            wordcount, date_published, date_archived, 
+            trello_url, article_url, editor_url
+        )
+        INSERT INTO completions (
+            id, title, product_code, 
+            target_language, media_groups, 
+            wordcount, date_published, date_archived, 
+            trello_url, article_url, editor_url
+        ) 
+        SELECT * FROM moved_record
+        RETURNING *;
+    `, [id])
+
+    return response
 }

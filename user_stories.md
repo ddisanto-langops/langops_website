@@ -5,7 +5,7 @@
 - [x] Needs at least one main data table
     - [x] Searching target languages needs to use friendly names
     - [x] Must provide the same data as the LangOps Dashboard API service  
-    - [ ] Data must be 2025 and onward  
+    - [x] Data must be 2025 and onward  
     - [x] Must be able to filter data by language  
     - [x] Table must show a condensed view and be expandable on click 
     - [x] Table must implement an on-click filter for each tab in the spreadsheet

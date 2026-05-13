@@ -1,5 +1,5 @@
 import type { ApiFilters } from "../../../shared/types"
-import { productCodes, friendlyLanguages, groupDisplayNames } from "../../../shared/constants"
+import { productCodes, supportedLanguages, groupDisplayNames } from "../../../shared/constants"
 
 interface DashboardFilterProps {
   filters: ApiFilters
@@ -20,7 +20,7 @@ export function DashboardFilter({filters, onFilterChange}: DashboardFilterProps)
       })}
     >
       <option value="">All Languages</option>
-      {friendlyLanguages.map((option) => (
+      {supportedLanguages.map((option) => (
         <option value={option}>{option}</option>
       ))}
     </select>
