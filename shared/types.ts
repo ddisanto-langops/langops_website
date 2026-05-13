@@ -75,6 +75,7 @@ export interface ApiFilters {
     to?: string | undefined
     title?: string | undefined
     page?: number | undefined
+    limit?: number | undefined
     pageSize?: number | undefined
     sortBy?: string | undefined
     sortDir?: string | undefined
@@ -123,24 +124,4 @@ export interface RawTrelloCard {
     }
   ]
   idLabels: string[]
-}
-
-/*
- *
- * Client Side
- *
-*/
-
-interface EditModalFields {
-    title: string
-    productCode: string
-    targetLanguage: string
-    mediaGroups: string[]
-    datePublished: string | null
-    dateArchived: string
-    trelloUrl: string
-    editorUrl: string | null
-    articleUrl: string | null
-    wordCount: number | null
-
 }

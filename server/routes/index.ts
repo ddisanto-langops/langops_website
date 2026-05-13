@@ -1,5 +1,7 @@
 import { Router } from 'express';
 import pool from '../database/databaseConfig.js';
+import { getActiveProducts, getCount, getProductCount } from '../services/syncFunctions.js';
+import type { ApiFilters } from '../../shared/types.js';
 
 const router = Router();
 
@@ -7,32 +9,11 @@ function getQueryString(value: unknown): string | undefined {
     return typeof value === 'string' ? value : undefined
 }
 
-router.get("/api/data", async (req, res) => {
+router.get("/api/products", async (req, res) => {
     console.log("Querying transient data...")
     try {
-        const result = await pool.query(`
-        SELECT 
-            id,
-            title,
-            product_code,
-            target_language AS "targetLanguage",
-            product_status AS "productStatus",
-            crowdin_url AS "crowdinUrl",
-            trello_url AS "trelloUrl",
-            article_url AS "articleUrl",
-            editor_url AS "editorUrl",
-            due_date AS "dueDate",
-            date_last_activity AS "dateLastActivity",
-            published,
-            date_published AS "datePublished",
-            translation_progress AS "translationProgress",
-            approval_progress AS "approvalProgress",
-            media_groups AS "mediaGroups",
-            wordcount AS "wordCount"
-        FROM products
-        ORDER BY date_last_activity DESC NULLS LAST
-        `)
-        res.json(result.rows)
+        const activeProducts = await getActiveProducts()
+        res.json(activeProducts)
 
     } catch (error) {
         error instanceof Error ? res.status(500).json({ error: error.message }) :
@@ -41,41 +22,28 @@ router.get("/api/data", async (req, res) => {
 })
 
 /*
-    This is the route for the dashboard page,
-    providing product completion stats as opposed
-    to the detailed table view found on
-    the completions page.
+ * GET /api/completions
+ * This is data is for the upper section (word count) 
+ * of the dashboard page, counting completions and published products.
+ * It is distinct from the detailed table view 
+ * found on the completions page, and from the
+ * byproduct endpoint which lists individual numbers of products.
 */
-router.get('/api/completions', async (req, res) => {
-    const lang = getQueryString(req.query.lang)
-    const code = getQueryString(req.query.code)
-    const group = getQueryString(req.query.group)
-    const from = getQueryString(req.query.from)
-    const to = getQueryString(req.query.to)
-    console.log(`"Querying completions: Lang: ${lang}, Code: ${code}, Media Group: ${group}, From: ${from}, To: ${to}`)
+router.get('/api/completions/wordcount', async (req, res) => {
+
+    const filters: Partial<ApiFilters> = {
+        lang: getQueryString(req.query.lang),
+        code: getQueryString(req.query.code),
+        group: getQueryString(req.query.group),
+        from: getQueryString(req.query.from),
+        to: getQueryString(req.query.to)
+    }
+    console.log(`"Querying completions: Lang: ${filters.lang}, Code: ${filters.code}, Media Group: ${filters.group}, From: ${filters.from}, To: ${filters.to}`)
 
     try {
-        const result = await pool.query(`
-        SELECT 
-            SUM(c.wordcount) AS "totalWords",
-            COUNT(c.*) AS "totalProducts",
-            SUM(p.wordcount) FILTER (WHERE p.published IS TRUE) AS "totalPublishedProductWords"
-        FROM completions c
-        LEFT JOIN products p ON c.product_code = p.product_code
-        WHERE
-            ($1::text IS NULL OR c.target_language = $1)
-            AND ($2::text IS NULL OR c.product_code = $2)
-            AND ($3::text IS NULL OR $3::text = ANY(c.media_groups))
-            AND ($4::date IS NULL OR c.date_published >= $4)
-            AND ($5::date IS NULL OR c.date_published <= $5)
-    `, [lang ?? null, code ?? null, group, from ?? null, to ?? null]);
+        const count = await getCount(filters)
     
-    const data = result.rows[0];
-    const responseData = {
-        totalWords: Number(data.totalWords),
-        totalProducts: Number(data.totalProducts)
-    };
-    res.json(responseData);
+        res.json(count);
         
     } catch (error) {
         error instanceof Error ? res.status(500).json({ error: error.message }) :
@@ -83,43 +51,23 @@ router.get('/api/completions', async (req, res) => {
     }
 })
 
-
-router.get("/api/data/completions/byproduct", async (req, res) => {
-    const lang = getQueryString(req.query.lang)
-    const code = getQueryString(req.query.code)
-    const group = getQueryString(req.query.group)
-    const from = getQueryString(req.query.from)
-    const to = getQueryString(req.query.to)
+/*
+ * This is the lower part of the dashboard page
+ * which provides totals by product code. 
+*/
+router.get("/api/completions/byproduct", async (req, res) => {
+    const filters: Partial<ApiFilters> = {
+        lang: getQueryString(req.query.lang),
+        code: getQueryString(req.query.code),
+        group: getQueryString(req.query.group),
+        from: getQueryString(req.query.from),
+        to: getQueryString(req.query.to)
+    }
+   
     try {
-        const result = await pool.query(`
-            SELECT product_code, COUNT(*) AS occurence_count
-            FROM (
-                SELECT product_code
-                FROM completions
-                WHERE
-                    ($1::text IS NULL OR target_language = $1)
-                    AND ($2::text IS NULL OR product_code = $2)
-                    AND ($3::text IS NULL OR $3::text = ANY(media_groups))
-                    AND ($4::date IS NULL OR date_published >= $4)
-                    AND ($5::date IS NULL OR date_published <= $5)
-
-                UNION ALL
-
-                SELECT product_code
-                FROM products
-                WHERE
-                    published IS TRUE
-                    AND ($1::text IS NULL OR target_language = $1)
-                    AND ($2::text IS NULL OR product_code = $2)
-                    AND ($3::text IS NULL OR $3::text = ANY(media_groups))
-                    AND ($4::date IS NULL OR date_published >= $4)
-                    AND ($5::date IS NULL OR date_published <= $5)
-            ) AS matching_records
-            GROUP BY product_code;`,
-            [lang ?? null, code ?? null, group, from ?? null, to ?? null]
-        );
+        const productCount = await getProductCount(filters)
         
-        res.json(result.rows);
+        res.json(productCount);
 
     } catch (error) {
         error instanceof Error ? res.status(500).json({ error: error.message }) :
@@ -128,24 +76,26 @@ router.get("/api/data/completions/byproduct", async (req, res) => {
 })
 
 /*
-    This endpoint is for the detailed completions
-    page, as opposed to the dashboard which also
-    queries the completions database.
+ * This endpoint is for the detailed completions
+ * table, as opposed to the dashboard which also
+ * queries the completions database.
 */
-router.get('/api/admin/completions', async (req, res) => {
-    const lang = getQueryString(req.query.lang)
-    const code = getQueryString(req.query.code)
-    const group = getQueryString(req.query.group)
-    const from = getQueryString(req.query.from)
-    const to = getQueryString(req.query.to)
-    const title = getQueryString(req.query.title)
-    const page = getQueryString(req.query.page) ?? '1'
-    const limit = getQueryString(req.query.limit) ?? '50'
-    const sortBy = getQueryString(req.query.sortBy)
-    const sortDir = getQueryString(req.query.sortDir)
-
-    const pageNum = Math.max(1, parseInt(page, 10) || 1)
-    const limitNum = Math.min(200, Math.max(1, parseInt(limit, 10) || 50))
+router.get('/api/completions', async (req, res) => {
+    const filters: ApiFilters = {
+        lang: getQueryString(req.query.lang),
+        code: getQueryString(req.query.code),
+        group: getQueryString(req.query.group),
+        from: getQueryString(req.query.from),
+        to: getQueryString(req.query.to),
+        title: getQueryString(req.query.title),
+        page: Number(getQueryString(req.query.page)) ?? '1',
+        limit: Number(getQueryString(req.query.limit) ?? '50'),
+        sortBy: getQueryString(req.query.sortBy),
+        sortDir: getQueryString(req.query.sortDir)
+    }
+    
+    const pageNum = filters.page ? Math.max(1, filters.page) : 1
+    const limitNum = Math.min(200, Math.max(1, filters.limit || 50))
     const offset = (pageNum - 1) * limitNum
 
     const allowedSortColumns = {
@@ -155,10 +105,10 @@ router.get('/api/admin/completions', async (req, res) => {
         datePublished: 'date_published',
         wordCount: 'wordcount',
     } as const
-    const sortColumn = sortBy && sortBy in allowedSortColumns
-        ? allowedSortColumns[sortBy as keyof typeof allowedSortColumns]
+    const sortColumn = filters.sortBy && filters.sortBy in allowedSortColumns
+        ? allowedSortColumns[filters.sortBy as keyof typeof allowedSortColumns]
         : 'date_published'
-    const sortDirection = sortDir === 'asc' ? 'ASC' : 'DESC'
+    const sortDirection = filters.sortDir === 'asc' ? 'ASC' : 'DESC'
 
     try {
         const result = await pool.query(`
@@ -185,7 +135,7 @@ router.get('/api/admin/completions', async (req, res) => {
                 AND ($6::text IS NULL OR title ILIKE '%' || $6 || '%')
             ORDER BY ${sortColumn} ${sortDirection} NULLS LAST
             LIMIT $7 OFFSET $8
-        `, [lang ?? null, code ?? null, group ?? null, from ?? null, to ?? null, title ?? null, limitNum, offset])
+        `, [filters.lang ?? null, filters.code ?? null, filters.group ?? null, filters.from ?? null, filters.to ?? null, filters.title ?? null, limitNum, offset])
 
         const totalCount = result.rows.length > 0 ? parseInt(result.rows[0].total_count, 10) : 0
         const data = result.rows.map(({ total_count, ...row }) => row)
@@ -198,7 +148,7 @@ router.get('/api/admin/completions', async (req, res) => {
     }
 })
 
-router.put('/api/admin/completions/:id', async (req, res) => {
+router.put('/api/completions/:id', async (req, res) => {
     const { id } = req.params
     const { title, productCode, targetLanguage, mediaGroups, wordCount, datePublished, dateArchived } = req.body
     
@@ -233,7 +183,7 @@ router.put('/api/admin/completions/:id', async (req, res) => {
 })
 
 // Delete a completion by id
-router.delete('/api/admin/completions/:id', async (req, res) => {
+router.delete('/api/completions/:id', async (req, res) => {
     const { id } = req.params
 
     try {

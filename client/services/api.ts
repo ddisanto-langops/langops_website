@@ -1,7 +1,7 @@
 import type { ApiFilters, ArchivedProduct } from "../../shared/types"
 
 export async function fetchProducts() {
-    const response = await fetch("/api/data")
+    const response = await fetch("/api/products")
     if (!response.ok) throw new Error('Failed to fetch products')
     return response.json()
 }
@@ -16,7 +16,7 @@ export async function fetchCompletions(filters: ApiFilters) {
     if (filters.to) params.append('to', filters.to)
 
     const query = params.toString()
-    const url = query ? `/api/completions?${query}` : '/api/completions'
+    const url = query ? `/api/completions/wordcount?${query}` : '/api/completions/wordcount'
 
     const response = await fetch(url)
     if (!response.ok) throw new Error("Failed to fetch completions data.")
@@ -38,7 +38,7 @@ export async function fetchAdminCompletions(filters: ApiFilters) {
     if (filters.sortDir) params.append('sortDir', filters.sortDir)
 
     const query = params.toString()
-    const url = `/api/admin/completions${query ? `?${query}` : ''}`
+    const url = `/api/completions${query ? `?${query}` : ''}`
 
     const response = await fetch(url)
     if (!response.ok) throw new Error("Failed to fetch completions data.")
@@ -55,7 +55,7 @@ export async function fetchCompletionsByProduct(filters: ApiFilters): Promise<{p
     if (filters.to) params.append('to', filters.to)
     
     const query = params.toString()
-    const url = `/api/data/completions/byproduct${query ? `?${query}` : ''}`
+    const url = `/api/completions/byproduct${query ? `?${query}` : ''}`
 
     const response = await fetch(url)
     if (!response.ok) throw new Error("Failed to fetch completions data.")
@@ -63,7 +63,7 @@ export async function fetchCompletionsByProduct(filters: ApiFilters): Promise<{p
 }
 
 export async function updateCompletion(record: ArchivedProduct) {
-    const response = await fetch(`/api/admin/completions/${record.id}`, {
+    const response = await fetch(`/api/completions/${record.id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(record)
