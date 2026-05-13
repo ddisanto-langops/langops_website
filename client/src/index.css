@@ -479,6 +479,19 @@ td {
     margin-left: 15px;
 }
 
+.link-edit-row, .link-display-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+}
+
+.input-wrapper, .url-wrapper {
+  flex-grow: 1;
+  word-break: break-all; /* Prevents long URLs from overflowing into the button */
+}
+
 .modal-link-input {
     background-color: hsl(211, 38%, 15%);
     color: white;
@@ -486,7 +499,7 @@ td {
     border: 1px solid #ccc;
     border-radius: 4px;
     font-size: 1rem;
-    width: 85%;
+    width: 100%;
 }
 
 #btn-close { 

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 
 interface EditableLinkProps {
     accessor: string
@@ -11,6 +11,7 @@ export function EditableLink({accessor, currentLink, onChange }: EditableLinkPro
   const [editValue, setEditValue] = useState(currentLink);
 
   const handleEdit = () => {
+    setEditValue(currentLink)
     setIsEditing(true);
   };
 
@@ -20,41 +21,51 @@ export function EditableLink({accessor, currentLink, onChange }: EditableLinkPro
   };
 
   return (
-    <div>
-      {isEditing ? (
-        <>
-          <input
-            className="modal-link-input"
-            name={accessor}
-            type="text"
-            value={editValue ?? ""}
-            onChange={(e) => setEditValue(e.target.value)}
-            placeholder="https://example.com"
-            onKeyDown={(e) => {
-              if (e.key === 'Enter') {
-                handleDone();
-              }
-            }}
-            autoFocus
-          />
-          <button className="link-edit-done-button" type="button" onClick={handleDone}>
-            Done
-          </button>
-        </>
-      ) : (
-        <>
-          {currentLink ? (
-            <a href={currentLink} target="_blank" rel="noreferrer" style={{color: 'coral'}}>
-              {currentLink}
-            </a>
-          ) : (
-            <span>No link added</span>
-          )}
-          <button className="link-edit-button" type="button" onClick={handleEdit}>
-            Edit
-          </button>
-        </>
-      )}
-    </div>
+    <>
+      <div className="link-component-container">
+        {isEditing ? (
+          <div className="link-edit-row">
+            <div className="input-wrapper">
+              <input
+                className="modal-link-input"
+                name={accessor}
+                type="text"
+                value={editValue ?? ""}
+                onChange={(e) => setEditValue(e.target.value)}
+                placeholder="https://example.com"
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    handleDone();
+                  }
+                }}
+                autoFocus
+              />
+            </div>
+            <div className="button-wrapper">
+              <button className="link-edit-done-button" type="button" onClick={handleDone}>
+                Done
+              </button>
+            </div>
+          </div>
+        ) : (
+          <div className="link-display-row">
+            <div className="url-wrapper">
+              {currentLink ? (
+                <a href={currentLink} target="_blank" rel="noreferrer" style={{color: 'coral'}}>
+                  {currentLink}
+                </a>
+              ) : (
+                <span>No link added</span>
+              )}
+            </div>
+            <div className="button-wrapper">
+              <button className="link-edit-button" type="button" onClick={handleEdit}>
+                Edit
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
+    </>
   );
 }
