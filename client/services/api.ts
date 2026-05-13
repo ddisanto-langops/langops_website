@@ -75,7 +75,7 @@ export async function updateCompletion(record: ArchivedProduct) {
 
 export async function deleteCompletion(id: string) {
     if (confirm("Are you sure you want to delete this record? This action cannot be undone.")) {
-        const response = await fetch(`/api/admin/completions/${id}`, {
+        const response = await fetch(`/api/completions/${id}`, {
         method: 'DELETE',
         })
         if (!response.ok) throw new Error('Failed to delete completion')
