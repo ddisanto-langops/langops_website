@@ -75,10 +75,18 @@ export async function updateCompletion(record: ArchivedProduct) {
 
 export async function deleteCompletion(id: string) {
     if (confirm("Are you sure you want to delete this record? This action cannot be undone.")) {
-        const response = await fetch(`/api/completions/${id}`, {
+        const response = await fetch(`/api/completions/delete/${id}`, {
         method: 'DELETE',
         })
         if (!response.ok) throw new Error('Failed to delete completion')
         return response.json()
     }
+}
+
+export async function restoreCompletion(id: string) {
+    const response = await fetch(`/api/completions/restore/${id}`, {
+        method: 'PUT'
+    })
+    if (!response.ok) throw new Error('Failed to restore completion')
+    return response.json()
 }

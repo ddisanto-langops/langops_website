@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import pool from '../database/databaseConfig.js';
-import { deleteCompletion, editCompletion, getActiveProducts, getCompletions, getCount, getProductCount } from '../services/syncFunctions.js';
+import { deleteCompletion, editCompletion, getActiveProducts, getCompletions, getCount, getProductCount, restoreCompletion } from '../services/syncFunctions.js';
 import type { ApiFilters, ArchivedProduct } from '../../shared/types.js';
 
 const router = Router();
@@ -133,7 +133,7 @@ router.put('/api/completions/:id', async (req, res) => {
 })
 
 // Delete a completion by id
-router.delete('/api/completions/:id', async (req, res) => {
+router.delete('/api/completions/delete/:id', async (req, res) => {
     const { id } = req.params
 
     try {
@@ -147,7 +147,27 @@ router.delete('/api/completions/:id', async (req, res) => {
 
     } catch (error) {
         error instanceof Error ? res.status(500).json({ error: error.message }) :
-            res.status(500).json({ error: "DEL /api/admin/completions/:id: Unknown error" })
+            res.status(500).json({ error: "DEL /api/completions/:id: Unknown error" })
+    }
+})
+
+
+// restore a completion via its ID
+router.put('api/completions/restore/:id', async (req, res) => {
+    const { id } = req.params
+
+    try {
+        const response = await restoreCompletion(id)
+        
+        if (response.rowCount === 0) {
+            return res.status(404).json({ error: 'Record not found' })
+        }
+
+        res.json({ message: 'Restored successfully', record: response.rows })
+
+    } catch (error) {
+        error instanceof Error ? res.status(500).json({ error: error.message }) :
+            res.status(500).json({ error: "PUT /api/completions/restore/:id: Unknown error" })
     }
 })
 
