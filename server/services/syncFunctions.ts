@@ -126,6 +126,8 @@ export async function parseProducts(rawCards: RawTrelloCard[], mode: "active" | 
             continue
             } else if (!card.targetLanguage || !supportedLanguages.includes(card.targetLanguage) ) {
                 console.log(`Skipped: ${card.title} | Reason: Target language missing or not yet supported (got '${card.targetLanguage}')`)
+            } else if (!card.datePublished && mode === "archived") {
+                console.log(`Skipped: ${card.title} | Reason: In mode "Archived" but missing date published`)
             } else {
                 console.log(`Accepted: ${card.title}`)
             }
@@ -196,7 +198,6 @@ export async function upsertProducts(products: ActiveProduct[]) {
 
 export async function upsertArchivedProducts(archivedProducts: ArchivedProduct[]) {
     for (const product of archivedProducts) {
-        if (!product.datePublished) continue //WARNING: products archived but not published will disappear.
         const response = await pool.query(`
             INSERT INTO completions (
                 id, title, product_code, target_language,

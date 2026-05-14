@@ -125,7 +125,7 @@ export class BaseCard {
         }
     }
 
-    protected getDatePublished() {
+    get datePublished() {
         const cardActions = this.rawData.actions; // No need for ?? null
         if (!cardActions) return null;
 
@@ -190,7 +190,7 @@ export class BaseCard {
             title: this.title,
             productCode: this.productCode,
             targetLanguage: this.targetLanguage,
-            datePublished: this.getDatePublished(),
+            datePublished: this.datePublished,
             mediaGroups: this.getMediaGroups(),
             published: fields.published,
             crowdinProjectId: fields.crowdinProjectId,
@@ -243,7 +243,7 @@ export class ActiveCard extends BaseCard {
 
     private async getProductStatus() {
         const crowdinData = await this.getCrowdinData() ?? {translationProgress: null, approvalProgress: null}
-        const published = this.getDatePublished()
+        const published = this.datePublished
         if (published) return 'published'
         const sevenDaysAgo = new Date()
         sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7)
@@ -271,7 +271,7 @@ export class ActiveCard extends BaseCard {
             published: fields.published,
             excluded: fields.exclude,
             dateLastActivity: this.dateLastActivity,
-            datePublished: this.getDatePublished(),
+            datePublished: this.datePublished,
             dueDate: this.dueDate,
             trelloUrl: this.trelloUrl,
             editorUrl: urls.editorUrl,
@@ -300,7 +300,7 @@ export class ArchivedCard extends BaseCard {
             productCode: this.productCode,
             targetLanguage: this.targetLanguage,
             mediaGroups: this.getMediaGroups(),
-            datePublished: this.getDatePublished(),
+            datePublished: this.datePublished,
             dateArchived: this.dateArchived,
             trelloUrl: this.trelloUrl,
             editorUrl: urls.editorUrl,
