@@ -1,7 +1,19 @@
+import type { ActiveProduct, ApiFilters, ArchivedProduct, RawTrelloCard } from '../../shared/types.js';
+
 import { Router } from 'express';
-import pool from '../database/databaseConfig.js';
-import { deleteCompletion, editCompletion, getActiveProducts, getCompletions, getCount, getProductCount, restoreCompletion } from '../services/syncFunctions.js';
-import type { ApiFilters, ArchivedProduct } from '../../shared/types.js';
+import { 
+    deleteCompletion, 
+    editCompletion, 
+    getActiveProducts, 
+    getCard, 
+    getCompletions, 
+    getCount, 
+    getProductCount, 
+    restoreCompletion,
+    parseProducts,
+    editProduct
+} from '../services/syncFunctions.js';
+import { parse } from 'node:path';
 
 const router = Router();
 
@@ -153,7 +165,6 @@ router.delete('/api/completions/delete/:id', async (req, res) => {
     }
 })
 
-
 // restore a completion via its ID
 router.put('api/completions/restore/:id', async (req, res) => {
     const { id } = req.params
@@ -170,6 +181,26 @@ router.put('api/completions/restore/:id', async (req, res) => {
     } catch (error) {
         error instanceof Error ? res.status(500).json({ error: error.message }) :
             res.status(500).json({ error: "PUT /api/completions/restore/:id: Unknown error" })
+    }
+})
+
+router.put('/api/updatecard/:id/:mode', async (req, res) => {
+    const { id, mode } = req.params
+
+    try {
+        const card: RawTrelloCard = await getCard(id)
+        
+        if (mode === "active") {
+            const product: ActiveProduct[] = await parseProducts([card], mode)
+            editProduct(id, product[0])
+        } else if ( mode === "archived") {
+            const product: ArchivedProduct[] = await parseProducts([card], mode)
+            editCompletion(id, product[0])
+        }
+        
+    } catch (error) {
+        error instanceof Error ? res.status(500).json({ error: error.message }) :
+            res.status(500).json({ error: "PUT /api/updatecard: Unknown error" })
     }
 })
 

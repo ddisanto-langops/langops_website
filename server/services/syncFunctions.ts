@@ -13,12 +13,16 @@ const trelloToken = process.env.TrelloToken;
 * Trello
 */
 
-export async function getActiveCards(): Promise<RawTrelloCard[]> {
-    if (!trelloBoardId || !trelloKey || !trelloToken) throw new Error("Missing credentials!")
-        
+export async function getActiveCards(since?: string): Promise<RawTrelloCard[]> {
+    if (!trelloBoardId || !trelloKey || !trelloToken) throw new Error("Get active cards: missing credentials")
+    
+    const date = new Date();
+    date.setDate(date.getDate() -1)
+    const yesterday = date.toISOString().split('T')[0]
+
     try {
         const response = await fetch(
-            `https://api.trello.com/1/boards/${trelloBoardId}/cards?key=${trelloKey}&token=${trelloToken}&fields=all&attachments=true&attachment_fields=all&customFieldItems=true&actions=all&since=2026-05-07`,
+            `https://api.trello.com/1/boards/${trelloBoardId}/cards?key=${trelloKey}&token=${trelloToken}&fields=all&attachments=true&attachment_fields=all&customFieldItems=true&actions=all&since=${since ?? yesterday}`,
             { method: 'GET' }
         )
         if (!response.ok) {
@@ -34,7 +38,7 @@ export async function getActiveCards(): Promise<RawTrelloCard[]> {
 }
 
 export async function getArchivedCards(since?: string) {
-    if (!trelloBoardId || !trelloKey || !trelloToken) throw new Error("Missing credentials!")
+    if (!trelloBoardId || !trelloKey || !trelloToken) throw new Error("Get archived cards: missing credentials!")
     
     const date = new Date();
     date.setDate(date.getDate() -1)
@@ -42,7 +46,7 @@ export async function getArchivedCards(since?: string) {
 
     try {
         const response = await fetch(
-            `https://api.trello.com/1/boards/${trelloBoardId}/cards?key=${trelloKey}&token=${trelloToken}&filter=closed&fields=name,idLabels,labels,due,dateLastActivity,url,isTemplate&attachments=true&attachment_fields=name,url&customFieldItems=true&actions=all&since=${since ? since : yesterday}`,
+            `https://api.trello.com/1/boards/${trelloBoardId}/cards?key=${trelloKey}&token=${trelloToken}&filter=closed&fields=name,idLabels,labels,due,dateLastActivity,url,isTemplate&attachments=true&attachment_fields=name,url&customFieldItems=true&actions=all&since=${since ?? yesterday}`,
             { method: 'GET' }
         )
         if (!response.ok) {
@@ -55,6 +59,34 @@ export async function getArchivedCards(since?: string) {
             console.log("Get Archived Cards: Unknown  error")
         return []
     }
+}
+
+// Used for refreshing card data on demand in the UI
+export async function getCard(id: string): Promise<RawTrelloCard> {
+    const response = await fetch(
+        `https://api.trello.com/1/cards/${id}?key=${trelloKey}&token=${trelloToken}&fields=name,dateLastActivity,due,url&actions=all&attachments=true&attachment_fields=all&customFieldItems=true`, {
+            headers: {
+                accept: 'application-json'
+            },
+            method: 'GET'
+        }
+    )
+    const card: RawTrelloCard = await response.json() as RawTrelloCard
+    return card
+}
+
+// Used for refreshing card data on demand in the UI
+export async function getCustomFields(id: string) {
+    const response = await fetch(
+        `https://api.trello.com/1/cards/${id}/customFieldItems?key=${trelloKey}&token=${trelloToken}`, {
+            headers: {
+                accept: 'application-json'
+            },
+            method: 'GET'
+        }
+    )
+    const card = await response.json()
+    return card
 }
 
 /*
@@ -416,6 +448,35 @@ export async function editCompletion(id: string, record: Partial<ArchivedProduct
             record.wordCount, 
             record.datePublished, 
             record.dateArchived,
+            record.editorUrl,
+            record.articleUrl,
+            id
+        ]
+    )
+    return response
+}
+
+export async function editProduct(id: string, record: Partial<ActiveProduct>) {
+    
+    const response = await pool.query(`
+        UPDATE products
+        SET title = $1,
+            product_code = $2,
+            target_language = $3,
+            media_groups = $4::text[],
+            wordcount = $5,
+            date_published = $6,
+            editor_url = $7,
+            article_url = $8
+        WHERE id = $9
+        RETURNING *
+        `, [
+            record.title, 
+            record.productCode, 
+            record.targetLanguage, 
+            record.mediaGroups, 
+            record.wordCount, 
+            record.datePublished,
             record.editorUrl,
             record.articleUrl,
             id

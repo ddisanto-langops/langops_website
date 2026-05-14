@@ -1,9 +1,3 @@
-/*
- *
- * Shared server/client
- *
- */
-
 export interface BaseProduct {
     id: string
     title: string
@@ -124,4 +118,35 @@ export interface RawTrelloCard {
     }
   ]
   idLabels: string[]
+}
+
+export interface CardCustomFieldWebResponse {
+    value: {checked: boolean}
+    idCustomField: string
+}
+
+export interface CardRefreshWebResponse {
+    id: string
+    name: string
+    dateLastActivity: string
+    due: string
+    url: string
+    actions: [
+        {
+            data: {
+                checkItem?: {
+                    id: string
+                    name: string
+                    state: string
+                }
+                customFieldItem?: [
+                    value: {
+                        checked: boolean
+                    },
+                    idCustomField: string
+                ]
+            }
+        }
+    ]
+    
 }
