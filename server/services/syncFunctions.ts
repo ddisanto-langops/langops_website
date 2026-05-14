@@ -64,7 +64,7 @@ export async function getArchivedCards(since?: string) {
 // Used for refreshing card data on demand in the UI
 export async function getCard(id: string): Promise<RawTrelloCard> {
     const response = await fetch(
-        `https://api.trello.com/1/cards/${id}?key=${trelloKey}&token=${trelloToken}&fields=name,dateLastActivity,due,url&actions=all&attachments=true&attachment_fields=all&customFieldItems=true`, {
+        `https://api.trello.com/1/cards/${id}?key=${trelloKey}&token=${trelloToken}&fields=name,dateLastActivity,due,url,dateClosed&actions=all&attachments=true&attachment_fields=all&customFieldItems=true`, {
             headers: {
                 accept: 'application-json'
             },
@@ -72,20 +72,6 @@ export async function getCard(id: string): Promise<RawTrelloCard> {
         }
     )
     const card: RawTrelloCard = await response.json() as RawTrelloCard
-    return card
-}
-
-// Used for refreshing card data on demand in the UI
-export async function getCustomFields(id: string) {
-    const response = await fetch(
-        `https://api.trello.com/1/cards/${id}/customFieldItems?key=${trelloKey}&token=${trelloToken}`, {
-            headers: {
-                accept: 'application-json'
-            },
-            method: 'GET'
-        }
-    )
-    const card = await response.json()
     return card
 }
 
@@ -439,14 +425,25 @@ export async function editCompletion(id: string, record: Partial<ArchivedProduct
             editor_url = $8,
             article_url = $9
         WHERE id = $10
-        RETURNING *
+        RETURNING
+            id,
+            title,
+            product_code AS "productCode",
+            target_language AS "targetLanguage",
+            media_groups AS "mediaGroups",
+            wordcount AS "wordCount",
+            date_published AS "datePublished",
+            date_archived AS "dateArchived",
+            editor_url AS "editorUrl",
+            article_url AS "articleUrl",
+            trello_url AS "trelloUrl"
         `, [
             record.title, 
             record.productCode, 
             record.targetLanguage, 
             record.mediaGroups, 
             record.wordCount, 
-            record.datePublished, 
+            record.datePublished || null, 
             record.dateArchived,
             record.editorUrl,
             record.articleUrl,
@@ -462,23 +459,54 @@ export async function editProduct(id: string, record: Partial<ActiveProduct>) {
         UPDATE products
         SET title = $1,
             product_code = $2,
-            target_language = $3,
-            media_groups = $4::text[],
-            wordcount = $5,
-            date_published = $6,
-            editor_url = $7,
-            article_url = $8
-        WHERE id = $9
-        RETURNING *
+            product_status = $3,
+            target_language = $4,
+            media_groups = $5::text[],
+            wordcount = $6,
+            published = $7,
+            due_date = $8,
+            date_last_activity = $9,
+            date_published = $10,
+            translation_progress = $11,
+            approval_progress = $12,
+            editor_url = $13,
+            article_url = $14,
+            crowdin_url = $15
+        WHERE id = $15
+        RETURNING 
+            id,
+            title,
+            product_code AS "productCode",
+            product_status AS "productStatus",
+            target_language AS "targetLanguage",
+            media_groups AS "mediaGroups",
+            wordcount AS "wordCount",
+            published,
+            due_date AS "dueDate",
+            date_last_activity AS "dateLastActivity",
+            date_published AS "datePublished",
+            translation_progress AS "translationProgress",
+            approval_progress AS "approvalProgress",
+            editor_url AS "editorUrl",
+            article_url AS "articleUrl",
+            crowdin_url AS "CrowdinUrl",
+            trello_url AS "trelloUrl"
         `, [
             record.title, 
-            record.productCode, 
+            record.productCode,
+            record.productStatus,
             record.targetLanguage, 
             record.mediaGroups, 
-            record.wordCount, 
+            record.wordCount,
+            record.published,
+            record.dueDate,
+            record.dateLastActivity,
             record.datePublished,
+            record.translationProgress,
+            record.approvalProgress,
             record.editorUrl,
             record.articleUrl,
+            record.crowdinUrl,
             id
         ]
     )

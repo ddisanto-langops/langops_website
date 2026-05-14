@@ -125,7 +125,7 @@ router.put('/api/completions/:id', async (req, res) => {
         targetLanguage: targetLanguage,
         mediaGroups: mediaGroups,
         wordCount: wordCount,
-        datePublished: datePublished,
+        datePublished: datePublished ?? null,
         dateArchived: dateArchived,
         editorUrl: editorUrl,
         articleUrl: articleUrl
@@ -184,7 +184,7 @@ router.put('api/completions/restore/:id', async (req, res) => {
     }
 })
 
-router.put('/api/updatecard/:id/:mode', async (req, res) => {
+router.put('/api/resync/:id/:mode', async (req, res) => {
     const { id, mode } = req.params
 
     try {
@@ -192,12 +192,21 @@ router.put('/api/updatecard/:id/:mode', async (req, res) => {
         
         if (mode === "active") {
             const product: ActiveProduct[] = await parseProducts([card], mode)
-            editProduct(id, product[0])
+            const result = await editProduct(id, product[0])
+            if (result.rowCount === 0) {
+                return res.status(404).json({ error: 'Record not found' })
+            } else {
+                return res.json(result.rows) 
+            }
         } else if ( mode === "archived") {
             const product: ArchivedProduct[] = await parseProducts([card], mode)
-            editCompletion(id, product[0])
-        }
-        
+            const result = await editCompletion(id, product[0])
+            if (result.rowCount === 0) {
+                return res.status(404).json({ error: 'Record not found' })
+            } else {
+                return res.json(result.rows)
+            }
+        } 
     } catch (error) {
         error instanceof Error ? res.status(500).json({ error: error.message }) :
             res.status(500).json({ error: "PUT /api/updatecard: Unknown error" })

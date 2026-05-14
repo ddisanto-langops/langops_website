@@ -4,7 +4,7 @@ import { EditableLink} from "./EditableLink"
 import React, { useState, useEffect } from "react"
 import { supportedLanguages, groupDisplayNames, productCodes } from "../../../shared/constants"
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { updateCompletion, deleteCompletion } from '../../services/api'
+import { updateCompletion, deleteCompletion, resync } from '../../services/api'
 
 interface EditModalProps {
     record: ArchivedProduct,
@@ -33,6 +33,14 @@ export function EditModal({record, isOpen, onClose}: EditModalProps) {
         onSuccess: () => {
             queryClient.invalidateQueries({queryKey: ['completions']})
             onClose()
+        }
+    })
+
+    const resyncMutation = useMutation({
+        mutationFn: (id: string) => resync(id, "archived"),
+        onSuccess: (result: ArchivedProduct[]) => {
+            queryClient.invalidateQueries({queryKey: ['completions']})
+            if (result[0]) setFormData(result[0])
         }
     })
 
@@ -86,7 +94,15 @@ export function EditModal({record, isOpen, onClose}: EditModalProps) {
                 </p>
                 : null
                 }
-               
+                <div className="modal-resync-div">
+                    <button
+                        type="button"
+                        className="resync-button"
+                        onClick={() => resyncMutation.mutate(String(formData.id))}
+                    >
+                        {resyncMutation.isPending ? "Loading..." : "Re-Sync Data"}
+                    </button>
+                </div>
                 <div className="modal-body">
                     <div className="modal-field">
                         <label className="modal-label">Editor URL:</label>

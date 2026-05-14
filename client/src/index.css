@@ -369,6 +369,14 @@ td {
 
 .detail-link { color: coral; }
 
+.resync-button {
+    background: linear-gradient(135deg, hsla(204, 85%, 56%, 0.747), hsl(202, 94%, 69%));
+    border-radius: 8px;
+    font-size: 1rem;
+    border: solid 1px transparent ;
+    margin-left: 15px;
+}
+
 /* =====================
    MODAL
    ===================== */
@@ -380,6 +388,12 @@ td {
     align-items: center;
     justify-content: center;
     z-index: 1000;
+}
+
+.modal-resync-div {
+    display: flex;
+    justify-content: center;
+    padding: 15px;
 }
 
 .modal-content {
