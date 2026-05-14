@@ -4,8 +4,9 @@ import {
   getArchivedCards,
   upsertProducts,
   upsertArchivedProducts,
-  removeFromProducts,
   parseProducts,
+  getActiveIds,
+  deleteProducts,
 } from './syncFunctions.js'
 import cron from 'node-cron'
 
@@ -27,12 +28,12 @@ export async function syncProducts() {
     console.log("\nActive products added to database.")
 
     /*
-      Delete products from the 'products' databse,
-      if their id isn't found in the latest API data.
+     * Get active IDs from board and delete from products
+     * if the ID isn't found on the board anymore.
     */ 
-    const activeIds: string[] = activeTrelloProducts.map(p => p.id)
-    const removed = await removeFromProducts(activeIds)
-    console.log(`\nRemoved ${removed.deletedCount} items from products database and moved ${removed.archivedCount} to completions.`)
+    const activeIds = await getActiveIds()
+    const deleted = await deleteProducts(activeIds)
+    console.log(`\nRemoved ${deleted.deletedCount} items from products database.`)
 
 
     /*

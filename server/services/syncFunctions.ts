@@ -75,6 +75,17 @@ export async function getCard(id: string): Promise<RawTrelloCard> {
     return card
 }
 
+export async function getActiveIds(): Promise<{id: string}[]> {
+    const response = await fetch(`https://api.trello.com/1/boards/${trelloBoardId}/cards?filter=visible&fields=id&key=${trelloKey}&token=${trelloToken}`,{
+        headers: {
+            accept: 'application-json'
+        },
+        method: 'GET'
+    })
+    const activeIds = await response.json() as {id: string}[]
+    return activeIds
+}
+
 /*
  * Product Factory
  * This function creates products from raw cards.
@@ -129,7 +140,6 @@ export async function parseProducts(rawCards: RawTrelloCard[], mode: "active" | 
     }
     return products
 }
-
 
 /*
 * Database
@@ -221,43 +231,6 @@ export async function upsertArchivedProducts(archivedProducts: ArchivedProduct[]
         if (response.rowCount === 0) {
             console.log(`Skipped insertion: ${product.title} | Reason: is deleted`)
         }
-    }
-}
-
-export async function removeFromProducts(activeIds: string[]) {
-    const client = await pool.connect();
-
-    try {
-        await client.query('BEGIN');
-
-        const deleteRes = await client.query(`
-            DELETE FROM products
-            WHERE id != ALL($1)
-            RETURNING id
-        `, [activeIds]);
-
-        const updateRes = await client.query(`
-            UPDATE completions
-            SET date_archived = NOW()
-            WHERE date_archived IS NULL
-            AND id != ALL($1)
-            RETURNING id
-        `, [activeIds]);
-
-        await client.query('COMMIT');
-
-        return {
-            deletedCount: deleteRes.rowCount,
-            archivedCount: updateRes.rowCount
-        };
-
-    } catch (error) {
-        await client.query('ROLLBACK');
-        console.error('Transaction failed, changes rolled back:', error);
-        throw error;
-    } finally {
-        // Always release the client back to the pool
-        client.release();
     }
 }
 
@@ -472,7 +445,7 @@ export async function editProduct(id: string, record: Partial<ActiveProduct>) {
             editor_url = $13,
             article_url = $14,
             crowdin_url = $15
-        WHERE id = $15
+        WHERE id = $16
         RETURNING 
             id,
             title,
@@ -513,6 +486,31 @@ export async function editProduct(id: string, record: Partial<ActiveProduct>) {
     return response
 }
 
+/*
+ * Hard delete; assumes products which are no longer active
+ * have been archived and will be found in completions on next sync. 
+ * Avoids moving record to 'deletions' database because that could cause an
+ * ID collision, and becaue 'deletions' is for records which would otherwise
+ * be difficult to recover via Trello.
+*/ 
+export async function deleteProducts(idsArray: {id: string}[]) {
+    const flattenedIds = idsArray.map(item => item.id)
+    if (flattenedIds.length === 0) {
+        console.log("No active cards returned from Trello. Aborting delete to protect data.");
+        return { deletedCount: 0 };
+    }
+    const query = await pool.query(`
+        DELETE FROM products 
+        WHERE NOT (id = ANY($1))
+        RETURNING id;
+        `,
+        [flattenedIds]
+    )
+    return {deletedCount: query.rowCount}
+}
+
+
+// Soft delete (moves to 'deleted' database)
 export async function deleteCompletion(id: string) {
     const response = await pool.query(`
         WITH moved_record AS (

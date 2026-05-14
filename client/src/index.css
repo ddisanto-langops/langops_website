@@ -374,7 +374,7 @@ td {
     border-radius: 8px;
     font-size: 1rem;
     border: solid 1px transparent ;
-    margin-left: 15px;
+    cursor: pointer;
 }
 
 /* =====================
@@ -483,6 +483,7 @@ td {
     font-size: 1rem;
     border: solid 1px transparent ;
     margin-left: 10px;
+    cursor: pointer;
 }
 
 .link-edit-done-button {
@@ -491,6 +492,7 @@ td {
     font-size: 1rem;
     border: solid 1px transparent ;
     margin-left: 15px;
+    cursor:pointer
 }
 
 .link-edit-row, .link-display-row {
