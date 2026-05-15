@@ -3,7 +3,7 @@ import { productCodes, supportedLanguages } from "../../shared/constants.js"
 import { ActiveCard, ArchivedCard } from "../classes.js";
 import pool from '../database/databaseConfig.js';
 import fetch from 'node-fetch'
-
+import * as cheerio from 'cheerio'
 
 const trelloBoardId = process.env.TrelloBoardId;
 const trelloKey = process.env.TrelloKey;
@@ -86,6 +86,26 @@ export async function getActiveIds(): Promise<{id: string}[]> {
     return activeIds
 }
 
+export async function getlocalizedTitle(url: string): Promise<string> {
+  try {
+    const response = await fetch(url);
+    
+    if (!response.ok) {
+      throw new Error(`Error fetching article title. Status: ${response.status}`);
+    }
+    
+    const html = await response.text();
+    const $ = cheerio.load(html);
+    const title = $('h1.text-left').contents().filter((_, node) => node.nodeType === 3).text().trim();    
+
+    return title;
+
+  } catch (error) {
+    console.error('Scraping failed:', error);
+    return 'NOT FOUND';
+  }
+}
+
 /*
  * Product Factory
  * This function creates products from raw cards.
@@ -136,7 +156,7 @@ export async function parseProducts(rawCards: RawTrelloCard[], mode: "active" | 
             const product = await card.parseActiveCard()
             products.push(product)
         } else if (card instanceof ArchivedCard) {
-            const product = card.parseArchivedCard()
+            const product = await card.parseArchivedCard()
             products.push(product)
         }
     }
@@ -200,15 +220,17 @@ export async function upsertArchivedProducts(archivedProducts: ArchivedProduct[]
     for (const product of archivedProducts) {
         const response = await pool.query(`
             INSERT INTO completions (
-                id, title, product_code, target_language,
+                id, title, localized_title, product_code, target_language,
                 media_groups, wordcount, date_published, trello_url,
                 article_url, editor_url, date_archived
             )
-            SELECT $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11
+            SELECT $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12
             WHERE NOT EXISTS (
                 SELECT 1 FROM deletions WHERE deletions.id = $1
             )
             ON CONFLICT (id) DO UPDATE SET
+                title            = EXCLUDED.title,
+                localized_title  = EXCLUDED.localized_title,
                 target_language  = EXCLUDED.target_language,
                 product_code     = EXCLUDED.product_code,
                 article_url      = EXCLUDED.article_url,
@@ -219,6 +241,7 @@ export async function upsertArchivedProducts(archivedProducts: ArchivedProduct[]
         `, [
             product.id,
             product.title,
+            product.localizedTitle,
             product.productCode,
             product.targetLanguage,
             product.mediaGroups ?? null,
@@ -287,16 +310,17 @@ export async function getCompletions(filters: ApiFilters) {
         SELECT
             id,
             title,
-            product_code as "productCode",
-            target_language as "targetLanguage",
-            media_groups as "mediaGroups",
-            wordcount as "wordCount",
-            date_published AS "datePublished",
-            date_archived AS "dateArchived",
-            trello_url AS "trelloUrl",
-            editor_url as "editorUrl",
-            article_url as "articleUrl",
-            COUNT(*) OVER() AS total_count
+            localized_title     AS "localizedTitle",
+            product_code        AS "productCode",
+            target_language     AS "targetLanguage",
+            media_groups        AS "mediaGroups",
+            wordcount           AS "wordCount",
+            date_published      AS "datePublished",
+            date_archived       AS "dateArchived",
+            trello_url          AS "trelloUrl",
+            editor_url          AS "editorUrl",
+            article_url         AS "articleUrl",
+            COUNT(*) OVER()     AS total_count
         FROM completions
         WHERE
             ($1::text IS NULL OR target_language ILIKE '%' || $1 || '%')
@@ -390,29 +414,32 @@ export async function editCompletion(id: string, record: Partial<ArchivedProduct
     const response = await pool.query(`
         UPDATE completions
         SET title = $1,
-            product_code = $2,
-            target_language = $3,
-            media_groups = $4::text[],
-            wordcount = $5,
-            date_published = $6,
-            date_archived = $7,
-            editor_url = $8,
-            article_url = $9
-        WHERE id = $10
+            localized_title = $2,
+            product_code = $3,
+            target_language = $4,
+            media_groups = $5::text[],
+            wordcount = $6,
+            date_published = $7,
+            date_archived = $8,
+            editor_url = $9,
+            article_url = $10
+        WHERE id = $11
         RETURNING
             id,
             title,
-            product_code AS "productCode",
-            target_language AS "targetLanguage",
-            media_groups AS "mediaGroups",
-            wordcount AS "wordCount",
-            date_published AS "datePublished",
-            date_archived AS "dateArchived",
-            editor_url AS "editorUrl",
-            article_url AS "articleUrl",
-            trello_url AS "trelloUrl"
+            localized_title     AS "localizedTitle",
+            product_code        AS "productCode",
+            target_language     AS "targetLanguage",
+            media_groups        AS "mediaGroups",
+            wordcount           AS "wordCount",
+            date_published      AS "datePublished",
+            date_archived       AS "dateArchived",
+            editor_url          AS "editorUrl",
+            article_url         AS "articleUrl",
+            trello_url          AS "trelloUrl"
         `, [
-            record.title, 
+            record.title,
+            record.localizedTitle || null,
             record.productCode, 
             record.targetLanguage, 
             record.mediaGroups, 
@@ -518,13 +545,13 @@ export async function deleteCompletion(id: string) {
             DELETE FROM completions
             WHERE id = $1
             RETURNING 
-            id, title, product_code, 
+            id, title, localized_title, product_code, 
             target_language, media_groups, 
             wordcount, date_published, date_archived, 
             trello_url, article_url, editor_url
         )
         INSERT INTO deletions (
-            id, title, product_code, 
+            id, title, localized_title, product_code, 
             target_language, media_groups, 
             wordcount, date_published, date_archived, 
             trello_url, article_url, editor_url
@@ -542,13 +569,13 @@ export async function restoreCompletion(id: string) {
             DELETE FROM deletions
             WHERE id = $1
             RETURNING 
-            id, title, product_code, 
+            id, title, localized_title, product_code, 
             target_language, media_groups, 
             wordcount, date_published, date_archived, 
             trello_url, article_url, editor_url
         )
         INSERT INTO completions (
-            id, title, product_code, 
+            id, title, localized_title, product_code, 
             target_language, media_groups, 
             wordcount, date_published, date_archived, 
             trello_url, article_url, editor_url

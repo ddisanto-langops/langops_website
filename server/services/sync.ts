@@ -22,7 +22,7 @@ export async function syncProducts() {
     console.log(`\nFetched ${activeCards.length} active cards from board.`)
 
     const activeTrelloProducts = await parseProducts(activeCards, "active")
-    console.log(`\nFound ${activeTrelloProducts.length} active products.`)
+    console.log(`\nAccepted ${activeTrelloProducts.length} active products.`)
 
     await upsertProducts(activeTrelloProducts)
     console.log("\nActive products added to database.")
@@ -33,7 +33,7 @@ export async function syncProducts() {
     */ 
     const activeIds = await getActiveIds()
     const deleted = await deleteProducts(activeIds)
-    console.log(`\nRemoved ${deleted.deletedCount} items from products database.`)
+    console.log(`\nRemoved ${deleted.deletedCount} stale items from products database.`)
 
 
     /*
@@ -46,7 +46,7 @@ export async function syncProducts() {
     console.log(`Fetched ${archivedCards.length} archived cards from board.`)
 
     const archivedTrelloProducts = await parseProducts(archivedCards, "archived")
-    console.log(`\nFound ${archivedTrelloProducts.length} archived products.`)
+    console.log(`\nAccepted ${archivedTrelloProducts.length} archived products.`)
 
     /*
     * All valid products added to 'completions' database

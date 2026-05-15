@@ -50,6 +50,7 @@ export interface ArchivedProduct {
     */
     id: string
     title: string
+    localizedTitle: string | null
     productCode: string
     targetLanguage: string
     mediaGroups: string[]

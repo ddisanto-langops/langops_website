@@ -7,6 +7,7 @@ import {
 } from '../shared/constants.js';
 import { TranslationStatus } from '@crowdin/crowdin-api-client';
 import ISO6391 from "iso-639-1"
+import { getlocalizedTitle } from "./services/syncFunctions.js";
 
 
 const groupLookup = new Map();
@@ -292,11 +293,21 @@ export class ArchivedCard extends BaseCard {
         return dateArchived
     }
 
-    parseArchivedCard() {
+    private async getLocalizedTitle() {
+        const url = this.getUrls().articleUrl
+        if (url) {
+            const title = getlocalizedTitle(url)
+            return title
+        }
+        return null
+    }
+
+    async parseArchivedCard() {
         const urls = this.getUrls()
         const parsedArchivedCard: ArchivedProduct = {
             id: this.id,
             title: this.title,
+            localizedTitle: await this.getLocalizedTitle(),
             productCode: this.productCode,
             targetLanguage: this.targetLanguage,
             mediaGroups: this.getMediaGroups(),

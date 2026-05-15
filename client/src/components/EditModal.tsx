@@ -117,6 +117,14 @@ export function EditModal({record, isOpen, onClose}: EditModalProps) {
                             onChange={handleInputChange}
                         >
                         </input>
+                        <label className="modal-label">Localized Title:</label>
+                        <input
+                            name="localizedTitle" 
+                            className="modal-input" 
+                            value={formData.localizedTitle ?? ''}
+                            onChange={handleInputChange}
+                        >
+                        </input>
                         <label className="modal-label">Product Code:</label>
                         <select
                             name="productCode" 
