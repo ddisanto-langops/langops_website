@@ -51,6 +51,9 @@ export class BaseCard {
     static productCodePattern = /^([A-Z-]*)([0-9]*[A-Z]*)(?=_)/
     static magazinePattern = /^[A-Z]{2}([0-9]{6})_([A-Z]{2}$)/
     static targetLangPattern = /[A-Z]{2}$/
+    static editorPattern = /\/editor\/articles\/posts/
+    static articlePattern = /(?<!editor)\/articles\/posts/
+    static crowdinPattern = /crowdin/
 
     get isTemplate() {
         return Boolean(this.rawData.isTemplate)
@@ -107,16 +110,19 @@ export class BaseCard {
 
     protected getUrls() {
         const cardAttachments = this.rawData.attachments ?? null
-        let crowdinUrl = null, editorUrl = null, articleUrl = null
+        let editorUrl = null, articleUrl = null, crowdinUrl = null
         for (const attachment of cardAttachments ?? []) {
-            if (attachment.name.includes("Crowdin")) {
-                crowdinUrl = attachment.url
-            }
-            if (attachment.name.includes("Edit Article")) {
-                editorUrl = attachment.url
-            }
-            if (attachment.name.match("Article")) {
-                articleUrl = attachment.url
+            const url = attachment.url
+            const editorMatch = url.match(BaseCard.editorPattern)
+            const articleMatch = url.match(BaseCard.articlePattern)
+            const crowdinMatch = url.match(BaseCard.crowdinPattern)
+
+            if (editorMatch) {
+                editorUrl = url
+            } else if (articleMatch) {
+                articleUrl = url
+            } else if (crowdinMatch) {
+                crowdinUrl = url
             }
         }
         return {
