@@ -343,6 +343,7 @@ td {
 .pagination-button:hover {
     transform: translateY(-2px);
     box-shadow: 0 6px 20px hsla(44, 100%, 66%, 0.384);
+    cursor: pointer;
 }
 
 .pagination-button:disabled {
