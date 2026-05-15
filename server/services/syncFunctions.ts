@@ -112,10 +112,7 @@ export async function parseProducts(rawCards: RawTrelloCard[], mode: "active" | 
         }
         const card = getCard()
         const cardCustomFields = card.getCustomFields()
-        if (!card.productCode) {
-            console.log(`Skipped: ${card.title} | Reason: Missing product code`)
-            continue
-        } else if (!productCodes.includes(card.productCode)) {
+        if (!productCodes.includes(card.productCode)) {
             console.log(`Skipped: ${card.title} | Reason: Product code invalid or not yet supported`)
             continue
         } else if (card.isTemplate) {
