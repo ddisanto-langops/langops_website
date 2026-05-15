@@ -177,7 +177,7 @@ h2 { overflow-wrap: break-word; }
 
 .click-filter-button {
     cursor: pointer;
-    background: linear-gradient(135deg, hsla(204, 85%, 56%, 0.747), hsl(202, 94%, 69%));
+    background: linear-gradient(135deg, hsl(204, 97%, 39%), hsl(202, 94%, 69%));
     color: white;
     border: none;
     padding: 10px 20px;
@@ -196,7 +196,7 @@ h2 { overflow-wrap: break-word; }
 }
 
 .click-filter-button-selected {
-    background: linear-gradient(135deg, hsla(170, 85%, 56%, 0.747), hsl(167, 77%, 52%));
+    background: hsl(155, 81%, 43%);
     color: white;
     border: none;
     padding: 10px 20px;
@@ -204,7 +204,7 @@ h2 { overflow-wrap: break-word; }
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    box-shadow: 0 2px 15px hsl(165, 92%, 65%);
+    box-shadow: 0 2px 15px hsl(143, 92%, 60%);
     
     margin: 5px;
 }
@@ -368,14 +368,22 @@ td {
     color: white;
 }
 
-.detail-link { color: coral; }
+.detail-link { 
+    color: coral; 
+}
 
 .resync-button {
-    background: linear-gradient(135deg, hsla(204, 85%, 56%, 0.747), hsl(202, 94%, 69%));
-    border-radius: 8px;
+    background: linear-gradient(135deg, hsl(204, 97%, 39%), hsl(202, 94%, 69%));
+    border-radius: 6px;
     font-size: 1rem;
-    border: solid 1px transparent ;
+    color: white;
+    border: solid 1px black ;
     cursor: pointer;
+    padding: 5px;
+}
+
+.resync-button:hover {
+    border: 1px solid coral;
 }
 
 /* =====================
@@ -487,6 +495,10 @@ td {
     cursor: pointer;
 }
 
+.link-edit-button:hover {
+    border: 1px solid coral;
+}
+
 .link-edit-done-button {
     background: linear-gradient(135deg, hsla(204, 85%, 56%, 0.747), hsl(202, 94%, 69%));
     border-radius: 8px;
@@ -494,6 +506,10 @@ td {
     border: solid 1px transparent ;
     margin-left: 15px;
     cursor:pointer
+}
+
+.link-edit-done-button:hover {
+    border: 1px solid coral;
 }
 
 .link-edit-row, .link-display-row {
