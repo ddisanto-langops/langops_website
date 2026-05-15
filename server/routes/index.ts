@@ -200,12 +200,15 @@ router.put('/api/resync/:id/:mode', async (req, res) => {
             }
         } else if ( mode === "archived") {
             const product: ArchivedProduct[] = await parseProducts([card], mode)
-            const result = await editCompletion(id, product[0])
-            if (result.rowCount === 0) {
-                return res.status(404).json({ error: 'Record not found' })
-            } else {
-                return res.json(result.rows)
+            if (product[0]) {
+                const result = await editCompletion(id, product[0])
+                if (result.rowCount === 0) {
+                    return res.status(404).json({ error: 'Record not found' })
+                } else {
+                    return res.json(result.rows)
+                }
             }
+            
         } 
     } catch (error) {
         error instanceof Error ? res.status(500).json({ error: error.message }) :
