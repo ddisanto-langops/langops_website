@@ -15,6 +15,6 @@ if (root) {
           <App />
         </QueryClientProvider>
       </BrowserRouter>
-    </StrictMode>,
+    </StrictMode>
   )
 }

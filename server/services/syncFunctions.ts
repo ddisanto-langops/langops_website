@@ -132,25 +132,24 @@ export async function parseProducts(rawCards: RawTrelloCard[], mode: "active" | 
         }
         const card = getCard()
         const cardCustomFields = card.getCustomFields()
-        if (!card.productCode) {
-            console.log(`Skipped: ${card.title} | Reason: Missing product code`)
-            continue
-            } else if (!productCodes.includes(card.productCode)) {
+        if (!productCodes.includes(card.productCode)) {
             console.log(`Skipped: ${card.title} | Reason: Product code invalid or not yet supported`)
             continue
-            } else if (card.isTemplate) {
+        } else if (card.isTemplate) {
             console.log(`Skipped: ${card.title} | Reason: Card is a template`)
             continue
-            } else if (cardCustomFields.exclude) {
+        } else if (cardCustomFields.exclude) {
             console.log(`Skipped: ${card.title} | Reason: 'Exclude' box is checked`)
             continue
-            } else if (!card.targetLanguage || !supportedLanguages.includes(card.targetLanguage) ) {
-                console.log(`Skipped: ${card.title} | Reason: Target language missing or not yet supported (got '${card.targetLanguage}')`)
-            } else if (!card.datePublished && mode === "archived") {
-                console.log(`Skipped: ${card.title} | Reason: In mode "Archived" but missing date published`)
-            } else {
-                console.log(`Accepted: ${card.title}`)
-            }
+        } else if (!card.targetLanguage || !supportedLanguages.includes(card.targetLanguage) ) {
+            console.log(`Skipped: ${card.title} | Reason: Target language missing or not yet supported (got '${card.targetLanguage}')`)
+            continue
+        } else if (!card.datePublished && mode === "archived") {
+            console.log(`Skipped: ${card.title} | Reason: In mode "Archived" but missing date published`)
+            continue
+        } else {
+            console.log(`Accepted: ${card.title}`)
+        }
         
         if (card instanceof ActiveCard) {
             const product = await card.parseActiveCard()
