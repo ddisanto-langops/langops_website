@@ -64,6 +64,7 @@ h2 { overflow-wrap: break-word; }
 
 #dashboard-container {
     display: grid;
+    margin-bottom: 30px;
 }
 
 .table-layout-container,

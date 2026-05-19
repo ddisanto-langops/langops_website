@@ -1,6 +1,6 @@
 import type { ArchivedProduct } from "../../../shared/types";
 
-import { fetchAdminCompletions } from "../../services/api"
+import { queryAllCompletions } from "../../services/api"
 import { ClickFilter } from "./clickFilter";
 import { useQuery, keepPreviousData } from "@tanstack/react-query"
 import { useState, useEffect } from "react";
@@ -85,7 +85,7 @@ export function CompletionTable({ onRowClick }: CompletionTableProps) {
 
   const { data: response = { data: [], totalCount: 0 }, isLoading, isError } = useQuery({
     queryKey: ['completions', queryFilters],
-    queryFn: () => fetchAdminCompletions(queryFilters),
+    queryFn: () => queryAllCompletions(queryFilters),
     placeholderData: keepPreviousData,
   })
 

@@ -13,7 +13,6 @@ import {
     parseProducts,
     editProduct
 } from '../services/syncFunctions.js';
-import { parse } from 'node:path';
 
 const router = Router();
 
@@ -112,8 +111,39 @@ router.get('/api/completions', async (req, res) => {
 
     } catch (error) {
         error instanceof Error ? res.status(500).json({ error: error.message }) :
-            res.status(500).json({ error: "GET /api/admin/completions: Unknown error" })
+            res.status(500).json({ error: "GET /api/completions: Unknown error" })
     }
+})
+
+// Endpoint for global search page
+router.get('/api/all', async (req, res) => {
+
+    try {
+        const filters: ApiFilters = {
+            lang: getQueryString(req.query.lang),
+            code: getQueryString(req.query.code),
+            group: getQueryString(req.query.group),
+            from: getQueryString(req.query.from),
+            to: getQueryString(req.query.to),
+            title: getQueryString(req.query.title),
+            page: Number(getQueryString(req.query.page)) ?? '1',
+            limit: Number(getQueryString(req.query.limit) ?? '50'),
+            sortBy: getQueryString(req.query.sortBy),
+            sortDir: getQueryString(req.query.sortDir)
+        }
+    
+        const products = await getActiveProducts()
+        const completions = await getCompletions(filters)
+        const responseData = {
+            activeProducts: products,
+            completions: completions
+        }
+        res.json(responseData)
+    } catch (error) {
+        error instanceof Error ? res.status(500).json({ error: error.message }) :
+            res.status(500).json({ error: "GET /api/all: Unknown error" })
+    }
+    
 })
 
 
@@ -145,7 +175,7 @@ router.put('/api/completions/:id', async (req, res) => {
 
     } catch (error) {
         error instanceof Error ? res.status(500).json({ error: error.message }) :
-            res.status(500).json({ error: "PUT /api/admin/completions/:id: Unknown error" })
+            res.status(500).json({ error: "PUT /api/completions/:id: Unknown error" })
     }
 })
 

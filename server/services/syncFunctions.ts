@@ -259,7 +259,7 @@ export async function upsertArchivedProducts(archivedProducts: ArchivedProduct[]
 
 
 // GET /api/products 
-export async function getActiveProducts() {
+export async function getActiveProducts(): Promise<ActiveProduct[]> {
     const request = await pool.query(`
         SELECT 
             id,
@@ -288,7 +288,7 @@ export async function getActiveProducts() {
 
 
 // GET /api/completions
-export async function getCompletions(filters: ApiFilters) {
+export async function getCompletions(filters: ApiFilters): Promise<{data: ArchivedProduct[], totalCount: number, page: number, pageSize: number}> {
     const pageNum = filters.page ? Math.max(1, filters.page) : 1
     const limitNum = Math.min(200, Math.max(1, filters.limit || 50))
     const offset = (pageNum - 1) * limitNum
