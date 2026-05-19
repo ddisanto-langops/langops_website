@@ -1,12 +1,13 @@
 import type { ApiFilters, ActiveProduct, ArchivedProduct } from "../../../shared/types";
 import { globalSearchQuery } from "../../services/api";
 import { useEffect, useState } from "react";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 
 
 export function GlobalSearch() {
-    const PAGE_SIZE = 50
+
+    const queryClient = useQueryClient()
 
     const [searchData, setSearchData] = useState<Promise<ActiveProduct | ArchivedProduct> | null >(null)
     const [filters, setFilters] = useState<ApiFilters>({
@@ -23,15 +24,17 @@ export function GlobalSearch() {
         sortDir: undefined
     })
 
+    const searchMutation = useMutation({
+        mutationFn: (filters: ApiFilters) => globalSearchQuery(filters),
+        onSuccess: () => {
+            queryClient.invalidateQueries({queryKey: ['global']})
+        }
+    })
    
-    useEffect(() => {
-            setSearchData(globalSearchQuery(filters))
-        }, [])
-     
+   
 
     const handleSearch = (e: React.MouseEvent<HTMLButtonElement>) => {
-        const response = globalSearchQuery(filters)
-        setSearchData(response)
+        const response = searchMutation.mutate(filters)
     }
     
     
@@ -49,6 +52,9 @@ export function GlobalSearch() {
                 >
                     Search
                 </button>
+            </div>
+            <div>
+                
             </div>
         </div>
     )
