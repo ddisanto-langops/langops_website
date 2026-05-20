@@ -8,8 +8,9 @@ export function NavBar() {
             </div>
             <nav id='navbar'>
                 <Link to={"/"} className='navbar-link'>Dashboard</Link>
-                <Link to={"/Products"} className='navbar-link'>Products</Link>
-                <Link to={"/Completions"} className='navbar-link'>Completions</Link>
+                <Link to={"/products"} className='navbar-link'>Products</Link>
+                <Link to={"/completions"} className='navbar-link'>Completions</Link>
+                <Link to={"/manage-idmls"} className='navbar-link'>Manage IDMLs</Link>
             </nav>
         </div>
     )

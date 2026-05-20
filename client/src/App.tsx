@@ -12,7 +12,7 @@ export default function App() {
       <Route path="/products" element={<ProductsPage />} />
       <Route path="/completions" element={<CompletionsPage />} />
       <Route path="/search" element={<GlobalSearch />} />
-      <Route path="/upload" element={<FileUploadPage />} />
+      <Route path="/manage-idmls" element={<FileUploadPage />} />
     </Routes>
   )
 };
