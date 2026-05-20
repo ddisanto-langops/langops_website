@@ -156,15 +156,18 @@ export function FileUpload() {
     const canUpload = selectedProject && targetLanguage && uploadStatus === 'ready' && xliffEntries.length > 0;
 
     return (
-        <div style={{ padding: '1rem', maxWidth: 900 }}>
+        <div className='idml-page'>
 
             {/* ── Project + language selectors ── */}
             <h3>IDML Upload & Reconstruction</h3>
-
-            <div style={{ display: 'flex', gap: 16, marginBottom: 16, flexWrap: 'wrap' }}>
-                <label style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+            <p id='idml-notice'>
+                On this page you can upload IDML magazine files to Crowdin as individual articles. Once you upload an IDML here, each story is extracted as a separate article, and parsed into XLIFF for upload to Crowdin. Input fields will then appear: <strong>ensure you rename the file as desired.</strong> <br></br><br></br>During translation, the data needed to reconstruct the IDML is stored in a database. Currently stored files are shown in the table below. <br></br><br></br>When translation is <strong>fully approved</strong>, click on "Reconstruct" to parse the translated files back into an IDML. This may take a couple minutes to complete. <br></br><br></br> <strong>Never delete a file from the table unless the reconstruction was successful.</strong>
+            </p>
+            <div className='idml-selectors'>
+                <label className='idml-selector-label'>
                     Crowdin Project
                     <select
+                        className='dashboard-dropdown'
                         value={selectedProject?.id ?? ''}
                         onChange={e => {
                             const proj = projects.find(p => p.id === Number(e.target.value)) ?? null;
@@ -179,9 +182,10 @@ export function FileUpload() {
                     </select>
                 </label>
 
-                <label style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                <label className='idml-selector-label'>
                     Target Language
                     <select
+                        className='dashboard-dropdown'
                         value={targetLanguage}
                         onChange={e => setTargetLanguage(e.target.value)}
                         disabled={!selectedProject}
@@ -195,32 +199,28 @@ export function FileUpload() {
             </div>
 
             {/* ── File input ── */}
-            <div style={{ marginBottom: 16 }}>
-                <label style={{ display: 'flex', flexDirection: 'column', gap: 4, width: 'fit-content' }}>
-                    Upload IDML File
-                    <input type='file' accept='.idml' onChange={handleFileChange} />
-                </label>
-            </div>
+            <label className='idml-file-label'>
+                <strong>Upload IDML File</strong>
+                <input type='file' accept='.idml' onChange={handleFileChange} />
+            </label>
 
-            {uploadStatus === 'parsing' && <p>Parsing IDML…</p>}
-            {uploadStatus === 'uploading' && <p>Uploading to Crowdin…</p>}
-            {uploadStatus === 'done' && <p style={{ color: 'green' }}>Upload complete — record saved.</p>}
-            {uploadStatus === 'error' && <p style={{ color: 'red' }}>{errorMsg}</p>}
+            {uploadStatus === 'parsing'   && <p className='idml-status-info'>Parsing IDML…</p>}
+            {uploadStatus === 'uploading' && <p className='idml-status-info'>Uploading to Crowdin…</p>}
+            {uploadStatus === 'done'      && <p className='idml-status-success'>Upload complete — record saved.</p>}
+            {uploadStatus === 'error'     && <p className='idml-status-error'>{errorMsg}</p>}
 
             {/* ── XLIFF rename list ── */}
             {uploadStatus === 'ready' && xliffEntries.length > 0 && (
-                <div style={{ marginBottom: 16 }}>
+                <div className='idml-xliff-section'>
                     <h4>Extracted XLIFF Files</h4>
-                    <p style={{ fontSize: '0.875rem', color: '#666' }}>
-                        Rename files if needed before uploading.
-                    </p>
+                    <p className='idml-hint'>Rename files before uploading.</p>
                     {xliffEntries.map((entry, i) => (
-                        <div key={entry.originalName} style={{ display: 'flex', gap: 8, marginBottom: 4, alignItems: 'center' }}>
-                            <span style={{ color: '#888', fontSize: '0.875rem', minWidth: 220 }}>{entry.originalName}</span>
+                        <div key={entry.originalName} className='idml-xliff-row'>
+                            <span className='idml-xliff-original'>{entry.originalName}</span>
                             <span>→</span>
                             <input
+                                className='idml-xliff-input'
                                 value={entry.displayName}
-                                style={{ width: 260 }}
                                 onChange={e => setXliffEntries(prev =>
                                     prev.map((item, idx) =>
                                         idx === i ? { ...item, displayName: e.target.value } : item
@@ -230,35 +230,32 @@ export function FileUpload() {
                         </div>
                     ))}
                     <button
+                        className='idml-upload-btn'
                         onClick={handleCrowdinUpload}
                         disabled={!canUpload}
-                        style={{ marginTop: 8 }}
                     >
                         Upload to Crowdin &amp; Save
                     </button>
-                    {!selectedProject || !targetLanguage
-                        ? <span style={{ fontSize: '0.8rem', color: '#888', marginLeft: 8 }}>
-                            Select a project and language above first.
-                          </span>
-                        : null
-                    }
+                    {(!selectedProject || !targetLanguage) && (
+                        <span className='idml-hint'>Select a project and language above first.</span>
+                    )}
                 </div>
             )}
 
             {/* ── Storage records table ── */}
-            <h4 style={{ marginTop: 32 }}>Stored Files</h4>
+            <h4 className='idml-storage-title'>Stored Files</h4>
             {storageRecords.length === 0
-                ? <p style={{ color: '#888' }}>No files stored yet.</p>
+                ? <p className='idml-empty'>No files stored yet.</p>
                 : (
-                    <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.875rem' }}>
+                    <table className='idml-table'>
                         <thead>
-                            <tr style={{ textAlign: 'left', borderBottom: '1px solid #ccc' }}>
-                                <th style={{ padding: '6px 8px' }}>File</th>
-                                <th style={{ padding: '6px 8px' }}>Project</th>
-                                <th style={{ padding: '6px 8px' }}>Language</th>
-                                <th style={{ padding: '6px 8px' }}>Status</th>
-                                <th style={{ padding: '6px 8px' }}>Created</th>
-                                <th style={{ padding: '6px 8px' }}>Actions</th>
+                            <tr>
+                                <th>File</th>
+                                <th>Project</th>
+                                <th>Language</th>
+                                <th>Status</th>
+                                <th>Created</th>
+                                <th>Actions</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -266,25 +263,24 @@ export function FileUpload() {
                                 const isReconstructing = reconstructingIds.has(record.id);
                                 const rowError = rowErrors[record.id];
                                 return (
-                                    <tr key={record.id} style={{ borderBottom: '1px solid #eee' }}>
-                                        <td style={{ padding: '6px 8px' }}>{record.fileName}</td>
-                                        <td style={{ padding: '6px 8px' }}>{record.crowdinProjectName ?? '—'}</td>
-                                        <td style={{ padding: '6px 8px' }}>{record.targetLanguage ?? '—'}</td>
-                                        <td style={{ padding: '6px 8px' }}>
+                                    <tr key={record.id}>
+                                        <td>{record.fileName}</td>
+                                        <td>{record.crowdinProjectName ?? '—'}</td>
+                                        <td>{record.targetLanguage ?? '—'}</td>
+                                        <td>
                                             {isReconstructing
-                                                ? <span style={{ color: '#888' }}>Reconstructing…</span>
+                                                ? <span className='idml-status-reconstructing'>Reconstructing…</span>
                                                 : record.status === 'complete'
-                                                    ? <span style={{ color: 'green' }}>Complete</span>
-                                                    : <span style={{ color: '#b07000' }}>Pending</span>
+                                                    ? <span className='idml-status-complete'>Complete</span>
+                                                    : <span className='idml-status-pending'>Pending</span>
                                             }
-                                            {rowError && <div style={{ color: 'red', fontSize: '0.75rem' }}>{rowError}</div>}
+                                            {rowError && <div className='idml-row-error'>{rowError}</div>}
                                         </td>
-                                        <td style={{ padding: '6px 8px' }}>
-                                            {new Date(record.createdAt).toLocaleDateString()}
-                                        </td>
-                                        <td style={{ padding: '6px 8px', display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+                                        <td>{new Date(record.createdAt).toLocaleDateString()}</td>
+                                        <td className='idml-actions-cell'>
                                             {record.status === 'pending' && (
                                                 <button
+                                                    className='idml-btn-reconstruct'
                                                     onClick={() => handleReconstruct(record)}
                                                     disabled={isReconstructing}
                                                 >
@@ -293,15 +289,16 @@ export function FileUpload() {
                                             )}
                                             {record.status === 'complete' && (
                                                 <a
+                                                    className='idml-btn-download'
                                                     href={`/api/idml/storage/${record.id}/download`}
                                                     download
                                                 >
-                                                    <button>Download</button>
+                                                    Download
                                                 </a>
                                             )}
                                             <button
+                                                className='idml-btn-delete'
                                                 onClick={() => handleDelete(record)}
-                                                style={{ color: 'red' }}
                                             >
                                                 Delete
                                             </button>

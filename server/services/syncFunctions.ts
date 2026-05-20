@@ -592,25 +592,6 @@ export async function restoreCompletion(id: string) {
  * and rebuilt IDML files after Crowdin reconstruction.
  */
 
-export async function createIdmlStorageTable(): Promise<void> {
-    await pool.query(`
-        CREATE TABLE IF NOT EXISTS idml_storage (
-            id                   SERIAL PRIMARY KEY,
-            file_name            TEXT NOT NULL,
-            idml_data            BYTEA NOT NULL,
-            xliff_zip_data       BYTEA NOT NULL,
-            crowdin_project_id   TEXT,
-            crowdin_project_name TEXT,
-            target_language      TEXT,
-            crowdin_file_ids     JSONB NOT NULL DEFAULT '[]',
-            status               TEXT NOT NULL DEFAULT 'pending',
-            rebuilt_idml_data    BYTEA,
-            created_at           TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-            updated_at           TIMESTAMPTZ NOT NULL DEFAULT NOW()
-        )
-    `)
-}
-
 export async function saveIdmlRecord(
     fileName: string,
     idmlData: Buffer,
