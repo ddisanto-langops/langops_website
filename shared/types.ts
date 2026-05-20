@@ -121,33 +121,26 @@ export interface RawTrelloCard {
   idLabels: string[]
 }
 
-export interface CardCustomFieldWebResponse {
-    value: {checked: boolean}
-    idCustomField: string
+export interface XliffEntry {
+    originalName: string   // the filename as it came out of the ZIP
+    displayName: string    // what the user has typed in the rename box
+    content: Blob          // the raw file bytes, ready to POST
 }
 
-export interface CardRefreshWebResponse {
-    id: string
+export interface IdmlStorageRecord {
+    id: number
+    fileName: string
+    crowdinProjectId: string | null
+    crowdinProjectName: string | null
+    targetLanguage: string | null
+    crowdinFileIds: number[]
+    status: 'pending' | 'complete'
+    createdAt: string
+    updatedAt: string
+}
+
+export type CrowdinProject = {
+    id: number
     name: string
-    dateLastActivity: string
-    due: string
-    url: string
-    actions: [
-        {
-            data: {
-                checkItem?: {
-                    id: string
-                    name: string
-                    state: string
-                }
-                customFieldItem?: [
-                    value: {
-                        checked: boolean
-                    },
-                    idCustomField: string
-                ]
-            }
-        }
-    ]
-    
+    targetLanguages: { id: string; name: string }[]
 }

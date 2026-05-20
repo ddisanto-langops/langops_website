@@ -1,4 +1,4 @@
-import type { ApiFilters, ArchivedProduct } from "../../shared/types"
+import type { ApiFilters, ArchivedProduct, IdmlStorageRecord, CrowdinProject } from "../../shared/types"
 
 export async function fetchProducts() {
     const response = await fetch("/api/products")
@@ -120,4 +120,103 @@ export async function resync(id: string, mode: "active" | "archived") {
     })
     if (!response.ok) throw new Error('Failed to restore completion')
     return response.json()
+}
+
+/** Send an IDML, receive xliff_out.zip (keep this for /reconstruct later) */
+export async function parseIdml(idmlFile: File, sourceLang = 'fr'): Promise<Blob> {
+    const form = new FormData();
+    form.append('idml', idmlFile);
+    form.append('source_lang', sourceLang);
+
+    const res = await fetch(`/api/idml/parse`, { method: 'POST', body: form });
+    if (!res.ok) {
+        const { error } = await res.json();
+        throw new Error(error);
+    }
+    return res.blob(); // store this ZIP — it contains style_map.json needed for reconstruct
+}
+
+/** Send original IDML + the ZIP from parseIdml(), receive rebuilt.idml */
+export async function reconstructIdml(idmlFile: File, xliffsZip: File | Blob): Promise<Blob> {
+    const form = new FormData();
+    form.append('idml', idmlFile);
+    form.append('xliffs', xliffsZip, 'xliff_out.zip');
+
+    const res = await fetch(`/api/idml/reconstruct`, { method: 'POST', body: form });
+    if (!res.ok) {
+        const { error } = await res.json();
+        throw new Error(error);
+    }
+    return res.blob();
+}
+
+export async function uploadXliffToCrowdin(
+    fileName: string,
+    content: Blob,
+    projectId: string
+): Promise<{ crowdinFileId: number }> {
+    const form = new FormData();
+    form.append('xliff', content, fileName);
+    form.append('fileName', fileName);
+    form.append('projectId', projectId);
+
+    const res = await fetch('/api/crowdin/upload', { method: 'POST', body: form });
+    if (!res.ok) {
+        const { error } = await res.json();
+        throw new Error(error);
+    }
+    return res.json();
+}
+
+export async function fetchCrowdinProjects(): Promise<CrowdinProject[]> {
+    const res = await fetch('/api/crowdin/projects')
+    if (!res.ok) throw new Error('Failed to fetch Crowdin projects')
+    return res.json()
+}
+
+export async function listIdmlStorage(): Promise<IdmlStorageRecord[]> {
+    const res = await fetch('/api/idml/storage')
+    if (!res.ok) throw new Error('Failed to fetch IDML storage records')
+    return res.json()
+}
+
+export async function saveIdmlStorage(
+    idmlFile: File,
+    xliffZip: Blob,
+    projectId: string,
+    projectName: string,
+    targetLanguage: string,
+    crowdinFileIds: number[]
+): Promise<{ id: number }> {
+    const form = new FormData()
+    form.append('idml', idmlFile, idmlFile.name)
+    form.append('xliffZip', xliffZip, 'xliff_out.zip')
+    form.append('fileName', idmlFile.name)
+    form.append('projectId', projectId)
+    form.append('projectName', projectName)
+    form.append('targetLanguage', targetLanguage)
+    form.append('crowdinFileIds', JSON.stringify(crowdinFileIds))
+
+    const res = await fetch('/api/idml/storage', { method: 'POST', body: form })
+    if (!res.ok) {
+        const { error } = await res.json()
+        throw new Error(error)
+    }
+    return res.json()
+}
+
+export async function deleteIdmlStorage(id: number): Promise<void> {
+    const res = await fetch(`/api/idml/storage/${id}`, { method: 'DELETE' })
+    if (!res.ok) {
+        const { error } = await res.json()
+        throw new Error(error)
+    }
+}
+
+export async function triggerReconstruct(id: number): Promise<void> {
+    const res = await fetch(`/api/idml/storage/${id}/reconstruct`, { method: 'POST' })
+    if (!res.ok) {
+        const { error } = await res.json()
+        throw new Error(error)
+    }
 }

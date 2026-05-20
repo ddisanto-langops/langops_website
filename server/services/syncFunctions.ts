@@ -1,4 +1,4 @@
-import type { ActiveProduct, ApiFilters, ArchivedProduct, RawTrelloCard } from "../../shared/types.js"
+import type { ActiveProduct, ApiFilters, ArchivedProduct, RawTrelloCard, IdmlStorageRecord } from "../../shared/types.js"
 import { productCodes, supportedLanguages } from "../../shared/constants.js"
 import { ActiveCard, ArchivedCard } from "../classes.js";
 import pool from '../database/databaseConfig.js';
@@ -584,4 +584,108 @@ export async function restoreCompletion(id: string) {
     `, [id])
 
     return response
+}
+
+/*
+ * IDML Storage
+ * Stores original IDML files, their parse output ZIPs,
+ * and rebuilt IDML files after Crowdin reconstruction.
+ */
+
+export async function createIdmlStorageTable(): Promise<void> {
+    await pool.query(`
+        CREATE TABLE IF NOT EXISTS idml_storage (
+            id                   SERIAL PRIMARY KEY,
+            file_name            TEXT NOT NULL,
+            idml_data            BYTEA NOT NULL,
+            xliff_zip_data       BYTEA NOT NULL,
+            crowdin_project_id   TEXT,
+            crowdin_project_name TEXT,
+            target_language      TEXT,
+            crowdin_file_ids     JSONB NOT NULL DEFAULT '[]',
+            status               TEXT NOT NULL DEFAULT 'pending',
+            rebuilt_idml_data    BYTEA,
+            created_at           TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+            updated_at           TIMESTAMPTZ NOT NULL DEFAULT NOW()
+        )
+    `)
+}
+
+export async function saveIdmlRecord(
+    fileName: string,
+    idmlData: Buffer,
+    xliffZipData: Buffer,
+    crowdinProjectId: string,
+    crowdinProjectName: string,
+    targetLanguage: string,
+    crowdinFileIds: number[]
+): Promise<number> {
+    const result = await pool.query(`
+        INSERT INTO idml_storage
+            (file_name, idml_data, xliff_zip_data, crowdin_project_id, crowdin_project_name, target_language, crowdin_file_ids)
+        VALUES ($1, $2, $3, $4, $5, $6, $7)
+        RETURNING id
+    `, [fileName, idmlData, xliffZipData, crowdinProjectId, crowdinProjectName, targetLanguage, JSON.stringify(crowdinFileIds)])
+    return result.rows[0].id as number
+}
+
+export async function listIdmlRecords(): Promise<IdmlStorageRecord[]> {
+    const result = await pool.query(`
+        SELECT
+            id,
+            file_name            AS "fileName",
+            crowdin_project_id   AS "crowdinProjectId",
+            crowdin_project_name AS "crowdinProjectName",
+            target_language      AS "targetLanguage",
+            crowdin_file_ids     AS "crowdinFileIds",
+            status,
+            created_at           AS "createdAt",
+            updated_at           AS "updatedAt"
+        FROM idml_storage
+        ORDER BY created_at DESC
+    `)
+    return result.rows
+}
+
+export async function getIdmlRecordData(id: number): Promise<{
+    fileName: string
+    idmlData: Buffer
+    xliffZipData: Buffer
+    crowdinProjectId: string
+    targetLanguage: string
+    crowdinFileIds: number[]
+} | null> {
+    const result = await pool.query(`
+        SELECT
+            file_name          AS "fileName",
+            idml_data          AS "idmlData",
+            xliff_zip_data     AS "xliffZipData",
+            crowdin_project_id AS "crowdinProjectId",
+            target_language    AS "targetLanguage",
+            crowdin_file_ids   AS "crowdinFileIds"
+        FROM idml_storage
+        WHERE id = $1
+    `, [id])
+    return result.rows[0] ?? null
+}
+
+export async function completeIdmlRecord(id: number, rebuiltData: Buffer): Promise<void> {
+    await pool.query(`
+        UPDATE idml_storage
+        SET status = 'complete', rebuilt_idml_data = $2, updated_at = NOW()
+        WHERE id = $1
+    `, [id, rebuiltData])
+}
+
+export async function getRebuiltIdml(id: number): Promise<{ data: Buffer; fileName: string } | null> {
+    const result = await pool.query(`
+        SELECT rebuilt_idml_data AS data, file_name AS "fileName"
+        FROM idml_storage
+        WHERE id = $1 AND status = 'complete'
+    `, [id])
+    return result.rows[0] ?? null
+}
+
+export async function deleteIdmlRecord(id: number): Promise<void> {
+    await pool.query(`DELETE FROM idml_storage WHERE id = $1`, [id])
 }

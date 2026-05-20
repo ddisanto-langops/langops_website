@@ -1,5 +1,5 @@
 import type { ActiveProduct, ApiFilters, ArchivedProduct, RawTrelloCard } from '../../shared/types.js';
-
+import multer from 'multer';
 import { Router } from 'express';
 import { 
     deleteCompletion, 
@@ -11,7 +11,13 @@ import {
     getProductCount, 
     restoreCompletion,
     parseProducts,
-    editProduct
+    editProduct,
+    saveIdmlRecord,
+    listIdmlRecords,
+    getIdmlRecordData,
+    completeIdmlRecord,
+    getRebuiltIdml,
+    deleteIdmlRecord,
 } from '../services/syncFunctions.js';
 
 const router = Router();
@@ -248,5 +254,292 @@ router.put('/api/resync/:id/:mode', async (req, res) => {
             res.status(500).json({ error: "PUT /api/updatecard: Unknown error" })
     }
 })
+
+
+/*
+ *  Route for uploading XLIFFs to Crowdin after parsing IDML
+*/
+const upload = multer({ storage: multer.memoryStorage() }); // keep file in RAM, don't write to disk
+const CROWDIN_TOKEN = process.env.crowdinToken!
+
+router.post('/api/crowdin/upload', upload.single('xliff'), async (req, res) => {
+    const { projectId, fileName } = req.body;
+    const fileBuffer = req.file?.buffer;
+
+    if (!fileBuffer || !projectId || !fileName) {
+        return res.status(400).json({ error: 'Missing required fields' });
+    }
+
+    try {
+        // Step A: upload to Crowdin Storage → get a storageId
+        const storageRes = await fetch('https://api.crowdin.com/api/v2/storages', {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${CROWDIN_TOKEN}`,
+                'Crowdin-API-FileName': fileName,
+                'Content-Type': 'application/octet-stream',
+            },
+            body: new Uint8Array(fileBuffer)
+        });
+        if (!storageRes.ok) throw new Error('Crowdin storage upload failed');
+        const { data: storageData } = await storageRes.json();
+        const storageId: number = storageData.id;
+
+        // Step B: add the file to the Crowdin project using the storageId
+        const fileRes = await fetch(`https://api.crowdin.com/api/v2/projects/${projectId}/files`, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${CROWDIN_TOKEN}`,
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ storageId, name: fileName }),
+        });
+        if (!fileRes.ok) {
+            const err = await fileRes.json();
+            throw new Error(err.errors?.[0]?.error?.message ?? 'Crowdin file creation failed');
+        }
+        const { data: fileData } = await fileRes.json();
+        res.json({ crowdinFileId: fileData.id }); // you can store this back in your DB
+
+    } catch (e) {
+        res.status(500).json({ error: e instanceof Error ? e.message : 'Unknown error' });
+    }
+});
+
+
+// in index.ts
+router.post('/api/idml/parse', upload.single('idml'), async (req, res) => {
+    if (!req.file) return res.status(400).json({ error: 'No file provided' });    
+    const sourceLang = req.body.source_lang ?? 'fr';
+    const fileBuffer = req.file.buffer;
+    const originalName = req.file.originalname;
+
+    const form = new FormData();
+    form.append('idml', new Blob([new Uint8Array(fileBuffer)]), originalName);
+    form.append('source_lang', sourceLang);
+
+    const upstream = await fetch('https://idml.pcglangops.com/parse', { method: 'POST', body: form });
+    if (!upstream.ok) {
+        const { error } = await upstream.json();
+        return res.status(502).json({ error });
+    }
+
+    const zip = await upstream.arrayBuffer();
+    res.setHeader('Content-Type', 'application/zip');
+    res.send(Buffer.from(zip));
+});
+
+router.post('/api/idml/reconstruct', upload.fields([{ name: 'idml', maxCount: 1 }, { name: 'xliffs', maxCount: 1 }]), async (req, res) => {
+    const files = req.files as Record<string, Express.Multer.File[]> | undefined;
+    const idmlBuffer = files?.['idml']?.[0]?.buffer;
+    const idmlName = files?.['idml']?.[0]?.originalname ?? 'file.idml';
+    const xliffsBuffer = files?.['xliffs']?.[0]?.buffer;
+
+    if (!idmlBuffer || !xliffsBuffer) {
+        return res.status(400).json({ error: 'Both idml and xliffs files are required' });
+    }
+
+    const form = new FormData();
+    form.append('idml', new Blob([new Uint8Array(idmlBuffer)]), idmlName);
+    form.append('xliffs', new Blob([new Uint8Array(xliffsBuffer)]), 'xliff_out.zip');
+
+    const upstream = await fetch('https://idml.pcglangops.com/reconstruct', { method: 'POST', body: form });
+    if (!upstream.ok) {
+        const { error } = await upstream.json();
+        return res.status(502).json({ error });
+    }
+
+    const idml = await upstream.arrayBuffer();
+    res.setHeader('Content-Type', 'application/octet-stream');
+    res.setHeader('Content-Disposition', 'attachment; filename="rebuilt.idml"');
+    res.send(Buffer.from(idml));
+});
+
+
+/*
+ * GET /api/crowdin/projects
+ * Returns all Crowdin projects with their target languages.
+*/
+router.get('/api/crowdin/projects', async (_req, res) => {
+    try {
+        const projRes = await fetch('https://api.crowdin.com/api/v2/projects?limit=500', {
+            headers: { 'Authorization': `Bearer ${CROWDIN_TOKEN}` }
+        })
+        if (!projRes.ok) throw new Error('Failed to fetch Crowdin projects')
+        const body = await projRes.json() as { data: { data: { id: number; name: string; targetLanguages: { id: string; name: string }[] } }[] }
+        const projects = body.data.map(p => ({
+            id: p.data.id,
+            name: p.data.name,
+            targetLanguages: p.data.targetLanguages?.map(l => ({ id: l.id, name: l.name })) ?? []
+        }))
+        res.json(projects)
+    } catch (e) {
+        res.status(500).json({ error: e instanceof Error ? e.message : 'Unknown error' })
+    }
+})
+
+
+/*
+ * GET /api/idml/storage
+ * List all stored IDML records (metadata only, no binary data).
+ */
+router.get('/api/idml/storage', async (_req, res) => {
+    try {
+        const records = await listIdmlRecords()
+        res.json(records)
+    } catch (e) {
+        res.status(500).json({ error: e instanceof Error ? e.message : 'Unknown error' })
+    }
+})
+
+
+/*
+ * POST /api/idml/storage
+ * Save a new IDML record after parse + Crowdin upload.
+ * Expects multipart: idml file, xliffZip file, plus body fields.
+ */
+router.post('/api/idml/storage', upload.fields([{ name: 'idml', maxCount: 1 }, { name: 'xliffZip', maxCount: 1 }]), async (req, res) => {
+    const files = req.files as Record<string, Express.Multer.File[]> | undefined
+    const idmlBuffer = files?.['idml']?.[0]?.buffer
+    const xliffZipBuffer = files?.['xliffZip']?.[0]?.buffer
+    const { fileName, projectId, projectName, targetLanguage, crowdinFileIds } = req.body
+
+    if (!idmlBuffer || !xliffZipBuffer || !fileName || !projectId || !targetLanguage || !crowdinFileIds) {
+        return res.status(400).json({ error: 'Missing required fields' })
+    }
+
+    try {
+        const parsedFileIds = JSON.parse(crowdinFileIds) as number[]
+        const id = await saveIdmlRecord(
+            fileName, idmlBuffer, xliffZipBuffer,
+            projectId, projectName ?? '', targetLanguage, parsedFileIds
+        )
+        res.json({ id })
+    } catch (e) {
+        res.status(500).json({ error: e instanceof Error ? e.message : 'Unknown error' })
+    }
+})
+
+
+/*
+ * DELETE /api/idml/storage/:id
+ * Permanently delete a stored IDML record and all its data.
+ */
+router.delete('/api/idml/storage/:id', async (req, res) => {
+    const id = Number(req.params.id)
+    if (isNaN(id)) return res.status(400).json({ error: 'Invalid ID' })
+    try {
+        await deleteIdmlRecord(id)
+        res.json({ message: 'Deleted' })
+    } catch (e) {
+        res.status(500).json({ error: e instanceof Error ? e.message : 'Unknown error' })
+    }
+})
+
+
+/*
+ * POST /api/idml/storage/:id/reconstruct
+ * Fetches translated XLIFFs from Crowdin, rebuilds the IDML,
+ * and stores the result. Updates status to 'complete' on success.
+ */
+router.post('/api/idml/storage/:id/reconstruct', async (req, res) => {
+    const id = Number(req.params.id)
+    if (isNaN(id)) return res.status(400).json({ error: 'Invalid ID' })
+
+    try {
+        const record = await getIdmlRecordData(id)
+        if (!record) return res.status(404).json({ error: 'Record not found' })
+
+        const { idmlData, xliffZipData, crowdinProjectId, targetLanguage, crowdinFileIds, fileName } = record
+
+        // Download each translated XLIFF from Crowdin
+        const translatedXliffs: { name: string; data: Buffer }[] = []
+
+        for (const fileId of crowdinFileIds) {
+            // Export file translation — synchronous, returns a direct download URL
+            const exportRes = await fetch(
+                `https://api.crowdin.com/api/v2/projects/${crowdinProjectId}/translations/builds/files/${fileId}`,
+                {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${CROWDIN_TOKEN}`, 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ targetLanguageId: targetLanguage })
+                }
+            )
+            if (!exportRes.ok) {
+                const err = await exportRes.json() as { errors?: { error: { message: string } }[] }
+                throw new Error(err.errors?.[0]?.error?.message ?? `Failed to export file ${fileId}`)
+            }
+            const exportBody = await exportRes.json() as { data: { url: string } }
+            if (!exportBody.data?.url) throw new Error(`No download URL returned for file ${fileId}`)
+
+            // Download the translated XLIFF directly
+            const xliffRes = await fetch(exportBody.data.url)
+            if (!xliffRes.ok) throw new Error(`Failed to download translated XLIFF for file ${fileId}`)
+            const xliffBuffer = Buffer.from(await xliffRes.arrayBuffer())
+
+            // Get file name from Crowdin
+            const fileInfoRes = await fetch(
+                `https://api.crowdin.com/api/v2/projects/${crowdinProjectId}/files/${fileId}`,
+                { headers: { 'Authorization': `Bearer ${CROWDIN_TOKEN}` } }
+            )
+            if (!fileInfoRes.ok) throw new Error(`Failed to fetch file info for file ${fileId}`)
+            const fileInfoBody = await fileInfoRes.json() as { data: { name: string } }
+            translatedXliffs.push({ name: fileInfoBody.data.name, data: xliffBuffer })
+        }
+
+        // Build new ZIP: translated XLIFFs + style_map.json from the original parse ZIP
+        const JSZip = (await import('jszip')).default
+        const originalZip = await JSZip.loadAsync(xliffZipData)
+        const styleMapEntry = originalZip.file('style_map.json')
+        if (!styleMapEntry) throw new Error('style_map.json not found in stored ZIP')
+        const styleMapData = await styleMapEntry.async('nodebuffer')
+
+        const newZip = new JSZip()
+        newZip.file('style_map.json', styleMapData)
+        for (const xliff of translatedXliffs) {
+            newZip.file(xliff.name, xliff.data)
+        }
+        const newZipBuffer = await newZip.generateAsync({ type: 'nodebuffer' })
+
+        // Send to the IDML reconstruct service
+        const form = new FormData()
+        form.append('idml', new Blob([new Uint8Array(idmlData)]), fileName)
+        form.append('xliffs', new Blob([new Uint8Array(newZipBuffer)]), 'xliff_out.zip')
+
+        const upstreamRes = await fetch('https://idml.pcglangops.com/reconstruct', { method: 'POST', body: form })
+        if (!upstreamRes.ok) {
+            const { error } = await upstreamRes.json() as { error: string }
+            throw new Error(error)
+        }
+        const rebuiltBuffer = Buffer.from(await upstreamRes.arrayBuffer())
+
+        await completeIdmlRecord(id, rebuiltBuffer)
+        res.json({ message: 'Reconstruction complete' })
+
+    } catch (e) {
+        res.status(500).json({ error: e instanceof Error ? e.message : 'Unknown error' })
+    }
+})
+
+
+/*
+ * GET /api/idml/storage/:id/download
+ * Stream the rebuilt IDML file to the client.
+ */
+router.get('/api/idml/storage/:id/download', async (req, res) => {
+    const id = Number(req.params.id)
+    if (isNaN(id)) return res.status(400).json({ error: 'Invalid ID' })
+    try {
+        const record = await getRebuiltIdml(id)
+        if (!record) return res.status(404).json({ error: 'Record not found or reconstruction not yet complete' })
+        const baseName = record.fileName.replace(/\.idml$/i, '')
+        res.setHeader('Content-Type', 'application/octet-stream')
+        res.setHeader('Content-Disposition', `attachment; filename="${baseName}_rebuilt.idml"`)
+        res.send(record.data)
+    } catch (e) {
+        res.status(500).json({ error: e instanceof Error ? e.message : 'Unknown error' })
+    }
+})
+
 
 export default router;
