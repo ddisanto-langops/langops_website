@@ -125,6 +125,7 @@ export interface XliffEntry {
     originalName: string   // the filename as it came out of the ZIP
     displayName: string    // what the user has typed in the rename box
     content: Blob          // the raw file bytes, ready to POST
+    summary?: string       // first few source segments, shown as a tooltip
 }
 
 export interface IdmlStorageRecord {

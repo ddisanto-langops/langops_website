@@ -14,10 +14,23 @@ import type { XliffEntry, IdmlStorageRecord } from '../../../shared/types';
 
 type UploadStatus = 'idle' | 'parsing' | 'ready' | 'uploading' | 'done' | 'error';
 
+/**
+ * Strips characters that are prohibited in filenames across Windows/Unix
+ * and by the Crowdin API: \ / : * ? " < > | and ASCII control characters.
+ * Also collapses runs of whitespace and trims the result.
+ */
+function sanitizeFileName(name: string): string {
+    return name
+        .replace(/[\x00-\x1f\\/:|*?"<>]/g, '')  // strip prohibited chars
+        .replace(/\s+/g, ' ')                      // collapse whitespace
+        .trim();
+}
+
 export function FileUpload() {
 
     // === Project / language selection ===
     const [projects, setProjects] = useState<CrowdinProject[]>([]);
+    const [langNameMap, setLangNameMap] = useState<Record<string, string>>({});
     const [selectedProject, setSelectedProject] = useState<CrowdinProject | null>(null);
     const [targetLanguage, setTargetLanguage] = useState('');
 
@@ -35,7 +48,18 @@ export function FileUpload() {
 
     useEffect(() => {
         fetchCrowdinProjects()
-            .then(setProjects)
+            .then(data => {
+                const sorted = [...data].sort((a, b) => a.name.localeCompare(b.name));
+                setProjects(sorted);
+                // Build a flat id→name map from all projects' target language lists
+                const map: Record<string, string> = {};
+                for (const proj of sorted) {
+                    for (const lang of proj.targetLanguages) {
+                        map[lang.id] = lang.name;
+                    }
+                }
+                setLangNameMap(map);
+            })
             .catch(e => console.error('Could not load Crowdin projects:', e));
         refreshStorage();
     }, []);
@@ -65,11 +89,26 @@ export function FileUpload() {
             const entries: XliffEntry[] = await Promise.all(
                 Object.entries(loaded.files)
                     .filter(([name, entry]) => !entry.dir && name.endsWith('.xliff'))
-                    .map(async ([name, entry]) => ({
-                        originalName: name,
-                        displayName: name,
-                        content: await entry.async('blob'),
-                    }))
+                    .map(async ([name, entry]) => {
+                        const blob = await entry.async('blob');
+
+                        // Parse XLIFF XML to extract the first few source segments as a tooltip
+                        let summary: string | undefined;
+                        try {
+                            const text = await entry.async('text');
+                            const doc = new DOMParser().parseFromString(text, 'application/xml');
+                            const segments = Array.from(doc.querySelectorAll('source'))
+                                .map(el => el.textContent?.trim())
+                                .filter((s): s is string => !!s && s.length > 0)
+                                .slice(0, 6)
+                                .join('\n');
+                            if (segments) summary = segments;
+                        } catch {
+                            // tooltip is best-effort; don't block the upload flow
+                        }
+
+                        return { originalName: name, displayName: name, content: blob, summary };
+                    })
             );
 
             setXliffEntries(entries);
@@ -89,8 +128,13 @@ export function FileUpload() {
 
         try {
             for (const entry of xliffEntries) {
+                const fileName = sanitizeFileName(
+                    entry.displayName.endsWith('.xliff')
+                        ? entry.displayName
+                        : `${entry.displayName}.xliff`
+                );
                 const { crowdinFileId } = await uploadXliffToCrowdin(
-                    entry.displayName,
+                    fileName,
                     entry.content,
                     String(selectedProject.id)
                 );
@@ -161,7 +205,7 @@ export function FileUpload() {
             {/* ── Project + language selectors ── */}
             <h3>IDML Upload & Reconstruction</h3>
             <p id='idml-notice'>
-                On this page you can upload IDML magazine files to Crowdin as individual articles. Once you upload an IDML here, each story is extracted as a separate article, and parsed into XLIFF for upload to Crowdin. Input fields will then appear: <strong>ensure you rename the file as desired.</strong> <br></br><br></br>During translation, the data needed to reconstruct the IDML is stored in a database. Currently stored files are shown in the table below. <br></br><br></br>When translation is <strong>fully approved</strong>, click on "Reconstruct" to parse the translated files back into an IDML. This may take a couple minutes to complete. <br></br><br></br> <strong>Never delete a file from the table unless the reconstruction was successful.</strong>
+                On this page you can upload an IDML magazine file and split it into individually named articles for Crowdin. Once you click "choose file" you'll be able to rename each article based on the provided preview text. Upload to Crowdin may take a couple minutes. <br></br><br></br><strong>When all article translations are fully approved</strong>, click on "Reconstruct" to parse the translated files back into an IDML. This may take some time. <br></br><br></br> <strong>Never delete a file from the table below unless the reconstruction was successful.</strong>
             </p>
             <div className='idml-selectors'>
                 <label className='idml-selector-label'>
@@ -216,14 +260,20 @@ export function FileUpload() {
                     <p className='idml-hint'>Rename files before uploading.</p>
                     {xliffEntries.map((entry, i) => (
                         <div key={entry.originalName} className='idml-xliff-row'>
-                            <span className='idml-xliff-original'>{entry.originalName}</span>
+                            <span
+                                className='idml-xliff-original'
+                                title={entry.summary}
+                            >
+                                {entry.originalName}
+                            </span>
+                            <p>{entry.summary}</p>
                             <span>→</span>
                             <input
                                 className='idml-xliff-input'
                                 value={entry.displayName}
                                 onChange={e => setXliffEntries(prev =>
                                     prev.map((item, idx) =>
-                                        idx === i ? { ...item, displayName: e.target.value } : item
+                                        idx === i ? { ...item, displayName: sanitizeFileName(e.target.value) } : item
                                     )
                                 )}
                             />
@@ -266,7 +316,7 @@ export function FileUpload() {
                                     <tr key={record.id}>
                                         <td>{record.fileName}</td>
                                         <td>{record.crowdinProjectName ?? '—'}</td>
-                                        <td>{record.targetLanguage ?? '—'}</td>
+                                        <td>{record.targetLanguage ? (langNameMap[record.targetLanguage] ?? record.targetLanguage) : '—'}</td>
                                         <td>
                                             {isReconstructing
                                                 ? <span className='idml-status-reconstructing'>Reconstructing…</span>
