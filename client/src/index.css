@@ -883,3 +883,11 @@ td {
     border-color: rgb(80, 255, 173);
     box-shadow: 0 4px 12px hsla(160, 84%, 49%, 0.849);
 }
+
+
+.global-results-div {
+    display: flex;
+    flex-direction: row;
+    gap: 200px;
+    justify-content: center;
+}

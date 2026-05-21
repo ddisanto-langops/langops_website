@@ -17,10 +17,10 @@ export interface BaseProduct {
 
 export interface ActiveProduct {
     /*
-    * Defined as a card on the LangOps Trello Board
-    * whose title contains a valid product code, 
-    * target language, and is not archived, 
-    * though it may be published.
+     * Defined as a card on the LangOps Trello Board
+     * whose title contains a valid product code, 
+     * target language, and is not archived, 
+     * though it may be published.
     */
     id: string
     title: string
@@ -144,4 +144,26 @@ export type CrowdinProject = {
     id: number
     name: string
     targetLanguages: { id: string; name: string }[]
+}
+
+export interface GlobalSearchRecord {
+    id: string
+    title: string
+    productCode: string
+    targetLanguage: string
+    productStatus: string | null
+    mediaGroups: string[]
+    published: boolean
+    dateLastActivity: string | null
+    dueDate: string | null
+    datePublished: string | null
+    trelloUrl: string,
+    editorUrl: string | null
+    crowdinUrl: string | null
+    articleUrl: string | null
+    translationProgress: number
+    approvalProgress: number
+    wordCount: number | null
+    localizedTitle: string | null
+    dateArchived: string
 }

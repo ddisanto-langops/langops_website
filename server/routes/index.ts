@@ -6,7 +6,8 @@ import {
     editCompletion, 
     getActiveProducts, 
     getCard, 
-    getCompletions, 
+    getCompletions,
+    getFilteredCompletions, 
     getCount, 
     getProductCount, 
     restoreCompletion,
@@ -34,12 +35,24 @@ router.get("/api/products", async (req, res) => {
 
     } catch (error) {
         error instanceof Error ? res.status(500).json({ error: error.message }) :
-            res.status(500).json({ error: "GET /api/data: Unknown error" })
+            res.status(500).json({ error: "GET /api/products: Unknown error" })
+    }
+})
+
+
+router.get("/api/completions", async (req, res) => {
+    try {
+        const archivedProducts = await getCompletions()
+        res.json(archivedProducts)
+
+    } catch (error) {
+        error instanceof Error ? res.status(500).json({ error: error.message }) :
+            res.status(500).json({ error: "GET /api/completions: Unknown error" })
     }
 })
 
 /*
- * GET /api/completions
+ * GET /api/completions/wordcount
  * This is data is for the upper section (word count) 
  * of the dashboard page, counting completions and published products.
  * It is distinct from the detailed table view 
@@ -64,7 +77,7 @@ router.get('/api/completions/wordcount', async (req, res) => {
         
     } catch (error) {
         error instanceof Error ? res.status(500).json({ error: error.message }) :
-            res.status(500).json({ error: "GET /api/completions: Unknown error" })
+            res.status(500).json({ error: "GET /api/completions/wordcount: Unknown error" })
     }
 })
 
@@ -97,7 +110,7 @@ router.get("/api/completions/byproduct", async (req, res) => {
  * table, as opposed to the dashboard which also
  * queries the completions database.
 */
-router.get('/api/completions', async (req, res) => {
+router.get('/api/completions/filter', async (req, res) => {
     const filters: ApiFilters = {
         lang: getQueryString(req.query.lang),
         code: getQueryString(req.query.code),
@@ -112,7 +125,7 @@ router.get('/api/completions', async (req, res) => {
     }
     
     try {
-        const tableData = await getCompletions(filters)
+        const tableData = await getFilteredCompletions(filters)
         res.json(tableData)
 
     } catch (error) {
@@ -122,7 +135,7 @@ router.get('/api/completions', async (req, res) => {
 })
 
 // Endpoint for global search page
-router.get('/api/all', async (req, res) => {
+router.get('/api/all/filter', async (req, res) => {
 
     try {
         const filters: ApiFilters = {
@@ -139,7 +152,7 @@ router.get('/api/all', async (req, res) => {
         }
     
         const products = await getActiveProducts()
-        const completions = await getCompletions(filters)
+        const completions = await getFilteredCompletions(filters)
         const responseData = {
             activeProducts: products,
             completions: completions

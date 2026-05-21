@@ -6,7 +6,13 @@ export async function fetchProducts() {
     return response.json()
 }
 
-export async function fetchCompletions(filters: ApiFilters) {
+export async function fetchCompletions() {
+    const response = await fetch("/api/completions")
+    if (!response.ok) throw new Error('Failed to fetch products')
+    return response.json()
+}
+
+export async function fetchFilteredCompletions(filters: ApiFilters) {
     const params = new URLSearchParams()
 
     if (filters.lang) params.append('lang', filters.lang)
@@ -38,7 +44,7 @@ export async function queryAllCompletions(filters: ApiFilters) {
     if (filters.sortDir) params.append('sortDir', filters.sortDir)
 
     const query = params.toString()
-    const url = `/api/completions${query ? `?${query}` : ''}`
+    const url = `/api/completions/filter${query ? `?${query}` : ''}`
 
     const response = await fetch(url)
     if (!response.ok) throw new Error("Failed to fetch completions data.")
@@ -61,7 +67,7 @@ export async function globalSearchQuery(filters: ApiFilters) {
 
     const query = params.toString()
 
-    const url = `/api/all${query ? `?${query}` : ''}`
+    const url = `/api/all/filter${query ? `?${query}` : ''}`
 
     const response = await fetch(url)
     if (!response.ok) throw new Error("Failed to fetch global search data.")

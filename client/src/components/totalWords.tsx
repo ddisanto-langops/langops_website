@@ -1,7 +1,7 @@
 import type { ApiFilters } from "../../../shared/types"
 
 import { useQuery } from "@tanstack/react-query"
-import { fetchCompletions } from "../../services/api"
+import { fetchFilteredCompletions } from "../../services/api"
 
 interface TotalWordsProps {
   filters: ApiFilters
@@ -10,7 +10,7 @@ export function TotalWords({filters}: TotalWordsProps) {
 
     const { data, isLoading } = useQuery({
     queryKey: ['completions', filters],
-    queryFn: () => fetchCompletions(filters)
+    queryFn: () => fetchFilteredCompletions(filters)
   })
 
   if (isLoading) return <p>Loading...</p>

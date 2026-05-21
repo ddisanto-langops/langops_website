@@ -288,7 +288,32 @@ export async function getActiveProducts(): Promise<ActiveProduct[]> {
 
 
 // GET /api/completions
-export async function getCompletions(filters: ApiFilters): Promise<{data: ArchivedProduct[], totalCount: number, page: number, pageSize: number}> {
+export async function getCompletions(): Promise<ArchivedProduct[]> {
+    const request = await pool.query(`
+        SELECT
+            id,
+            title,
+            localized_title     AS "localizedTitle",
+            product_code        AS "productCode",
+            target_language     AS "targetLanguage",
+            media_groups        AS "mediaGroups",
+            wordcount           AS "wordCount",
+            date_published      AS "datePublished",
+            date_archived       AS "dateArchived",
+            trello_url          AS "trelloUrl",
+            editor_url          AS "editorUrl",
+            article_url         AS "articleUrl",
+            COUNT(*) OVER()     AS total_count
+        FROM completions
+        ORDER BY date_archived DESC
+        `)
+    
+    return request.rows
+}
+
+
+// GET /api/completions/filter
+export async function getFilteredCompletions(filters: ApiFilters): Promise<{data: ArchivedProduct[], totalCount: number, page: number, pageSize: number}> {
     const pageNum = filters.page ? Math.max(1, filters.page) : 1
     const limitNum = Math.min(200, Math.max(1, filters.limit || 50))
     const offset = (pageNum - 1) * limitNum
@@ -669,4 +694,10 @@ export async function getRebuiltIdml(id: number): Promise<{ data: Buffer; fileNa
 
 export async function deleteIdmlRecord(id: number): Promise<void> {
     await pool.query(`DELETE FROM idml_storage WHERE id = $1`, [id])
+}
+
+
+export async function getGlobalSearchData(filters: ApiFilters) {
+    
+    
 }
