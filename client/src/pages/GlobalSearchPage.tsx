@@ -14,40 +14,46 @@ export function GlobalSearchPage() {
     return (
         <>
             <NavBar />
-            <input
-                type="radio"
-                name="table-select"
-                value={"products"}
-                onChange={handleSelect}
-            >
-            </input>
-            <label htmlFor="products">Products</label>
-            <input
-                type="radio"
-                name="table-select"
-                value={"completions"}
-                onChange={handleSelect}
-            >
-            </input>
-            <label htmlFor="products">Completions</label>
-            <input
-                type="radio"
-                name="table-select"
-                value={"all"}
-                onChange={handleSelect}
-            >
-            </input>
-            <label htmlFor="products">All</label>
-            <input
-                type="radio"
-                name="table-select"
-                value={"deletions"}
-                onChange={handleSelect}
-            >
-            </input>
-            <label htmlFor="products">Deletions</label>
-
+            <div id="global-table-selection-div">
+                <input
+                    className="table-radio-selector"
+                    type="radio"
+                    name="table-select"
+                    value={"products"}
+                    onChange={handleSelect}
+                >
+                </input>
+                <label htmlFor="products">Products</label>
+                <input
+                    className="table-radio-selector"
+                    type="radio"
+                    name="table-select"
+                    value={"completions"}
+                    onChange={handleSelect}
+                >
+                </input>
+                <label htmlFor="products">Completions</label>
+                <input
+                    className="table-radio-selector"
+                    type="radio"
+                    name="table-select"
+                    value={"all"}
+                    onChange={handleSelect}
+                >
+                </input>
+                <label htmlFor="products">All</label>
+                <input
+                    className="table-radio-selector"
+                    type="radio"
+                    name="table-select"
+                    value={"deletions"}
+                    onChange={handleSelect}
+                >
+                </input>
+                <label htmlFor="products">Deletions</label>
+            </div>
             <div>
+                {selectedTable === "" && <p className="generic-notice">Select a table above to get started.</p>}
                 {selectedTable === "products" && <ProductTable />}
                 {selectedTable === "completions" && <CompletionTable />}
                 {selectedTable === "all" && <AllProductsTable />}

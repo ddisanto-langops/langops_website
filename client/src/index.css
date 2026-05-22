@@ -12,6 +12,30 @@ body {
 
 h2 { overflow-wrap: break-word; }
 
+
+.generic-notice {
+    background-color: #007bff;
+    color: white;
+    padding: 10px;
+    border-radius: 6px;
+    font-size: 1rem;
+    max-width: 50%;
+    text-align: left;
+    justify-self: center;
+
+}
+
+.error-message {
+    background-color: #d31111;
+    color: white;
+    padding: 10px;
+    border-radius: 6px;
+    font-size: 1rem;
+    max-width: 50%;
+    text-align: left;
+    justify-self: center;
+}
+
 /* =======================
    NAVBAR & WEBSITE TITLE
    ======================= */
@@ -244,20 +268,18 @@ h2 { overflow-wrap: break-word; }
    TABLES
    ===================== */
 
-   #product-table-body, #completions-table-body {
+#product-table-body, #completions-table-body {
     text-align: center;
 }
 
 #product-table,
 #completions-table {
     table-layout: auto;
-    width: 100%;
+    width: 95%;
+    margin: 0 auto;
     border-collapse: separate;
     border-spacing: 0 10px;
 }
-
-#product-table { width: 95%; }
-#completions-table { width: 100%; }
 
 .table-sort-div:hover {
     color: coral;
@@ -664,15 +686,6 @@ td {
 
 }
 
-#idml-notice {
-    background-color: #007bff;
-    padding: 10px;
-    border-radius: 6px;
-    font-size: 1rem;
-    max-width: 50%;
-
-}
-
 .idml-selectors {
     display: flex;
     gap: 16px;
@@ -920,6 +933,37 @@ td {
 /* =====================
    ALL PRODUCTS TABLE
    ===================== */
+
+#global-table-selection-div {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    text-align: center;
+    margin: 20px;
+    font-size: 1.5rem;
+    color: white;
+}
+
+.table-radio-selector {
+    background-color: hsl(204, 97%, 39%);
+    appearance: none;
+    height: 20px;
+    width: 20px;
+    border: 2px solid hsl(204, 97%, 39%);
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+.table-radio-selector:checked {
+    background-color: hsl(155, 81%, 43%);
+    appearance: none;
+    height: 20px;
+    width: 20px;
+    border: 2px solid hsl(204, 97%, 39%);
+    box-shadow: 0 0 10px 2px hsl(155, 81%, 43%);
+    border-radius: 50%;
+}
+
 #all-products-page-title {
     color: white;
     justify-self: center;
@@ -931,10 +975,11 @@ td {
     width: 95%;
     border: 4px solid coral;
     border-radius: 6px;
+    margin-bottom: 40px;
 }
 #all-products-table {
     width: 100%;
-    border-collapse: collapse;
+    border-collapse: separate;
 }
 #all-products-table thead,
 #all-products-table tbody {

@@ -161,8 +161,8 @@ export function AllProductsTable() {
         </select>
     )
 
-    if (isLoading && data.length === 0) return <p>Loading...</p>
-    if (isError) return <p>Error loading products.</p>
+    if (isLoading && data.length === 0) return <p className="generic-notice">Loading...</p>
+    if (isError) return <p className="error-message">Error loading products.</p>
 
     return (
         <>

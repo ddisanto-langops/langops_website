@@ -142,20 +142,6 @@ export async function parseIdml(idmlFile: File, sourceLang = 'fr'): Promise<Blob
     return res.blob(); // store this ZIP — it contains style_map.json needed for reconstruct
 }
 
-/** Send original IDML + the ZIP from parseIdml(), receive rebuilt.idml */
-export async function reconstructIdml(idmlFile: File, xliffsZip: File | Blob): Promise<Blob> {
-    const form = new FormData();
-    form.append('idml', idmlFile);
-    form.append('xliffs', xliffsZip, 'xliff_out.zip');
-
-    const res = await fetch(`/api/idml/reconstruct`, { method: 'POST', body: form });
-    if (!res.ok) {
-        const { error } = await res.json();
-        throw new Error(error);
-    }
-    return res.blob();
-}
-
 export async function uploadXliffToCrowdin(
     fileName: string,
     content: Blob,
@@ -217,6 +203,12 @@ export async function deleteIdmlStorage(id: number): Promise<void> {
         const { error } = await res.json()
         throw new Error(error)
     }
+}
+
+export async function fetchDeletions(): Promise<ArchivedProduct[]> {
+    const res = await fetch('/api/deletions')
+    if (!res.ok) throw new Error('Failed to fetch deletions')
+    return res.json()
 }
 
 export async function triggerReconstruct(id: number): Promise<void> {

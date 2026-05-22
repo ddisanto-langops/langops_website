@@ -315,6 +315,29 @@ export async function getCompletions(): Promise<ArchivedProduct[]> {
     return request.rows
 }
 
+export async function getDeletions(): Promise<ArchivedProduct[]> {
+    const request = await pool.query(`
+        SELECT
+            id,
+            provenance,
+            title,
+            NULL::text          AS "localizedTitle",
+            product_code        AS "productCode",
+            target_language     AS "targetLanguage",
+            media_groups        AS "mediaGroups",
+            wordcount           AS "wordCount",
+            date_published      AS "datePublished",
+            date_archived       AS "dateArchived",
+            trello_url          AS "trelloUrl",
+            editor_url          AS "editorUrl",
+            article_url         AS "articleUrl"
+        FROM deletions
+        ORDER BY date_archived DESC
+    `)
+
+    return request.rows
+}
+
 
 // GET /api/completions/filter
 export async function getFilteredCompletions(filters: ApiFilters): Promise<{data: ArchivedProduct[], totalCount: number, page: number, pageSize: number}> {

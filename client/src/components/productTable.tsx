@@ -110,8 +110,8 @@ export function ProductTable() {
     )
   }
 
-  if (isLoading) return <p>Loading...</p>
-  if (isError) return <p>Error loading products.</p>
+  if (isLoading) return <p className="generic-notice">Loading...</p>
+  if (isError) return <p className="error-message">Error loading products.</p>
   
   return (
   <>

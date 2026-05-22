@@ -7,6 +7,7 @@ import {
     getActiveProducts, 
     getCard, 
     getCompletions,
+    getDeletions,
     getFilteredCompletions,
     getFilteredAllProducts,
     getCount, 
@@ -49,6 +50,16 @@ router.get("/api/completions", async (req, res) => {
     } catch (error) {
         error instanceof Error ? res.status(500).json({ error: error.message }) :
             res.status(500).json({ error: "GET /api/completions: Unknown error" })
+    }
+})
+
+router.get("/api/deletions", async (_req, res) => {
+    try {
+        const deletedRecords = await getDeletions()
+        res.json(deletedRecords)
+    } catch (error) {
+        error instanceof Error ? res.status(500).json({ error: error.message }) :
+            res.status(500).json({ error: "GET /api/deletions: Unknown error" })
     }
 })
 
@@ -162,38 +173,6 @@ router.get('/api/all-products/filter', async (req, res) => {
             res.status(500).json({ error: 'GET /api/all-products/filter: Unknown error' })
     }
 })
-
-// Endpoint for global search page
-router.get('/api/all/filter', async (req, res) => {
-
-    try {
-        const filters: ApiFilters = {
-            lang: getQueryString(req.query.lang),
-            code: getQueryString(req.query.code),
-            group: getQueryString(req.query.group),
-            from: getQueryString(req.query.from),
-            to: getQueryString(req.query.to),
-            title: getQueryString(req.query.title),
-            page: Number(getQueryString(req.query.page)) ?? '1',
-            limit: Number(getQueryString(req.query.limit) ?? '50'),
-            sortBy: getQueryString(req.query.sortBy),
-            sortDir: getQueryString(req.query.sortDir)
-        }
-    
-        const products = await getActiveProducts()
-        const completions = await getFilteredCompletions(filters)
-        const responseData = {
-            activeProducts: products,
-            completions: completions
-        }
-        res.json(responseData)
-    } catch (error) {
-        error instanceof Error ? res.status(500).json({ error: error.message }) :
-            res.status(500).json({ error: "GET /api/all: Unknown error" })
-    }
-    
-})
-
 
 // edit completion
 router.put('/api/completions/:id', async (req, res) => {
@@ -369,32 +348,6 @@ router.post('/api/idml/parse', upload.single('idml'), async (req, res) => {
     const zip = await upstream.arrayBuffer();
     res.setHeader('Content-Type', 'application/zip');
     res.send(Buffer.from(zip));
-});
-
-router.post('/api/idml/reconstruct', upload.fields([{ name: 'idml', maxCount: 1 }, { name: 'xliffs', maxCount: 1 }]), async (req, res) => {
-    const files = req.files as Record<string, Express.Multer.File[]> | undefined;
-    const idmlBuffer = files?.['idml']?.[0]?.buffer;
-    const idmlName = files?.['idml']?.[0]?.originalname ?? 'file.idml';
-    const xliffsBuffer = files?.['xliffs']?.[0]?.buffer;
-
-    if (!idmlBuffer || !xliffsBuffer) {
-        return res.status(400).json({ error: 'Both idml and xliffs files are required' });
-    }
-
-    const form = new FormData();
-    form.append('idml', new Blob([new Uint8Array(idmlBuffer)]), idmlName);
-    form.append('xliffs', new Blob([new Uint8Array(xliffsBuffer)]), 'xliff_out.zip');
-
-    const upstream = await fetch('https://idml.pcglangops.com/reconstruct', { method: 'POST', body: form });
-    if (!upstream.ok) {
-        const { error } = await upstream.json();
-        return res.status(502).json({ error });
-    }
-
-    const idml = await upstream.arrayBuffer();
-    res.setHeader('Content-Type', 'application/octet-stream');
-    res.setHeader('Content-Disposition', 'attachment; filename="rebuilt.idml"');
-    res.send(Buffer.from(idml));
 });
 
 

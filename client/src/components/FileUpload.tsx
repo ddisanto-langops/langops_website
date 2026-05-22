@@ -204,7 +204,7 @@ export function FileUpload() {
 
             {/* ── Project + language selectors ── */}
             <h3>IDML Upload & Reconstruction</h3>
-            <p id='idml-notice'>
+            <p className='generic-notice'>
                 On this page you can upload an IDML magazine file and split it into individually named articles for Crowdin. Once you click "choose file" you'll be able to rename each article based on the provided preview text. Upload to Crowdin may take a couple minutes. <br></br><br></br><strong>When all article translations are fully approved</strong>, click on "Reconstruct" to parse the translated files back into an IDML. This may take some time. <br></br><br></br> <strong>Never delete a file from the table below unless the reconstruction was successful.</strong>
             </p>
             <div className='idml-selectors'>

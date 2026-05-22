@@ -133,8 +133,8 @@ export function CompletionTable() {
     )
   }
 
-  if (isLoading && data.length === 0) return <p>Loading...</p>
-  if (isError) return <p>Error loading completions.</p>
+  if (isLoading && data.length === 0) return <p className="generic-notice">Loading...</p>
+  if (isError) return <p className="error-message">Error loading completions.</p>
 
   return (
     <>
@@ -153,7 +153,7 @@ export function CompletionTable() {
       </div>
 
       <div style={{ overflow: 'auto', position: 'relative' }}>
-        <table id="completions-table" style={{ width: '100%' }}>
+        <table id="completions-table">
           <thead id="completions-table-head">
             {table.getHeaderGroups().map(headerGroup => (
               <tr key={headerGroup.id}>
