@@ -1,4 +1,4 @@
-import type { ActiveProduct, ApiFilters, ArchivedProduct, RawTrelloCard } from "../../shared/types.js"
+import type { ActiveProduct, AllProduct, ApiFilters, ArchivedProduct, RawTrelloCard, IdmlStorageRecord } from "../../shared/types.js"
 import { productCodes, supportedLanguages } from "../../shared/constants.js"
 import { ActiveCard, ArchivedCard } from "../classes.js";
 import pool from '../database/databaseConfig.js';
@@ -174,8 +174,8 @@ export async function upsertProducts(products: ActiveProduct[]) {
                 crowdin_url, trello_url, article_url,
                 editor_url, due_date, date_last_activity,
                 published, date_published, translation_progress, 
-                approval_progress, media_groups, wordcount
-            ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17)
+                approval_progress, media_groups, wordcount, provenance
+            ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17, $18)
             ON CONFLICT (id) DO UPDATE SET
                 title                   = EXCLUDED.title,
                 product_code            = EXCLUDED.product_code,
@@ -210,7 +210,8 @@ export async function upsertProducts(products: ActiveProduct[]) {
             product.translationProgress,
             product.approvalProgress,
             product.mediaGroups,
-            product.wordCount ?? null
+            product.wordCount ?? null,
+            'products'
         ])
     }
 }
@@ -221,9 +222,9 @@ export async function upsertArchivedProducts(archivedProducts: ArchivedProduct[]
             INSERT INTO completions (
                 id, title, localized_title, product_code, target_language,
                 media_groups, wordcount, date_published, trello_url,
-                article_url, editor_url, date_archived
+                article_url, editor_url, date_archived, provenance
             )
-            SELECT $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12
+            SELECT $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13
             WHERE NOT EXISTS (
                 SELECT 1 FROM deletions WHERE deletions.id = $1
             )
@@ -249,7 +250,8 @@ export async function upsertArchivedProducts(archivedProducts: ArchivedProduct[]
             product.trelloUrl,
             product.articleUrl ?? null,
             product.editorUrl ?? null,
-            product.dateArchived ?? null
+            product.dateArchived ?? null,
+            'completions'
         ])
         if (response.rowCount === 0) {
             console.log(`Skipped insertion: ${product.title} | Reason: is deleted`)
@@ -259,10 +261,11 @@ export async function upsertArchivedProducts(archivedProducts: ArchivedProduct[]
 
 
 // GET /api/products 
-export async function getActiveProducts() {
+export async function getActiveProducts(): Promise<ActiveProduct[]> {
     const request = await pool.query(`
         SELECT 
             id,
+            provenance,
             title,
             product_code,
             target_language AS "targetLanguage",
@@ -288,7 +291,56 @@ export async function getActiveProducts() {
 
 
 // GET /api/completions
-export async function getCompletions(filters: ApiFilters) {
+export async function getCompletions(): Promise<ArchivedProduct[]> {
+    const request = await pool.query(`
+        SELECT
+            id,
+            provenance,
+            title,
+            localized_title     AS "localizedTitle",
+            product_code        AS "productCode",
+            target_language     AS "targetLanguage",
+            media_groups        AS "mediaGroups",
+            wordcount           AS "wordCount",
+            date_published      AS "datePublished",
+            date_archived       AS "dateArchived",
+            trello_url          AS "trelloUrl",
+            editor_url          AS "editorUrl",
+            article_url         AS "articleUrl",
+            COUNT(*) OVER()     AS total_count
+        FROM completions
+        ORDER BY date_archived DESC
+        `)
+    
+    return request.rows
+}
+
+export async function getDeletions(): Promise<ArchivedProduct[]> {
+    const request = await pool.query(`
+        SELECT
+            id,
+            provenance,
+            title,
+            NULL::text          AS "localizedTitle",
+            product_code        AS "productCode",
+            target_language     AS "targetLanguage",
+            media_groups        AS "mediaGroups",
+            wordcount           AS "wordCount",
+            date_published      AS "datePublished",
+            date_archived       AS "dateArchived",
+            trello_url          AS "trelloUrl",
+            editor_url          AS "editorUrl",
+            article_url         AS "articleUrl"
+        FROM deletions
+        ORDER BY date_archived DESC
+    `)
+
+    return request.rows
+}
+
+
+// GET /api/completions/filter
+export async function getFilteredCompletions(filters: ApiFilters): Promise<{data: ArchivedProduct[], totalCount: number, page: number, pageSize: number}> {
     const pageNum = filters.page ? Math.max(1, filters.page) : 1
     const limitNum = Math.min(200, Math.max(1, filters.limit || 50))
     const offset = (pageNum - 1) * limitNum
@@ -308,6 +360,7 @@ export async function getCompletions(filters: ApiFilters) {
     const response = await pool.query(`
         SELECT
             id,
+            provenance,
             title,
             localized_title     AS "localizedTitle",
             product_code        AS "productCode",
@@ -425,6 +478,7 @@ export async function editCompletion(id: string, record: Partial<ArchivedProduct
         WHERE id = $11
         RETURNING
             id,
+            provenance,
             title,
             localized_title     AS "localizedTitle",
             product_code        AS "productCode",
@@ -475,6 +529,7 @@ export async function editProduct(id: string, record: Partial<ActiveProduct>) {
         WHERE id = $16
         RETURNING 
             id,
+            provenance,
             title,
             product_code AS "productCode",
             product_status AS "productStatus",
@@ -544,18 +599,23 @@ export async function deleteCompletion(id: string) {
             DELETE FROM completions
             WHERE id = $1
             RETURNING 
-            id, title, localized_title, product_code, 
+            id, provenance, title, localized_title, product_code, 
             target_language, media_groups, 
             wordcount, date_published, date_archived, 
             trello_url, article_url, editor_url
         )
         INSERT INTO deletions (
-            id, title, localized_title, product_code, 
+            id, provenance, title, localized_title, product_code, 
             target_language, media_groups, 
             wordcount, date_published, date_archived, 
             trello_url, article_url, editor_url
         ) 
-        SELECT * FROM moved_record
+        SELECT
+            id, 'deletions', title, localized_title, product_code,
+            target_language, media_groups,
+            wordcount, date_published, date_archived,
+            trello_url, article_url, editor_url
+        FROM moved_record
         RETURNING *;
     `, [id])
 
@@ -568,20 +628,241 @@ export async function restoreCompletion(id: string) {
             DELETE FROM deletions
             WHERE id = $1
             RETURNING 
-            id, title, localized_title, product_code, 
+            id, provenance, title, localized_title, product_code, 
             target_language, media_groups, 
             wordcount, date_published, date_archived, 
             trello_url, article_url, editor_url
         )
         INSERT INTO completions (
-            id, title, localized_title, product_code, 
+            id, provenance, title, localized_title, product_code, 
             target_language, media_groups, 
             wordcount, date_published, date_archived, 
             trello_url, article_url, editor_url
         ) 
-        SELECT * FROM moved_record
+        SELECT
+            id, 'completions',
+            title, localized_title, product_code, 
+            target_language, media_groups, 
+            wordcount, date_published, date_archived, 
+            trello_url, article_url, editor_url
+        FROM moved_record
         RETURNING *;
     `, [id])
 
     return response
+}
+
+/*
+ * IDML Storage
+ * Stores original IDML files, their parse output ZIPs,
+ * and rebuilt IDML files after Crowdin reconstruction.
+ */
+
+export async function saveIdmlRecord(
+    fileName: string,
+    idmlData: Buffer,
+    xliffZipData: Buffer,
+    crowdinProjectId: string,
+    crowdinProjectName: string,
+    targetLanguage: string,
+    crowdinFileIds: number[]
+): Promise<number> {
+    const result = await pool.query(`
+        INSERT INTO idml_storage
+            (file_name, idml_data, xliff_zip_data, crowdin_project_id, crowdin_project_name, target_language, crowdin_file_ids)
+        VALUES ($1, $2, $3, $4, $5, $6, $7)
+        RETURNING id
+    `, [fileName, idmlData, xliffZipData, crowdinProjectId, crowdinProjectName, targetLanguage, JSON.stringify(crowdinFileIds)])
+    return result.rows[0].id as number
+}
+
+export async function listIdmlRecords(): Promise<IdmlStorageRecord[]> {
+    const result = await pool.query(`
+        SELECT
+            id,
+            file_name            AS "fileName",
+            crowdin_project_id   AS "crowdinProjectId",
+            crowdin_project_name AS "crowdinProjectName",
+            target_language      AS "targetLanguage",
+            crowdin_file_ids     AS "crowdinFileIds",
+            status,
+            created_at           AS "createdAt",
+            updated_at           AS "updatedAt"
+        FROM idml_storage
+        ORDER BY created_at DESC
+    `)
+    return result.rows
+}
+
+export async function getIdmlRecordData(id: number): Promise<{
+    fileName: string
+    idmlData: Buffer
+    xliffZipData: Buffer
+    crowdinProjectId: string
+    targetLanguage: string
+    crowdinFileIds: number[]
+} | null> {
+    const result = await pool.query(`
+        SELECT
+            file_name          AS "fileName",
+            idml_data          AS "idmlData",
+            xliff_zip_data     AS "xliffZipData",
+            crowdin_project_id AS "crowdinProjectId",
+            target_language    AS "targetLanguage",
+            crowdin_file_ids   AS "crowdinFileIds"
+        FROM idml_storage
+        WHERE id = $1
+    `, [id])
+    return result.rows[0] ?? null
+}
+
+export async function completeIdmlRecord(id: number, rebuiltData: Buffer): Promise<void> {
+    await pool.query(`
+        UPDATE idml_storage
+        SET status = 'complete', rebuilt_idml_data = $2, updated_at = NOW()
+        WHERE id = $1
+    `, [id, rebuiltData])
+}
+
+export async function getRebuiltIdml(id: number): Promise<{ data: Buffer; fileName: string } | null> {
+    const result = await pool.query(`
+        SELECT rebuilt_idml_data AS data, file_name AS "fileName"
+        FROM idml_storage
+        WHERE id = $1 AND status = 'complete'
+    `, [id])
+    return result.rows[0] ?? null
+}
+
+export async function deleteIdmlRecord(id: number): Promise<void> {
+    await pool.query(`DELETE FROM idml_storage WHERE id = $1`, [id])
+}
+
+
+export async function getFilteredAllProducts(filters: ApiFilters): Promise<{ data: AllProduct[], totalCount: number, page: number, pageSize: number }> {
+    const pageNum = filters.page ? Math.max(1, filters.page) : 1
+    const limitNum = Math.min(200, Math.max(1, filters.limit || 50))
+    const offset = (pageNum - 1) * limitNum
+
+    const allowedSortColumns = {
+        source: 'source',
+        title: 'title',
+        productCode: 'product_code',
+        targetLanguage: 'target_language',
+        datePublished: 'date_published',
+        wordCount: 'wordcount',
+        dateArchived: 'date_archived',
+    } as const
+    const sortColumn = filters.sortBy && filters.sortBy in allowedSortColumns
+        ? allowedSortColumns[filters.sortBy as keyof typeof allowedSortColumns]
+        : 'date_published'
+    const sortDirection = filters.sortDir === 'asc' ? 'ASC' : 'DESC'
+
+    const response = await pool.query(`
+        SELECT
+            source,
+            id,
+            title,
+            product_code           AS "productCode",
+            target_language        AS "targetLanguage",
+            media_groups           AS "mediaGroups",
+            wordcount              AS "wordCount",
+            date_published         AS "datePublished",
+            trello_url             AS "trelloUrl",
+            editor_url             AS "editorUrl",
+            article_url            AS "articleUrl",
+            product_status         AS "productStatus",
+            due_date               AS "dueDate",
+            date_last_activity     AS "dateLastActivity",
+            translation_progress   AS "translationProgress",
+            approval_progress      AS "approvalProgress",
+            published,
+            crowdin_url            AS "crowdinUrl",
+            localized_title        AS "localizedTitle",
+            date_archived          AS "dateArchived",
+            COUNT(*) OVER()        AS total_count
+        FROM (
+            SELECT
+                'active'::text          AS source,
+                id,
+                title,
+                product_code,
+                target_language,
+                media_groups,
+                wordcount,
+                date_published,
+                trello_url,
+                editor_url,
+                article_url,
+                product_status,
+                due_date,
+                date_last_activity,
+                translation_progress,
+                approval_progress,
+                published,
+                crowdin_url,
+                NULL::text              AS localized_title,
+                NULL::timestamptz       AS date_archived
+            FROM products
+            UNION ALL
+            SELECT
+                'archived'::text        AS source,
+                id,
+                title,
+                product_code,
+                target_language,
+                media_groups,
+                wordcount,
+                date_published,
+                trello_url,
+                editor_url,
+                article_url,
+                NULL::text              AS product_status,
+                NULL::timestamptz       AS due_date,
+                NULL::timestamptz       AS date_last_activity,
+                NULL::integer           AS translation_progress,
+                NULL::integer           AS approval_progress,
+                NULL::boolean           AS published,
+                NULL::text              AS crowdin_url,
+                localized_title,
+                date_archived
+            FROM completions
+            UNION ALL
+            SELECT
+                'deleted'::text         AS source,
+                id,
+                title,
+                product_code,
+                target_language,
+                media_groups,
+                wordcount,
+                date_published,
+                trello_url,
+                editor_url,
+                article_url,
+                NULL::text              AS product_status,
+                NULL::timestamptz       AS due_date,
+                NULL::timestamptz       AS date_last_activity,
+                NULL::integer           AS translation_progress,
+                NULL::integer           AS approval_progress,
+                NULL::boolean           AS published,
+                NULL::text              AS crowdin_url,
+                NULL::text              AS localized_title,
+                date_archived
+            FROM deletions
+        ) combined
+        WHERE
+            ($1::text IS NULL OR target_language ILIKE '%' || $1 || '%')
+            AND ($2::text IS NULL OR product_code ILIKE '%' || $2 || '%')
+            AND ($3::text IS NULL OR $3 = ANY(media_groups))
+            AND ($4::date IS NULL OR date_published >= $4::date)
+            AND ($5::date IS NULL OR date_published <= $5::date)
+            AND ($6::text IS NULL OR title ILIKE '%' || $6 || '%')
+            AND ($9::text IS NULL OR source = $9)
+        ORDER BY ${sortColumn} ${sortDirection} NULLS LAST, id
+        LIMIT $7 OFFSET $8
+    `, [filters.lang ?? null, filters.code ?? null, filters.group ?? null, filters.from ?? null, filters.to ?? null, filters.title ?? null, limitNum, offset, filters.source ?? null])
+
+    const totalCount = response.rows.length > 0 ? parseInt(response.rows[0].total_count, 10) : 0
+    const data: AllProduct[] = response.rows.map(({ total_count, ...row }) => row)
+    return { data, totalCount, page: pageNum, pageSize: limitNum }
 }

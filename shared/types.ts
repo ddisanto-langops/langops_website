@@ -17,10 +17,10 @@ export interface BaseProduct {
 
 export interface ActiveProduct {
     /*
-    * Defined as a card on the LangOps Trello Board
-    * whose title contains a valid product code, 
-    * target language, and is not archived, 
-    * though it may be published.
+     * Defined as a card on the LangOps Trello Board
+     * whose title contains a valid product code, 
+     * target language, and is not archived, 
+     * though it may be published.
     */
     id: string
     title: string
@@ -69,6 +69,7 @@ export interface ApiFilters {
     from?: string | undefined
     to?: string | undefined
     title?: string | undefined
+    source?: string | undefined
     page?: number | undefined
     limit?: number | undefined
     pageSize?: number | undefined
@@ -121,33 +122,52 @@ export interface RawTrelloCard {
   idLabels: string[]
 }
 
-export interface CardCustomFieldWebResponse {
-    value: {checked: boolean}
-    idCustomField: string
+export interface XliffEntry {
+    originalName: string   // the filename as it came out of the ZIP
+    displayName: string    // what the user has typed in the rename box
+    content: Blob          // the raw file bytes, ready to POST
+    summary?: string       // first few source segments, shown as a tooltip
 }
 
-export interface CardRefreshWebResponse {
-    id: string
+export interface IdmlStorageRecord {
+    id: number
+    fileName: string
+    crowdinProjectId: string | null
+    crowdinProjectName: string | null
+    targetLanguage: string | null
+    crowdinFileIds: number[]
+    status: 'pending' | 'complete'
+    createdAt: string
+    updatedAt: string
+}
+
+export type CrowdinProject = {
+    id: number
     name: string
-    dateLastActivity: string
-    due: string
-    url: string
-    actions: [
-        {
-            data: {
-                checkItem?: {
-                    id: string
-                    name: string
-                    state: string
-                }
-                customFieldItem?: [
-                    value: {
-                        checked: boolean
-                    },
-                    idCustomField: string
-                ]
-            }
-        }
-    ]
-    
+    targetLanguages: { id: string; name: string }[]
+}
+
+export interface AllProduct {
+    source: 'active' | 'archived' | 'deleted'
+    id: string
+    title: string
+    productCode: string
+    targetLanguage: string
+    mediaGroups: string[]
+    wordCount: number | null
+    datePublished: string | null
+    trelloUrl: string
+    editorUrl: string | null
+    articleUrl: string | null
+    // active-only
+    productStatus: string | null
+    dueDate: string | null
+    dateLastActivity: string | null
+    translationProgress: number | null
+    approvalProgress: number | null
+    published: boolean | null
+    crowdinUrl: string | null
+    // archived-only
+    localizedTitle: string | null
+    dateArchived: string | null
 }

@@ -1,6 +1,6 @@
 import type { ArchivedProduct } from "../../../shared/types";
 
-import { fetchAdminCompletions } from "../../services/api"
+import { queryAllCompletions } from "../../services/api"
 import { ClickFilter } from "./clickFilter";
 import { useQuery, keepPreviousData } from "@tanstack/react-query"
 import { useState, useEffect } from "react";
@@ -14,6 +14,7 @@ import {
 } from '@tanstack/react-table'
 import { formatDate } from "../../services/formatDate"
 import { groupDisplayNames } from "../../../shared/constants"
+import { EditModal } from "./CompletionModal";
 
 const columnHelper = createColumnHelper<ArchivedProduct>()
 
@@ -43,11 +44,7 @@ const columns = [
 
 const PAGE_SIZE = 50
 
-interface CompletionTableProps {
-  onRowClick: (row: ArchivedProduct) => void
-}
-
-export function CompletionTable({ onRowClick }: CompletionTableProps) {
+export function CompletionTable() {
   const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: PAGE_SIZE })
   const [sorting, setSorting] = useState([{ id: 'datePublished', desc: true }])
   const [groupFilter, setGroupFilter] = useState<string | null>(null)
@@ -56,6 +53,8 @@ export function CompletionTable({ onRowClick }: CompletionTableProps) {
   const [langInput, setLangInput] = useState('')
   const [debouncedTextFilters, setDebouncedTextFilters] = useState({ title: '', code: '', lang: '' })
   const [activeTab, setActiveTab] = useState<string | null>(null)
+  const [selectedRow, setSelectedRow] = useState<ArchivedProduct | null>(null)
+  const [modalIsOpen, setModalIsOpen] = useState(false)
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -85,7 +84,7 @@ export function CompletionTable({ onRowClick }: CompletionTableProps) {
 
   const { data: response = { data: [], totalCount: 0 }, isLoading, isError } = useQuery({
     queryKey: ['completions', queryFilters],
-    queryFn: () => fetchAdminCompletions(queryFilters),
+    queryFn: () => queryAllCompletions(queryFilters),
     placeholderData: keepPreviousData,
   })
 
@@ -118,11 +117,28 @@ export function CompletionTable({ onRowClick }: CompletionTableProps) {
     targetLanguage: [langInput, setLangInput],
   }
 
-  if (isLoading && data.length === 0) return <p>Loading...</p>
-  if (isError) return <p>Error loading completions.</p>
+  const handleRowClick = (row: ArchivedProduct) => {
+    setSelectedRow(row)
+    setModalIsOpen(true)
+  }
+
+  const onModalClose = () => {
+    setModalIsOpen(false)
+  }
+
+  const GuardedCompletionModal = () => {
+    if (!selectedRow) return null
+    return (
+      <EditModal record={selectedRow} isOpen={modalIsOpen} onClose={onModalClose}/>
+    )
+  }
+
+  if (isLoading && data.length === 0) return <p className="generic-notice">Loading...</p>
+  if (isError) return <p className="error-message">Error loading completions.</p>
 
   return (
     <>
+      <GuardedCompletionModal  />
       <h2 id='completions-page-title'>Completions</h2>
       <ClickFilter activeTab={activeTab} onTabClick={handleTabClick}/>
       <div className="pagination-controls">
@@ -137,7 +153,7 @@ export function CompletionTable({ onRowClick }: CompletionTableProps) {
       </div>
 
       <div style={{ overflow: 'auto', position: 'relative' }}>
-        <table id="completions-table" style={{ width: '100%' }}>
+        <table id="completions-table">
           <thead id="completions-table-head">
             {table.getHeaderGroups().map(headerGroup => (
               <tr key={headerGroup.id}>
@@ -172,7 +188,7 @@ export function CompletionTable({ onRowClick }: CompletionTableProps) {
               <tr
                 key={row.id}
                 className="table-row"
-                onClick={() => onRowClick(row.original)}
+                onClick={() => handleRowClick(row.original)}
               >
                 {row.getVisibleCells().map(cell => (
                   <td className="table-data" key={cell.id}>

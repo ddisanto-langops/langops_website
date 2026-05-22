@@ -1,6 +1,6 @@
 import type { ActiveProduct } from "../../../shared/types";
 import type { SortingState, ColumnFiltersState, Row, VisibilityState } from "@tanstack/react-table"
-
+import { ProductModal } from "./ProductModal";
 import { fetchProducts } from "../../services/api"
 import { ClickFilter } from "./clickFilter";
 import { useQuery } from "@tanstack/react-query"
@@ -59,11 +59,7 @@ const columns = [
   })
 ]
 
-interface ProductTableProps {
-  onRowClick: (row: ActiveProduct) => void
-}
-
-export function ProductTable({ onRowClick }: ProductTableProps) {
+export function ProductTable() {
  
   const { data = [], isLoading, isError } = useQuery({
     queryKey: ['products'],
@@ -75,6 +71,10 @@ export function ProductTable({ onRowClick }: ProductTableProps) {
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
   const [activeTab, setActiveTab] = useState<string | null>(null)
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({ mediaType: false })
+  const [selectedRow, setSelectedRow] = useState<ActiveProduct | undefined>(undefined)
+  const [modalIsOpen, setModalIsOpen] = useState(false)
+
+
 
   // eslint-disable-next-line react-hooks/incompatible-library
   const table = useReactTable({
@@ -94,12 +94,29 @@ export function ProductTable({ onRowClick }: ProductTableProps) {
     table.getColumn('mediaType')?.setFilterValue(value)
   }
 
-  if (isLoading) return <p>Loading...</p>
-  if (isError) return <p>Error loading products.</p>
+  const handleRowClick = (row: ActiveProduct) => {
+    setSelectedRow(row)
+    setModalIsOpen(true)
+  }
+
+  const handleModalClose = () => {
+    setModalIsOpen(false)
+  }
+
+  const GuardedProductModal = () => {
+    if (!selectedRow) return null
+    return (
+      <ProductModal record={selectedRow} isOpen={modalIsOpen} onClose={handleModalClose} />
+    )
+  }
+
+  if (isLoading) return <p className="generic-notice">Loading...</p>
+  if (isError) return <p className="error-message">Error loading products.</p>
   
   return (
   <>
   <h2 id='products-page-title'>Products</h2>
+  <GuardedProductModal />
   <ClickFilter activeTab={activeTab} onTabClick={handleTabClick}/>
   <table id="product-table">
     <thead id="product-table-head">
@@ -132,7 +149,7 @@ export function ProductTable({ onRowClick }: ProductTableProps) {
     </thead>
     <tbody id="product-table-body">
       {table.getRowModel().rows.map(row => (
-        <tr className="table-row" style={{ cursor: 'pointer' }} key={row.id} onClick={() => onRowClick(row.original)}>
+        <tr className="table-row" style={{ cursor: 'pointer' }} key={row.id} onClick={() => handleRowClick(row.original)}>
           {row.getVisibleCells().map(cell => (
             <td className="table-data" key={cell.id}>
               {flexRender(cell.column.columnDef.cell, cell.getContext())}

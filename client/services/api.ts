@@ -1,12 +1,18 @@
-import type { ApiFilters, ArchivedProduct } from "../../shared/types"
+import type { ApiFilters, ArchivedProduct, AllProduct, IdmlStorageRecord, CrowdinProject, ActiveProduct } from "../../shared/types"
 
-export async function fetchProducts() {
+export async function fetchProducts(): Promise<ActiveProduct[]> {
     const response = await fetch("/api/products")
     if (!response.ok) throw new Error('Failed to fetch products')
     return response.json()
 }
 
-export async function fetchCompletions(filters: ApiFilters) {
+export async function fetchCompletions() {
+    const response = await fetch("/api/completions")
+    if (!response.ok) throw new Error('Failed to fetch products')
+    return response.json()
+}
+
+export async function fetchFilteredCompletions(filters: ApiFilters) {
     const params = new URLSearchParams()
 
     if (filters.lang) params.append('lang', filters.lang)
@@ -23,7 +29,7 @@ export async function fetchCompletions(filters: ApiFilters) {
     return response.json()
 }
 
-export async function fetchAdminCompletions(filters: ApiFilters) {
+export async function queryAllCompletions(filters: ApiFilters) {
     const params = new URLSearchParams()
 
     if (filters.lang) params.append('lang', filters.lang)
@@ -38,11 +44,34 @@ export async function fetchAdminCompletions(filters: ApiFilters) {
     if (filters.sortDir) params.append('sortDir', filters.sortDir)
 
     const query = params.toString()
-    const url = `/api/completions${query ? `?${query}` : ''}`
+    const url = `/api/completions/filter${query ? `?${query}` : ''}`
 
     const response = await fetch(url)
     if (!response.ok) throw new Error("Failed to fetch completions data.")
     return await response.json()
+}
+
+export async function queryAllProducts(filters: ApiFilters): Promise<{ data: AllProduct[], totalCount: number, page: number, pageSize: number }> {
+    const params = new URLSearchParams()
+
+    if (filters.lang) params.append('lang', filters.lang)
+    if (filters.code) params.append('code', filters.code)
+    if (filters.group) params.append('group', filters.group)
+    if (filters.from) params.append('from', filters.from)
+    if (filters.to) params.append('to', filters.to)
+    if (filters.title) params.append('title', filters.title)
+    if (filters.source) params.append('source', filters.source)
+    if (filters.page != null) params.append('page', String(filters.page))
+    if (filters.pageSize != null) params.append('limit', String(filters.pageSize))
+    if (filters.sortBy) params.append('sortBy', filters.sortBy)
+    if (filters.sortDir) params.append('sortDir', filters.sortDir)
+
+    const query = params.toString()
+    const url = `/api/all-products/filter${query ? `?${query}` : ''}`
+
+    const response = await fetch(url)
+    if (!response.ok) throw new Error('Failed to fetch all products data.')
+    return response.json()
 }
 
 export async function fetchCompletionsByProduct(filters: ApiFilters): Promise<{product_code: string, occurence_count: number}[]> {
@@ -97,4 +126,95 @@ export async function resync(id: string, mode: "active" | "archived") {
     })
     if (!response.ok) throw new Error('Failed to restore completion')
     return response.json()
+}
+
+/** Send an IDML, receive xliff_out.zip (keep this for /reconstruct later) */
+export async function parseIdml(idmlFile: File, sourceLang = 'fr'): Promise<Blob> {
+    const form = new FormData();
+    form.append('idml', idmlFile);
+    form.append('source_lang', sourceLang);
+
+    const res = await fetch(`/api/idml/parse`, { method: 'POST', body: form });
+    if (!res.ok) {
+        const { error } = await res.json();
+        throw new Error(error);
+    }
+    return res.blob(); // store this ZIP — it contains style_map.json needed for reconstruct
+}
+
+export async function uploadXliffToCrowdin(
+    fileName: string,
+    content: Blob,
+    projectId: string
+): Promise<{ crowdinFileId: number }> {
+    const form = new FormData();
+    form.append('xliff', content, fileName);
+    form.append('fileName', fileName);
+    form.append('projectId', projectId);
+
+    const res = await fetch('/api/crowdin/upload', { method: 'POST', body: form });
+    if (!res.ok) {
+        const { error } = await res.json();
+        throw new Error(error);
+    }
+    return res.json();
+}
+
+export async function fetchCrowdinProjects(): Promise<CrowdinProject[]> {
+    const res = await fetch('/api/crowdin/projects')
+    if (!res.ok) throw new Error('Failed to fetch Crowdin projects')
+    return res.json()
+}
+
+export async function listIdmlStorage(): Promise<IdmlStorageRecord[]> {
+    const res = await fetch('/api/idml/storage')
+    if (!res.ok) throw new Error('Failed to fetch IDML storage records')
+    return res.json()
+}
+
+export async function saveIdmlStorage(
+    idmlFile: File,
+    xliffZip: Blob,
+    projectId: string,
+    projectName: string,
+    targetLanguage: string,
+    crowdinFileIds: number[]
+): Promise<{ id: number }> {
+    const form = new FormData()
+    form.append('idml', idmlFile, idmlFile.name)
+    form.append('xliffZip', xliffZip, 'xliff_out.zip')
+    form.append('fileName', idmlFile.name)
+    form.append('projectId', projectId)
+    form.append('projectName', projectName)
+    form.append('targetLanguage', targetLanguage)
+    form.append('crowdinFileIds', JSON.stringify(crowdinFileIds))
+
+    const res = await fetch('/api/idml/storage', { method: 'POST', body: form })
+    if (!res.ok) {
+        const { error } = await res.json()
+        throw new Error(error)
+    }
+    return res.json()
+}
+
+export async function deleteIdmlStorage(id: number): Promise<void> {
+    const res = await fetch(`/api/idml/storage/${id}`, { method: 'DELETE' })
+    if (!res.ok) {
+        const { error } = await res.json()
+        throw new Error(error)
+    }
+}
+
+export async function fetchDeletions(): Promise<ArchivedProduct[]> {
+    const res = await fetch('/api/deletions')
+    if (!res.ok) throw new Error('Failed to fetch deletions')
+    return res.json()
+}
+
+export async function triggerReconstruct(id: number): Promise<void> {
+    const res = await fetch(`/api/idml/storage/${id}/reconstruct`, { method: 'POST' })
+    if (!res.ok) {
+        const { error } = await res.json()
+        throw new Error(error)
+    }
 }
