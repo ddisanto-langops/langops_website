@@ -605,12 +605,17 @@ export async function deleteCompletion(id: string) {
             trello_url, article_url, editor_url
         )
         INSERT INTO deletions (
-            id, 'deletions', title, localized_title, product_code, 
+            id, provenance, title, localized_title, product_code, 
             target_language, media_groups, 
             wordcount, date_published, date_archived, 
             trello_url, article_url, editor_url
         ) 
-        SELECT * FROM moved_record
+        SELECT
+            id, 'deletions', title, localized_title, product_code,
+            target_language, media_groups,
+            wordcount, date_published, date_archived,
+            trello_url, article_url, editor_url
+        FROM moved_record
         RETURNING *;
     `, [id])
 
@@ -629,7 +634,7 @@ export async function restoreCompletion(id: string) {
             trello_url, article_url, editor_url
         )
         INSERT INTO completions (
-            id, provenance,title, localized_title, product_code, 
+            id, provenance, title, localized_title, product_code, 
             target_language, media_groups, 
             wordcount, date_published, date_archived, 
             trello_url, article_url, editor_url

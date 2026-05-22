@@ -3,6 +3,7 @@ import { ProductTable } from "../components/ProductTable"
 import { CompletionTable } from "../components/CompletionTable"
 import { AllProductsTable } from "../components/AllProductsTable"
 import { NavBar } from "../components/NavBar"
+import { DeletionsTable } from "../components/DeletionsTable"
 
 export function GlobalSearchPage() {
     const [selectedTable, setSelectedTable] = useState("")
@@ -23,7 +24,7 @@ export function GlobalSearchPage() {
                     onChange={handleSelect}
                 >
                 </input>
-                <label htmlFor="products">Products</label>
+                <label htmlFor="products">Active Products</label>
                 <input
                     className="table-radio-selector"
                     type="radio"
@@ -57,6 +58,7 @@ export function GlobalSearchPage() {
                 {selectedTable === "products" && <ProductTable />}
                 {selectedTable === "completions" && <CompletionTable />}
                 {selectedTable === "all" && <AllProductsTable />}
+                {selectedTable === "deletions" && <DeletionsTable />}
             </div>
         </>
     )

@@ -226,7 +226,7 @@ router.delete('/api/completions/delete/:id', async (req, res) => {
 })
 
 // restore a completion via its ID
-router.put('api/completions/restore/:id', async (req, res) => {
+router.put('/api/completions/restore/:id', async (req, res) => {
     const { id } = req.params
 
     try {
@@ -328,7 +328,6 @@ router.post('/api/crowdin/upload', upload.single('xliff'), async (req, res) => {
 });
 
 
-// in index.ts
 router.post('/api/idml/parse', upload.single('idml'), async (req, res) => {
     if (!req.file) return res.status(400).json({ error: 'No file provided' });    
     const sourceLang = req.body.source_lang ?? 'fr';
