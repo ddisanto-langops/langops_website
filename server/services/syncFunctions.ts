@@ -174,8 +174,8 @@ export async function upsertProducts(products: ActiveProduct[]) {
                 crowdin_url, trello_url, article_url,
                 editor_url, due_date, date_last_activity,
                 published, date_published, translation_progress, 
-                approval_progress, media_groups, wordcount
-            ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17)
+                approval_progress, media_groups, wordcount, provenance
+            ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17, $18)
             ON CONFLICT (id) DO UPDATE SET
                 title                   = EXCLUDED.title,
                 product_code            = EXCLUDED.product_code,
@@ -210,7 +210,8 @@ export async function upsertProducts(products: ActiveProduct[]) {
             product.translationProgress,
             product.approvalProgress,
             product.mediaGroups,
-            product.wordCount ?? null
+            product.wordCount ?? null,
+            'products'
         ])
     }
 }
@@ -221,9 +222,9 @@ export async function upsertArchivedProducts(archivedProducts: ArchivedProduct[]
             INSERT INTO completions (
                 id, title, localized_title, product_code, target_language,
                 media_groups, wordcount, date_published, trello_url,
-                article_url, editor_url, date_archived
+                article_url, editor_url, date_archived, provenance
             )
-            SELECT $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12
+            SELECT $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13
             WHERE NOT EXISTS (
                 SELECT 1 FROM deletions WHERE deletions.id = $1
             )
@@ -249,7 +250,8 @@ export async function upsertArchivedProducts(archivedProducts: ArchivedProduct[]
             product.trelloUrl,
             product.articleUrl ?? null,
             product.editorUrl ?? null,
-            product.dateArchived ?? null
+            product.dateArchived ?? null,
+            'completions'
         ])
         if (response.rowCount === 0) {
             console.log(`Skipped insertion: ${product.title} | Reason: is deleted`)
@@ -263,6 +265,7 @@ export async function getActiveProducts(): Promise<ActiveProduct[]> {
     const request = await pool.query(`
         SELECT 
             id,
+            provenance,
             title,
             product_code,
             target_language AS "targetLanguage",
@@ -292,6 +295,7 @@ export async function getCompletions(): Promise<ArchivedProduct[]> {
     const request = await pool.query(`
         SELECT
             id,
+            provenance,
             title,
             localized_title     AS "localizedTitle",
             product_code        AS "productCode",
@@ -333,6 +337,7 @@ export async function getFilteredCompletions(filters: ApiFilters): Promise<{data
     const response = await pool.query(`
         SELECT
             id,
+            provenance,
             title,
             localized_title     AS "localizedTitle",
             product_code        AS "productCode",
@@ -450,6 +455,7 @@ export async function editCompletion(id: string, record: Partial<ArchivedProduct
         WHERE id = $11
         RETURNING
             id,
+            provenance,
             title,
             localized_title     AS "localizedTitle",
             product_code        AS "productCode",
@@ -500,6 +506,7 @@ export async function editProduct(id: string, record: Partial<ActiveProduct>) {
         WHERE id = $16
         RETURNING 
             id,
+            provenance,
             title,
             product_code AS "productCode",
             product_status AS "productStatus",
@@ -569,13 +576,13 @@ export async function deleteCompletion(id: string) {
             DELETE FROM completions
             WHERE id = $1
             RETURNING 
-            id, title, localized_title, product_code, 
+            id, provenance, title, localized_title, product_code, 
             target_language, media_groups, 
             wordcount, date_published, date_archived, 
             trello_url, article_url, editor_url
         )
         INSERT INTO deletions (
-            id, title, localized_title, product_code, 
+            id, 'deletions', title, localized_title, product_code, 
             target_language, media_groups, 
             wordcount, date_published, date_archived, 
             trello_url, article_url, editor_url
@@ -593,18 +600,24 @@ export async function restoreCompletion(id: string) {
             DELETE FROM deletions
             WHERE id = $1
             RETURNING 
-            id, title, localized_title, product_code, 
+            id, provenance, title, localized_title, product_code, 
             target_language, media_groups, 
             wordcount, date_published, date_archived, 
             trello_url, article_url, editor_url
         )
         INSERT INTO completions (
-            id, title, localized_title, product_code, 
+            id, provenance,title, localized_title, product_code, 
             target_language, media_groups, 
             wordcount, date_published, date_archived, 
             trello_url, article_url, editor_url
         ) 
-        SELECT * FROM moved_record
+        SELECT
+            id, 'completions',
+            title, localized_title, product_code, 
+            target_language, media_groups, 
+            wordcount, date_published, date_archived, 
+            trello_url, article_url, editor_url
+        FROM moved_record
         RETURNING *;
     `, [id])
 
