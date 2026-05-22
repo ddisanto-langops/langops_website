@@ -1,4 +1,4 @@
-import type { ActiveProduct, ApiFilters, ArchivedProduct, RawTrelloCard, IdmlStorageRecord } from "../../shared/types.js"
+import type { ActiveProduct, AllProduct, ApiFilters, ArchivedProduct, RawTrelloCard, IdmlStorageRecord } from "../../shared/types.js"
 import { productCodes, supportedLanguages } from "../../shared/constants.js"
 import { ActiveCard, ArchivedCard } from "../classes.js";
 import pool from '../database/databaseConfig.js';
@@ -710,7 +710,131 @@ export async function deleteIdmlRecord(id: number): Promise<void> {
 }
 
 
-export async function getGlobalSearchData(filters: ApiFilters) {
-    
-    
+export async function getFilteredAllProducts(filters: ApiFilters): Promise<{ data: AllProduct[], totalCount: number, page: number, pageSize: number }> {
+    const pageNum = filters.page ? Math.max(1, filters.page) : 1
+    const limitNum = Math.min(200, Math.max(1, filters.limit || 50))
+    const offset = (pageNum - 1) * limitNum
+
+    const allowedSortColumns = {
+        source: 'source',
+        title: 'title',
+        productCode: 'product_code',
+        targetLanguage: 'target_language',
+        datePublished: 'date_published',
+        wordCount: 'wordcount',
+        dateArchived: 'date_archived',
+    } as const
+    const sortColumn = filters.sortBy && filters.sortBy in allowedSortColumns
+        ? allowedSortColumns[filters.sortBy as keyof typeof allowedSortColumns]
+        : 'date_published'
+    const sortDirection = filters.sortDir === 'asc' ? 'ASC' : 'DESC'
+
+    const response = await pool.query(`
+        SELECT
+            source,
+            id,
+            title,
+            product_code           AS "productCode",
+            target_language        AS "targetLanguage",
+            media_groups           AS "mediaGroups",
+            wordcount              AS "wordCount",
+            date_published         AS "datePublished",
+            trello_url             AS "trelloUrl",
+            editor_url             AS "editorUrl",
+            article_url            AS "articleUrl",
+            product_status         AS "productStatus",
+            due_date               AS "dueDate",
+            date_last_activity     AS "dateLastActivity",
+            translation_progress   AS "translationProgress",
+            approval_progress      AS "approvalProgress",
+            published,
+            crowdin_url            AS "crowdinUrl",
+            localized_title        AS "localizedTitle",
+            date_archived          AS "dateArchived",
+            COUNT(*) OVER()        AS total_count
+        FROM (
+            SELECT
+                'active'::text          AS source,
+                id,
+                title,
+                product_code,
+                target_language,
+                media_groups,
+                wordcount,
+                date_published,
+                trello_url,
+                editor_url,
+                article_url,
+                product_status,
+                due_date,
+                date_last_activity,
+                translation_progress,
+                approval_progress,
+                published,
+                crowdin_url,
+                NULL::text              AS localized_title,
+                NULL::timestamptz       AS date_archived
+            FROM products
+            UNION ALL
+            SELECT
+                'archived'::text        AS source,
+                id,
+                title,
+                product_code,
+                target_language,
+                media_groups,
+                wordcount,
+                date_published,
+                trello_url,
+                editor_url,
+                article_url,
+                NULL::text              AS product_status,
+                NULL::timestamptz       AS due_date,
+                NULL::timestamptz       AS date_last_activity,
+                NULL::integer           AS translation_progress,
+                NULL::integer           AS approval_progress,
+                NULL::boolean           AS published,
+                NULL::text              AS crowdin_url,
+                localized_title,
+                date_archived
+            FROM completions
+            UNION ALL
+            SELECT
+                'deleted'::text         AS source,
+                id,
+                title,
+                product_code,
+                target_language,
+                media_groups,
+                wordcount,
+                date_published,
+                trello_url,
+                editor_url,
+                article_url,
+                NULL::text              AS product_status,
+                NULL::timestamptz       AS due_date,
+                NULL::timestamptz       AS date_last_activity,
+                NULL::integer           AS translation_progress,
+                NULL::integer           AS approval_progress,
+                NULL::boolean           AS published,
+                NULL::text              AS crowdin_url,
+                NULL::text              AS localized_title,
+                date_archived
+            FROM deletions
+        ) combined
+        WHERE
+            ($1::text IS NULL OR target_language ILIKE '%' || $1 || '%')
+            AND ($2::text IS NULL OR product_code ILIKE '%' || $2 || '%')
+            AND ($3::text IS NULL OR $3 = ANY(media_groups))
+            AND ($4::date IS NULL OR date_published >= $4::date)
+            AND ($5::date IS NULL OR date_published <= $5::date)
+            AND ($6::text IS NULL OR title ILIKE '%' || $6 || '%')
+            AND ($9::text IS NULL OR source = $9)
+        ORDER BY ${sortColumn} ${sortDirection} NULLS LAST, id
+        LIMIT $7 OFFSET $8
+    `, [filters.lang ?? null, filters.code ?? null, filters.group ?? null, filters.from ?? null, filters.to ?? null, filters.title ?? null, limitNum, offset, filters.source ?? null])
+
+    const totalCount = response.rows.length > 0 ? parseInt(response.rows[0].total_count, 10) : 0
+    const data: AllProduct[] = response.rows.map(({ total_count, ...row }) => row)
+    return { data, totalCount, page: pageNum, pageSize: limitNum }
 }

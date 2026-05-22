@@ -7,7 +7,8 @@ import {
     getActiveProducts, 
     getCard, 
     getCompletions,
-    getFilteredCompletions, 
+    getFilteredCompletions,
+    getFilteredAllProducts,
     getCount, 
     getProductCount, 
     restoreCompletion,
@@ -131,6 +132,34 @@ router.get('/api/completions/filter', async (req, res) => {
     } catch (error) {
         error instanceof Error ? res.status(500).json({ error: error.message }) :
             res.status(500).json({ error: "GET /api/completions: Unknown error" })
+    }
+})
+
+/*
+ * Unified paginated endpoint returning both active and archived products.
+ * Used by the AllProducts table on the search page.
+ */
+router.get('/api/all-products/filter', async (req, res) => {
+    const filters: ApiFilters = {
+        lang: getQueryString(req.query.lang),
+        code: getQueryString(req.query.code),
+        group: getQueryString(req.query.group),
+        from: getQueryString(req.query.from),
+        to: getQueryString(req.query.to),
+        title: getQueryString(req.query.title),
+        source: getQueryString(req.query.source),
+        page: Number(getQueryString(req.query.page)) || 1,
+        limit: Number(getQueryString(req.query.limit) || '50'),
+        sortBy: getQueryString(req.query.sortBy),
+        sortDir: getQueryString(req.query.sortDir),
+    }
+
+    try {
+        const tableData = await getFilteredAllProducts(filters)
+        res.json(tableData)
+    } catch (error) {
+        error instanceof Error ? res.status(500).json({ error: error.message }) :
+            res.status(500).json({ error: 'GET /api/all-products/filter: Unknown error' })
     }
 })
 

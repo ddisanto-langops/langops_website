@@ -6,13 +6,14 @@ import { supportedLanguages, groupDisplayNames, productCodes } from "../../../sh
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { updateCompletion, deleteCompletion, resync } from '../../services/api'
 
-interface EditModalProps {
+interface CompletionModalProps {
     record: ArchivedProduct,
     isOpen: boolean,
     onClose: () => void
 }
 
-export function EditModal({record, isOpen, onClose}: EditModalProps) {
+export function EditModal({record, isOpen, onClose}: CompletionModalProps) {
+    
     const queryClient = useQueryClient()
     const [formData, setFormData] = useState(record)
 
@@ -70,7 +71,7 @@ export function EditModal({record, isOpen, onClose}: EditModalProps) {
         }
 
     }
-
+    
     if (!isOpen) return null
     return (
         <div className="modal-overlay">
@@ -104,81 +105,82 @@ export function EditModal({record, isOpen, onClose}: EditModalProps) {
                     </button>
                 </div>
                 <div className="modal-body">
-                    <div className="modal-field">
-                        <label className="modal-label">Editor URL:</label>
+                    <div className="completion-modal-field">
+                        <label className="completion-modal-label">Editor URL:</label>
                         <EditableLink accessor="editorUrl" currentLink={formData.editorUrl ?? ""} onChange={handleLinkEdit} />
-                        <label className="modal-label">Article URL:</label>
+                        <label className="completion-modal-label">Article URL:</label>
                         <EditableLink accessor="articleUrl" currentLink={formData.articleUrl ?? ""} onChange={handleLinkEdit} />
-                        <label className="modal-label">Title:</label>
+                        <label className="completion-modal-label">Title:</label>
                         <input
                             name="title" 
-                            className="modal-input" 
+                            className="completion-modal-input" 
                             value={formData.title}
                             onChange={handleInputChange}
                         >
                         </input>
-                        <label className="modal-label">Localized Title:</label>
+                        <label className="completion-modal-label">Localized Title:</label>
                         <input
                             name="localizedTitle" 
-                            className="modal-input" 
+                            className="completion-modal-input" 
                             value={formData.localizedTitle ?? ''}
                             onChange={handleInputChange}
                         >
                         </input>
-                        <label className="modal-label">Product Code:</label>
+                        <label className="completion-modal-label">Product Code:</label>
                         <select
                             name="productCode" 
-                            className="modal-input" 
+                            className="completion-modal-input" 
                             value={formData.productCode}
                             onChange={handleDropdownChange}
                         >
                             {productCodes.map(code => (
-                                <option>{code}</option>
+                                <option key={code}>{code}</option>
                             ))}
                         </select>
-                        <label className="modal-label">Target Language:</label>
+                        <label className="completion-modal-label">Target Language:</label>
                         <select
                             name="targetLanguage" 
-                            className="modal-input" 
+                            className="completion-modal-input" 
                             value={formData.targetLanguage}
                             onChange={handleDropdownChange}
                         >
                             {supportedLanguages.map(language => (
-                                <option>{language}</option>
+                                <option key={language}>{language}</option>
                             ))}
                         </select>
-                        <label className="modal-label">Date Published:</label>
+                        <label className="completion-modal-label">Date Published:</label>
                         <input
                             name="datePublished"
-                            className="modal-input" 
+                            className="completion-modal-input" 
                             value={formData.datePublished ?? ''}
                             onChange={handleInputChange}
                         >
                         </input>
-                        <label className="modal-label">Date Archived:</label>
+                        <label className="completion-modal-label">Date Archived:</label>
                         <input
                             name="dateArchived"
-                            className="modal-input" 
+                            className="completion-modal-input" 
                             value={formData.dateArchived ?? ''}
                             onChange={handleInputChange}
                         >
                         </input>
-                        <label className="modal-label">Wordcount:</label>
+                        <label className="completion-modal-label">Wordcount:</label>
                         <input
                             name="wordCount"
-                            className="modal-input" 
+                            className="completion-modal-input" 
                             value={formData.wordCount ?? ''}
                             onChange={handleInputChange}
                         >
                         </input>
                         
                     </div>
-                    <div className="modal-mediagroups-div">
+                    <div className="completion-modal-mediagroups-div">
                             { 
                                 Object.entries(groupDisplayNames).map(([key, value]) => {
                                     const selected = formData.mediaGroups.includes(key)
                                     return (
                                         <button
+                                            key={key}
                                             name="mediaGroups"
                                             type="button"
                                             className={selected ? "media-button active" : "media-button"}

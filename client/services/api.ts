@@ -1,6 +1,6 @@
-import type { ApiFilters, ArchivedProduct, IdmlStorageRecord, CrowdinProject } from "../../shared/types"
+import type { ApiFilters, ArchivedProduct, AllProduct, IdmlStorageRecord, CrowdinProject, ActiveProduct } from "../../shared/types"
 
-export async function fetchProducts() {
+export async function fetchProducts(): Promise<ActiveProduct[]> {
     const response = await fetch("/api/products")
     if (!response.ok) throw new Error('Failed to fetch products')
     return response.json()
@@ -51,7 +51,7 @@ export async function queryAllCompletions(filters: ApiFilters) {
     return await response.json()
 }
 
-export async function globalSearchQuery(filters: ApiFilters) {
+export async function queryAllProducts(filters: ApiFilters): Promise<{ data: AllProduct[], totalCount: number, page: number, pageSize: number }> {
     const params = new URLSearchParams()
 
     if (filters.lang) params.append('lang', filters.lang)
@@ -60,18 +60,18 @@ export async function globalSearchQuery(filters: ApiFilters) {
     if (filters.from) params.append('from', filters.from)
     if (filters.to) params.append('to', filters.to)
     if (filters.title) params.append('title', filters.title)
+    if (filters.source) params.append('source', filters.source)
     if (filters.page != null) params.append('page', String(filters.page))
     if (filters.pageSize != null) params.append('limit', String(filters.pageSize))
     if (filters.sortBy) params.append('sortBy', filters.sortBy)
     if (filters.sortDir) params.append('sortDir', filters.sortDir)
 
     const query = params.toString()
-
-    const url = `/api/all/filter${query ? `?${query}` : ''}`
+    const url = `/api/all-products/filter${query ? `?${query}` : ''}`
 
     const response = await fetch(url)
-    if (!response.ok) throw new Error("Failed to fetch global search data.")
-    return await response.json()
+    if (!response.ok) throw new Error('Failed to fetch all products data.')
+    return response.json()
 }
 
 export async function fetchCompletionsByProduct(filters: ApiFilters): Promise<{product_code: string, occurence_count: number}[]> {

@@ -69,6 +69,7 @@ export interface ApiFilters {
     from?: string | undefined
     to?: string | undefined
     title?: string | undefined
+    source?: string | undefined
     page?: number | undefined
     limit?: number | undefined
     pageSize?: number | undefined
@@ -146,24 +147,27 @@ export type CrowdinProject = {
     targetLanguages: { id: string; name: string }[]
 }
 
-export interface GlobalSearchRecord {
+export interface AllProduct {
+    source: 'active' | 'archived' | 'deleted'
     id: string
     title: string
     productCode: string
     targetLanguage: string
-    productStatus: string | null
     mediaGroups: string[]
-    published: boolean
-    dateLastActivity: string | null
-    dueDate: string | null
-    datePublished: string | null
-    trelloUrl: string,
-    editorUrl: string | null
-    crowdinUrl: string | null
-    articleUrl: string | null
-    translationProgress: number
-    approvalProgress: number
     wordCount: number | null
+    datePublished: string | null
+    trelloUrl: string
+    editorUrl: string | null
+    articleUrl: string | null
+    // active-only
+    productStatus: string | null
+    dueDate: string | null
+    dateLastActivity: string | null
+    translationProgress: number | null
+    approvalProgress: number | null
+    published: boolean | null
+    crowdinUrl: string | null
+    // archived-only
     localizedTitle: string | null
-    dateArchived: string
+    dateArchived: string | null
 }

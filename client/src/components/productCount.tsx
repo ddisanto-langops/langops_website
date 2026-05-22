@@ -28,7 +28,7 @@ export function ProductCount({filters}: ProductCountProps) {
 		{data
 			.sort((key, value) => key.product_code.localeCompare(value.product_code))
 			.map((item) => (
-				<div className="product-count-data">{`${item.product_code}: ${item.occurence_count}`}</div>
+				<div key={item.product_code} className="product-count-data">{`${item.product_code}: ${item.occurence_count}`}</div>
 			))
 		}
 	</div>
