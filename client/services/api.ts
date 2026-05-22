@@ -103,7 +103,7 @@ export async function updateCompletion(record: ArchivedProduct) {
 }
 
 export async function deleteCompletion(id: string) {
-    if (confirm("Are you sure you want to delete this record? This action cannot be undone.")) {
+    if (confirm("Are you sure you want to delete this record?")) {
         const response = await fetch(`/api/completions/delete/${id}`, {
         method: 'DELETE',
         })
