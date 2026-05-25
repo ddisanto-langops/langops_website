@@ -74,9 +74,11 @@ h2 { overflow-wrap: break-word; }
    ===================== */
 #dashboard-page-title,
 #products-page-title,
-#completions-page-title {
+#completions-page-title,
+#deletions-page-title {
     color: white;
     justify-self: center;
+    padding: 20px;
 }
 
 /* =====================
