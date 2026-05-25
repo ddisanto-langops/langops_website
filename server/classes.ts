@@ -152,7 +152,7 @@ export class BaseCard {
         const magazineMatch = this.title.match(BaseCard.magazinePattern)
         const magazine = magazineMatch ? magazineMatch[1] : null
         if (magazine) {
-            return ['Magazine']
+            return ['magazines']
         } else {
             const productMediaType = groupLookup.get(this.productCode) ?? []
             const labelMediaType = (this.labels ?? []).flatMap(label => 

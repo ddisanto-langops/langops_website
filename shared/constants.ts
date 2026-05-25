@@ -29,8 +29,7 @@ export const productCodes: string[] = [
 ]
 
 /*
-mediaGroups defines which product codes (extracted from card title) 
-and labels (extracted from card idLabels field) belong to which group(s).
+mediaGroups defines which product codes (extracted from card title).
 The associated key will be added to 'mediaType' in the API's response.
 Note that one product code can belong to multiple groups.
 */

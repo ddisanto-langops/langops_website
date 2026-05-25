@@ -12,7 +12,7 @@ export function ClickFilter({ onTabClick, activeTab }: ClickFilterProps) {
             <button className={activeTab === 'website' ? "click-filter-button-selected" : "click-filter-button"} onClick={() => onTabClick('website')}>Website</button>
             <button className={activeTab === 'interpretation' ? "click-filter-button-selected" : "click-filter-button"} onClick={() => onTabClick('interpretation')}>Interpretation</button>
             <button className={activeTab === 'pcgChurch' ? "click-filter-button-selected" : "click-filter-button"} onClick={() => onTabClick('pcgChurch')}>PCG.church</button>
-            <button className={activeTab === 'magazine' ? "click-filter-button-selected" : "click-filter-button"} onClick={() => onTabClick('magazine')}>Magazines</button>
+            <button className={activeTab === 'magazines' ? "click-filter-button-selected" : "click-filter-button"} onClick={() => onTabClick('magazines')}>Magazines</button>
         </div>
     )
 }
