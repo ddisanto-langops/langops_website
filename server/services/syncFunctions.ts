@@ -652,6 +652,15 @@ export async function restoreCompletion(id: string) {
     return response
 }
 
+// Hard delete of records in deletions table
+export async function permanentDelete(id: string) {
+    const response = await pool.query(
+        `DELETE FROM deletions WHERE id = $1 RETURNING *;`
+    , [id])
+
+    return response
+}
+
 /*
  * IDML Storage
  * Stores original IDML files, their parse output ZIPs,

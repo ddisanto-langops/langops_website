@@ -21,6 +21,7 @@ import {
     completeIdmlRecord,
     getRebuiltIdml,
     deleteIdmlRecord,
+    permanentDelete,
 } from '../services/syncFunctions.js';
 
 const router = Router();
@@ -435,6 +436,21 @@ router.delete('/api/idml/storage/:id', async (req, res) => {
     if (isNaN(id)) return res.status(400).json({ error: 'Invalid ID' })
     try {
         await deleteIdmlRecord(id)
+        res.json({ message: 'Deleted' })
+    } catch (e) {
+        res.status(500).json({ error: e instanceof Error ? e.message : 'Unknown error' })
+    }
+})
+
+
+/**
+ * Hard delete of a record already in deletions table.
+ * Corresponds to deletion button in UI.
+ */
+router.delete('/api/deletions/delete/:id', async (req, res) => {
+    const id = req.params.id
+    try {
+        await permanentDelete(id)
         res.json({ message: 'Deleted' })
     } catch (e) {
         res.status(500).json({ error: e instanceof Error ? e.message : 'Unknown error' })

@@ -102,12 +102,27 @@ export async function updateCompletion(record: ArchivedProduct) {
     return response.json()
 }
 
+
+/**
+ * Soft delete: moves a completions record to deletions database.
+ * Corresponds to delete button on the Completion Modal.
+ */
 export async function deleteCompletion(id: string) {
     if (confirm("Are you sure you want to delete this record?")) {
         const response = await fetch(`/api/completions/delete/${id}`, {
         method: 'DELETE',
         })
         if (!response.ok) throw new Error('Failed to delete completion')
+        return response.json()
+    }
+}
+
+export async function permanentlyDeleteCompletion(id: string) {
+    if(confirm("Permanently delete this record? This action cannot be undone.")) {
+        const response = await fetch(`/api/deletions/delete/${id}`, {
+            method: 'DELETE'
+        })
+        if (!response.ok) throw new Error('Failed to delete record')
         return response.json()
     }
 }

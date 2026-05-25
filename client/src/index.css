@@ -1061,14 +1061,14 @@ td {
 
 #deletions-table-div thead tr {
     display: grid;
-    grid-template-columns: 3fr 1fr 1fr 0.5fr;
+    grid-template-columns: 3fr 1fr 1fr 0.8fr;
     width: 100%;
     justify-self: center;
 }
 
 #deletions-table-div tbody tr {
     display: grid;
-    grid-template-columns: 3fr 1fr 1fr 0.5fr;
+    grid-template-columns: 3fr 1fr 1fr 0.8fr;
     background-color: hsla(207, 71%, 43%, 0.678);
     box-shadow: 0 0 8px hsla(207, 71%, 43%, 0.678);
     border: none;
@@ -1092,4 +1092,27 @@ td {
 
 #restore-button:hover {
     box-shadow: 0 4px 12px hsla(199, 100%, 66%, 0.5);
+}
+
+#deletions-table > tbody > tr > td { 
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+}
+
+#deletions-table > tbody > tr > td > #permanent-delete {
+    cursor: pointer;
+    background: linear-gradient(135deg, hsl(0, 70%, 32%), hsl(0, 65%, 50%));
+    color: white;
+    border: 1px solid transparent;
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    box-shadow: 0 2px 8px hsla(0, 65%, 50%, 0.3);
+    transition: box-shadow 0.2s, border-color 0.2s;
+}
+
+#deletions-table > tbody > tr > td > #permanent-delete:hover {
+    box-shadow: 0 4px 12px hsl(0, 65%, 50%);
 }

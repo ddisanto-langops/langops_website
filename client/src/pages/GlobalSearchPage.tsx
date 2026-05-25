@@ -38,20 +38,20 @@ export function GlobalSearchPage() {
                     className="table-radio-selector"
                     type="radio"
                     name="table-select"
-                    value={"all"}
-                    onChange={handleSelect}
-                >
-                </input>
-                <label htmlFor="products">All</label>
-                <input
-                    className="table-radio-selector"
-                    type="radio"
-                    name="table-select"
                     value={"deletions"}
                     onChange={handleSelect}
                 >
                 </input>
                 <label htmlFor="products">Deletions</label>
+                <input
+                    className="table-radio-selector"
+                    type="radio"
+                    name="table-select"
+                    value={"all"}
+                    onChange={handleSelect}
+                >
+                </input>
+                <label htmlFor="products">All</label>
             </div>
             <div>
                 {selectedTable === "" && <p className="generic-notice">Select a table above to get started.</p>}
