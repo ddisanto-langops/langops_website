@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { fetchDeletions, restoreCompletion, permanentlyDeleteCompletion } from "../../services/api";
 import { formatDate } from "../../services/formatDate";
 import type { ArchivedProduct } from "../../../shared/types";
@@ -6,10 +6,18 @@ import type { ArchivedProduct } from "../../../shared/types";
 
 export function DeletionsTable() {
     const [data, setData] = useState<ArchivedProduct[]>([])
+    const [search, setSearch] = useState("")
+
     useEffect(() => {
         fetchDeletions()
             .then(setData)
     },[])
+
+    const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setSearch(e.target.value)
+    }
+
+    const filteredData = data.filter((item) => item.title.toLowerCase().includes(search.toLowerCase()))
 
     const handleRestore = (id: string) => {
         restoreCompletion(id).then(() => {
@@ -28,6 +36,14 @@ export function DeletionsTable() {
     )
     return (
         <>
+        <div id="deletions-search">
+            <input
+                placeholder="Search deleted title..."
+                value={search}
+                onChange={(e) => handleSearch(e)}
+            >
+            </input>
+        </div>
         <div id="deletions-table-div">
             <table id="deletions-table">
                 <thead>
@@ -39,7 +55,7 @@ export function DeletionsTable() {
                     </tr>
                 </thead>
                 <tbody>
-                    {data.map(item => (
+                    {filteredData.map(item => (
                         <tr key={item.id}>
                             <td>{item.title}</td>
                             <td>{item.targetLanguage}</td>

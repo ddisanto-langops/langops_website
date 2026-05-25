@@ -1049,6 +1049,23 @@ td {
    DELETIONS TABLE
    ===================== */
 
+#deletions-search {
+    display: flex;
+    justify-content: center;
+    margin: 50px;
+}
+
+#deletions-search > input {
+    font-size: 1rem;
+    border-radius: 6px;
+    border: none;
+    padding: 5px;
+}
+
+#deletions-search > input:focus {
+    box-shadow: 0px 0px 5px 5px hsla(155, 81%, 43%, 0.3);
+}
+
 #deletions-table-div {
     display: flex;
     justify-content: center;
