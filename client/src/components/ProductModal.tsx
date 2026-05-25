@@ -1,9 +1,8 @@
 import type { ActiveProduct, ArchivedProduct } from "../../../shared/types"
-
-import React, { useState, useEffect } from "react"
-import { supportedLanguages, groupDisplayNames, productCodes } from "../../../shared/constants"
+import { formatDate } from "../../services/formatDate"
+import { useState, useEffect } from "react"
+import { resync } from "../../services/api"
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { updateCompletion, deleteCompletion, resync } from '../../services/api'
 
 interface ProductModalProps {
     record: ActiveProduct,
@@ -36,6 +35,7 @@ export function ProductModal({record, isOpen, onClose}: ProductModalProps) {
                 className="modal-content"
             >
                 <h2 className="modal-title">View Record</h2>
+                <p className="generic-notice">Product data is automatically refreshed every 5 minutes. If you need to edit a product, please do so in Trello, then click "Re-Sync Data" to immediately refresh this display.</p>
                 {formData.trelloUrl ? 
                 <p
                     style={{justifySelf: 'center'}}
@@ -76,37 +76,54 @@ export function ProductModal({record, isOpen, onClose}: ProductModalProps) {
                     </button>
                 </div>
                 <div className="modal-body">
-                    <div className="product-modal-field">
+                    <div className="product-modal-info-block">
                         <label className="product-modal-label">Title:</label>
                         <p className="product-modal-info">{formData.title ?? '❓'}</p>
+                    </div>
+                    <div className="product-modal-info-block">
                         <label className="product-modal-label">Target Language:</label>
                         <p className="product-modal-info">{formData.targetLanguage}</p>
+                    </div>
+                    <div className="product-modal-info-block">
                         <label className="product-modal-label">Status:</label>
                         <p className="product-modal-info">{formData.productStatus}</p>
+                    </div>
+                    <div className="product-modal-info-block">
                         <label className="product-modal-label">Due:</label>
-                        <p className="product-modal-info">{formData.dueDate ?? '❓'}</p>
+                        <p className="product-modal-info">{formatDate(formData.dueDate) ?? '❓'}</p>
+                    </div>
+                    <div className="product-modal-info-block">
                         <label className="product-modal-label">Last Activity:</label>
-                        <p className="product-modal-info">{formData.dateLastActivity}</p>
+                        <p className="product-modal-info">{formatDate(formData.dateLastActivity)}</p>
+                    </div>
+                    <div className="product-modal-info-block">
                         <label className="product-modal-label">Translation Progress:</label>
                         <p className="product-modal-info">{formData.translationProgress ?? '❓'}</p>
+                    </div>
+                    <div className="product-modal-info-block">
                         <label className="product-modal-label">Approval Progress:</label>
                         <p className="product-modal-info">{formData.approvalProgress ?? '❓'}</p>
+                    </div>
+                    <div className="product-modal-info-block">
                         <label className="product-modal-label">Published:</label>
                         <p className="product-modal-info">{formData.published ? '✅': '❌'}</p>
+                    </div>
+                    <div className="product-modal-info-block">
                         <label className="product-modal-label">Date Published:</label>
-                        <p className="product-modal-info">{formData.datePublished ?? '❓'}</p>
+                        <p className="product-modal-info">{formatDate(formData.datePublished) ?? '❓'}</p>
+                    </div>
+                    <div className="product-modal-info-block">
                         <label className="product-modal-label">Wordcount:</label>
                         <p className="product-modal-info">{formData.wordCount}</p>
                     </div>
-                    
-                    <div className="modal-actions">
-                        <button 
-                            type="button"
-                            id="btn-close" 
-                            onClick={onClose}
-                        >Close
-                        </button>
-                    </div>
+                </div>
+                <div className="modal-actions">
+                    <button 
+                        type="button"
+                        id="btn-close" 
+                        onClick={onClose}
+                    >Close
+                    </button>
                 </div>
             </form>
         </div>

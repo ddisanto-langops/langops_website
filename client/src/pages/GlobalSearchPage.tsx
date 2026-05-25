@@ -20,29 +20,29 @@ export function GlobalSearchPage() {
                     className="table-radio-selector"
                     type="radio"
                     name="table-select"
-                    value={"products"}
+                    value={"active"}
                     onChange={handleSelect}
                 >
                 </input>
-                <label htmlFor="products">Active Products</label>
+                <label htmlFor="products">Active</label>
                 <input
                     className="table-radio-selector"
                     type="radio"
                     name="table-select"
-                    value={"completions"}
+                    value={"completed"}
                     onChange={handleSelect}
                 >
                 </input>
-                <label htmlFor="products">Completions</label>
+                <label htmlFor="products">Completed</label>
                 <input
                     className="table-radio-selector"
                     type="radio"
                     name="table-select"
-                    value={"deletions"}
+                    value={"deleted"}
                     onChange={handleSelect}
                 >
                 </input>
-                <label htmlFor="products">Deletions</label>
+                <label htmlFor="products">Deleted</label>
                 <input
                     className="table-radio-selector"
                     type="radio"
@@ -55,10 +55,11 @@ export function GlobalSearchPage() {
             </div>
             <div>
                 {selectedTable === "" && <p className="generic-notice">Select a table above to get started.</p>}
-                {selectedTable === "products" && <ProductTable />}
-                {selectedTable === "completions" && <CompletionTable />}
+                {selectedTable === "active" && <ProductTable />}
+                {selectedTable === "completed" && <CompletionTable />}
+                {selectedTable === "deleted" && <DeletionsTable />}
                 {selectedTable === "all" && <AllProductsTable />}
-                {selectedTable === "deletions" && <DeletionsTable />}
+                
             </div>
         </>
     )

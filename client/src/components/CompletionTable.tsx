@@ -139,7 +139,6 @@ export function CompletionTable() {
   return (
     <>
       <GuardedCompletionModal  />
-      <h2 id='completions-page-title'>Completions</h2>
       <ClickFilter activeTab={activeTab} onTabClick={handleTabClick}/>
       <div className="pagination-controls">
         <button className="pagination-button" onClick={() => table.previousPage()} disabled={!table.getCanPreviousPage()}>

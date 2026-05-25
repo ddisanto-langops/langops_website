@@ -115,7 +115,6 @@ export function ProductTable() {
   
   return (
   <>
-  <h2 id='products-page-title'>Products</h2>
   <GuardedProductModal />
   <ClickFilter activeTab={activeTab} onTabClick={handleTabClick}/>
   <table id="product-table">

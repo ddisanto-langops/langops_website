@@ -104,7 +104,7 @@ export function EditModal({record, isOpen, onClose}: CompletionModalProps) {
                         {resyncMutation.isPending ? "Loading..." : "Re-Sync Data"}
                     </button>
                 </div>
-                <div className="modal-body">
+                <div className="completion-modal-body">
                     <div className="completion-modal-field">
                         <label className="completion-modal-label">Editor URL:</label>
                         <EditableLink accessor="editorUrl" currentLink={formData.editorUrl ?? ""} onChange={handleLinkEdit} />

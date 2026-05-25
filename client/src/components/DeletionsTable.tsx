@@ -36,7 +36,6 @@ export function DeletionsTable() {
     )
     return (
         <>
-        <h2 id="deletions-page-title">Deletions</h2>
         <div id="deletions-search">
             <input
                 placeholder="Search deleted title..."

@@ -181,7 +181,6 @@ export function AllProductsTable() {
                 />
             )}
 
-            <h2 id="all-products-page-title">All Products</h2>
             <ClickFilter activeTab={activeTab} onTabClick={handleTabClick} />
 
             <div className="pagination-controls">

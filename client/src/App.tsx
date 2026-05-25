@@ -9,7 +9,7 @@ export default function App() {
     <Routes>
       <Route path="/" element={<HomePage />} />
       <Route path="/dashboard" element={<Dashboard />} />
-      <Route path="/search" element={<GlobalSearchPage />} />
+      <Route path="/products" element={<GlobalSearchPage />} />
       <Route path="/manage-idmls" element={<FileUploadPage />} />
     </Routes>
   )
