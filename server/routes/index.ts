@@ -25,6 +25,9 @@ import {
 
 const router = Router();
 
+const idmlServiceSecret = process.env.IdmlServiceSecret ?? ""
+const IdmlServiceId = process.env.IdmlServiceId ?? ""
+
 function getQueryString(value: unknown): string | undefined {
     return typeof value === 'string' ? value : undefined
 }
@@ -338,7 +341,15 @@ router.post('/api/idml/parse', upload.single('idml'), async (req, res) => {
     form.append('idml', new Blob([new Uint8Array(fileBuffer)]), originalName);
     form.append('source_lang', sourceLang);
 
-    const upstream = await fetch('https://idml.pcglangops.com/parse', { method: 'POST', body: form });
+    const headers = new Headers() 
+    headers.append("CF-Access-Client-Id", IdmlServiceId )
+    headers.append("CF-Access-Client-Secret", idmlServiceSecret)
+
+    const upstream = await fetch('https://idml.pcglangops.com/parse', {
+        headers: headers,
+        method: 'POST',
+        body: form 
+    });
     if (!upstream.ok) {
         const { error } = await upstream.json();
         return res.status(502).json({ error });
@@ -500,7 +511,14 @@ router.post('/api/idml/storage/:id/reconstruct', async (req, res) => {
         form.append('idml', new Blob([new Uint8Array(idmlData)]), fileName)
         form.append('xliffs', new Blob([new Uint8Array(newZipBuffer)]), 'xliff_out.zip')
 
-        const upstreamRes = await fetch('https://idml.pcglangops.com/reconstruct', { method: 'POST', body: form })
+        const headers = new Headers()
+        headers.append("CF-Access-Client-Id", IdmlServiceId )
+        headers.append("CF-Access-Client-Secret", idmlServiceSecret)
+        const upstreamRes = await fetch('https://idml.pcglangops.com/reconstruct', { 
+            method: 'POST',
+            headers: headers,
+            body: form 
+        })
         if (!upstreamRes.ok) {
             const { error } = await upstreamRes.json() as { error: string }
             throw new Error(error)
