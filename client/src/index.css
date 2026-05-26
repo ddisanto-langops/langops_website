@@ -242,14 +242,14 @@ h2 { overflow-wrap: break-word; }
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    box-shadow: 0 2px 15px hsla(199, 100%, 66%, 0.384);
+
     transition: transform 0.2s, box-shadow 0.2s;
     margin: 5px;
 }
 
 .click-filter-button:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px hsla(199, 100%, 66%, 0.616);
+
+    background: linear-gradient(135deg, hsl(204, 97%, 39%), hsl(202, 97%, 59%));
 }
 
 .click-filter-button-selected {
@@ -391,13 +391,12 @@ td {
     font-size: 0.75rem;
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    box-shadow: 0 4px 15px hsla(44, 100%, 66%, 0.384);
+    
     transition: transform 0.2s, box-shadow 0.2s;
 }
 
 .pagination-button:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px hsla(44, 100%, 66%, 0.384);
+    background: linear-gradient(135deg, hsla(40, 94%, 65%, 0.747), hsl(34, 98%, 49%));
     cursor: pointer;
 }
 
