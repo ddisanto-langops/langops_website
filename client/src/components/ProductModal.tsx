@@ -86,7 +86,11 @@ export function ProductModal({record, isOpen, onClose}: ProductModalProps) {
                     </div>
                     <div className="product-modal-info-block">
                         <label className="product-modal-label">Status:</label>
-                        <p className="product-modal-info">{formData.productStatus}</p>
+                        <p className="product-modal-info">
+                            {formData.productStatus === 'pending' ? "Pending ⌛" : ""}
+                            {formData.productStatus === 'published' ? 'Published ✅': ""}
+                            {formData.productStatus === 'unknown' ? '❓' : ""}
+                        </p>        
                     </div>
                     <div className="product-modal-info-block">
                         <label className="product-modal-label">Due:</label>
@@ -103,10 +107,6 @@ export function ProductModal({record, isOpen, onClose}: ProductModalProps) {
                     <div className="product-modal-info-block">
                         <label className="product-modal-label">Approval Progress:</label>
                         <p className="product-modal-info">{formData.approvalProgress ?? '❓'}</p>
-                    </div>
-                    <div className="product-modal-info-block">
-                        <label className="product-modal-label">Published:</label>
-                        <p className="product-modal-info">{formData.published ? '✅': '❌'}</p>
                     </div>
                     <div className="product-modal-info-block">
                         <label className="product-modal-label">Date Published:</label>

@@ -47,7 +47,7 @@ const columns = [
         size: 150,
     }),
     columnHelper.accessor("datePublished", {
-        header: "Published",
+        header: "Date Published",
         cell: info => formatDate(info.getValue()),
         size: 120,
     }),

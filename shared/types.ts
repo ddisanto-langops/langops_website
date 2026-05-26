@@ -28,7 +28,6 @@ export interface ActiveProduct {
     targetLanguage: string
     productStatus: string
     mediaGroups: string[]
-    published: boolean
     excluded: boolean
     dateLastActivity: string
     dueDate: string | null
@@ -165,7 +164,6 @@ export interface AllProduct {
     dateLastActivity: string | null
     translationProgress: number | null
     approvalProgress: number | null
-    published: boolean | null
     crowdinUrl: string | null
     // archived-only
     localizedTitle: string | null

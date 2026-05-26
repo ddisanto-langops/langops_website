@@ -275,7 +275,6 @@ export class ActiveCard extends BaseCard {
             targetLanguage: this.targetLanguage,
             productStatus: productStatus,
             mediaGroups: this.getMediaGroups(),
-            published: fields.published,
             excluded: fields.exclude,
             dateLastActivity: this.dateLastActivity,
             datePublished: this.datePublished,

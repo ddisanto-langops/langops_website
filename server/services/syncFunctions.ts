@@ -172,10 +172,9 @@ export async function upsertProducts(products: ActiveProduct[]) {
             INSERT INTO products (
                 id, title, product_code, target_language, product_status,
                 crowdin_url, trello_url, article_url,
-                editor_url, due_date, date_last_activity,
-                published, date_published, translation_progress, 
-                approval_progress, media_groups, wordcount, provenance
-            ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17, $18)
+                editor_url, due_date, date_last_activity, date_published, 
+                translation_progress, approval_progress, media_groups, wordcount, provenance
+            ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17)
             ON CONFLICT (id) DO UPDATE SET
                 title                   = EXCLUDED.title,
                 product_code            = EXCLUDED.product_code,
@@ -187,7 +186,6 @@ export async function upsertProducts(products: ActiveProduct[]) {
                 article_url             = EXCLUDED.article_url,
                 due_date                = EXCLUDED.due_date,
                 date_last_activity      = EXCLUDED.date_last_activity,
-                published               = EXCLUDED.published,
                 date_published          = EXCLUDED.date_published,
                 translation_progress    = EXCLUDED.translation_progress,
                 approval_progress       = EXCLUDED.approval_progress,
@@ -205,7 +203,6 @@ export async function upsertProducts(products: ActiveProduct[]) {
             product.articleUrl ?? null,
             product.dueDate ?? null,
             product.dateLastActivity,
-            product.published,
             product.datePublished ?? null,
             product.translationProgress,
             product.approvalProgress,
@@ -276,7 +273,6 @@ export async function getActiveProducts(): Promise<ActiveProduct[]> {
             editor_url AS "editorUrl",
             due_date AS "dueDate",
             date_last_activity AS "dateLastActivity",
-            published,
             date_published AS "datePublished",
             translation_progress AS "translationProgress",
             approval_progress AS "approvalProgress",
@@ -397,7 +393,7 @@ export async function getCount(filters: Partial<ApiFilters>) {
         SELECT 
             SUM(c.wordcount) AS "totalWords",
             COUNT(c.*) AS "totalProducts",
-            SUM(p.wordcount) FILTER (WHERE p.published IS TRUE) AS "totalPublishedProductWords"
+            SUM(p.wordcount) FILTER (WHERE p.product_status = 'published') AS "totalPublishedProductWords"
         FROM completions c
         LEFT JOIN products p ON c.product_code = p.product_code
         WHERE
@@ -441,7 +437,7 @@ export async function getProductCount(filters: Partial<ApiFilters>) {
             SELECT product_code
             FROM products
             WHERE
-                published IS TRUE
+                product_status = 'published'
                 AND ($1::text IS NULL OR target_language = $1)
                 AND ($2::text IS NULL OR product_code = $2)
                 AND ($3::text IS NULL OR $3::text = ANY(media_groups))
@@ -517,16 +513,15 @@ export async function editProduct(id: string, record: Partial<ActiveProduct>) {
             target_language = $4,
             media_groups = $5::text[],
             wordcount = $6,
-            published = $7,
-            due_date = $8,
-            date_last_activity = $9,
-            date_published = $10,
-            translation_progress = $11,
-            approval_progress = $12,
-            editor_url = $13,
-            article_url = $14,
-            crowdin_url = $15
-        WHERE id = $16
+            due_date = $7,
+            date_last_activity = $8,
+            date_published = $9,
+            translation_progress = $10,
+            approval_progress = $11,
+            editor_url = $12,
+            article_url = $13,
+            crowdin_url = $14
+        WHERE id = $15
         RETURNING 
             id,
             provenance,
@@ -536,7 +531,6 @@ export async function editProduct(id: string, record: Partial<ActiveProduct>) {
             target_language AS "targetLanguage",
             media_groups AS "mediaGroups",
             wordcount AS "wordCount",
-            published,
             due_date AS "dueDate",
             date_last_activity AS "dateLastActivity",
             date_published AS "datePublished",
@@ -553,7 +547,6 @@ export async function editProduct(id: string, record: Partial<ActiveProduct>) {
             record.targetLanguage, 
             record.mediaGroups, 
             record.wordCount,
-            record.published,
             record.dueDate,
             record.dateLastActivity,
             record.datePublished,
@@ -784,7 +777,6 @@ export async function getFilteredAllProducts(filters: ApiFilters): Promise<{ dat
             date_last_activity     AS "dateLastActivity",
             translation_progress   AS "translationProgress",
             approval_progress      AS "approvalProgress",
-            published,
             crowdin_url            AS "crowdinUrl",
             localized_title        AS "localizedTitle",
             date_archived          AS "dateArchived",
@@ -807,7 +799,6 @@ export async function getFilteredAllProducts(filters: ApiFilters): Promise<{ dat
                 date_last_activity,
                 translation_progress,
                 approval_progress,
-                published,
                 crowdin_url,
                 NULL::text              AS localized_title,
                 NULL::timestamptz       AS date_archived
@@ -830,7 +821,6 @@ export async function getFilteredAllProducts(filters: ApiFilters): Promise<{ dat
                 NULL::timestamptz       AS date_last_activity,
                 NULL::integer           AS translation_progress,
                 NULL::integer           AS approval_progress,
-                NULL::boolean           AS published,
                 NULL::text              AS crowdin_url,
                 localized_title,
                 date_archived
@@ -853,7 +843,6 @@ export async function getFilteredAllProducts(filters: ApiFilters): Promise<{ dat
                 NULL::timestamptz       AS date_last_activity,
                 NULL::integer           AS translation_progress,
                 NULL::integer           AS approval_progress,
-                NULL::boolean           AS published,
                 NULL::text              AS crowdin_url,
                 NULL::text              AS localized_title,
                 date_archived
