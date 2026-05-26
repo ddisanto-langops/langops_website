@@ -7,7 +7,7 @@ import {
   parseProducts,
   getActiveIds,
   deleteProducts,
-} from './syncFunctions.js'
+} from './functions.js'
 import cron from 'node-cron'
 
 export async function syncProducts() {

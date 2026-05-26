@@ -22,7 +22,7 @@ import {
     getRebuiltIdml,
     deleteIdmlRecord,
     permanentDelete,
-} from '../services/syncFunctions.js';
+} from '../services/functions.js';
 
 const router = Router();
 

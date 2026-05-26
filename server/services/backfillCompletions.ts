@@ -1,5 +1,5 @@
 import fetch from 'node-fetch'
-import { parseProducts, getArchivedCards, upsertArchivedProducts } from './syncFunctions.js'
+import { parseProducts, getArchivedCards, upsertArchivedProducts } from './functions.js'
 
 const trelloBoardId = process.env.TrelloBoardId;
 const trelloKey = process.env.TrelloKey;

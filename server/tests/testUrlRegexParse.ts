@@ -1,4 +1,4 @@
-import { getArchivedCards, parseProducts } from "../services/syncFunctions.js"
+import { getArchivedCards, parseProducts } from "../services/functions.js"
 
 const cards = await getArchivedCards()
 

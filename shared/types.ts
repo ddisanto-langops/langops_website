@@ -36,8 +36,8 @@ export interface ActiveProduct {
     editorUrl: string | null
     crowdinUrl: string | null
     articleUrl: string | null
-    translationProgress: number
-    approvalProgress: number
+    translationProgress: number | null
+    approvalProgress: number | null
     wordCount: number | null
 }
 

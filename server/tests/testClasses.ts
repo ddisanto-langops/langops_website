@@ -1,7 +1,7 @@
 import { BaseCard, ActiveCard, ArchivedCard } from "../classes.js"
 import type { RawTrelloCard } from "../../shared/types.js"
 //import response from "../../response.json" with { type: 'json'}
-import { parseProducts, getActiveCards, getArchivedCards } from "../services/syncFunctions.js"
+import { parseProducts, getActiveCards, getArchivedCards } from "../services/functions.js"
 
 //const cards = response as unknown as RawTrelloCard[]
 
@@ -14,10 +14,10 @@ try {
         : console.log("Unknown error")
 }
 */
-const cards = await getArchivedCards("2026-05-07")
+const cards = await getActiveCards("2026-05-22")
 try {
-    const archivedProducts = await parseProducts(cards, "archived")
-    console.log(archivedProducts)
+    const activeProducts = await parseProducts(cards, "active")
+    console.log(activeProducts)
 } catch (error) {
     error instanceof Error ? console.log(`testClasses error: ${error.message}`)
         : console.log("Unknown error")

@@ -4,10 +4,12 @@ import {
     customFields,
     productCodes, 
     mediaGroups,
+    crowdinProjectIds,
 } from '../shared/constants.js';
 import { TranslationStatus } from '@crowdin/crowdin-api-client';
 import ISO6391 from "iso-639-1"
-import { getlocalizedTitle } from "./services/syncFunctions.js";
+import { getlocalizedTitle } from "./services/functions.js";
+import { url } from "node:inspector";
 
 
 const groupLookup = new Map();
@@ -54,6 +56,7 @@ export class BaseCard {
     static editorPattern = /\/editor\/articles\/posts/
     static articlePattern = /(?<!editor)\/articles\/posts/
     static crowdinPattern = /crowdin/
+    static crowdinLinkPattern = /editor\/([A-z]{4,})\/([0-9]{5})/
 
     get isTemplate() {
         return Boolean(this.rawData.isTemplate)
@@ -222,50 +225,96 @@ export class ActiveCard extends BaseCard {
         return dueDate
     }
 
-    private async getCrowdinData() {
-        const token = process.env.crowdintoken
-        const { crowdinProjectId, crowdinFileId } = this.getCustomFields()
-        
-        if (!token || !crowdinProjectId ||!crowdinFileId) return null;
-        
-        try {
-            const api = new TranslationStatus({ token })
-            const response = await api.getFileProgress(
-                Number(crowdinProjectId),
-                Number(crowdinFileId)
-            );
-            const { translationProgress, approvalProgress } = response.data[0].data
-            
-            return {
-                translationProgress,
-                approvalProgress
-            }
+    get urls() {
+         const urls = this.getUrls()
+         return urls
+    }
 
-        } catch (error) {
-            const message = error instanceof Error ? error.message : "Unknown error"
-            console.error(`Error fetching Crowdin progress for "${this.title}": ${message}`)
-            return null
+
+    private async getCrowdinData(crowdinUrl: string) {
+        if (crowdinUrl && crowdinUrl.length > 0) {
+            const match = crowdinUrl.match(BaseCard.crowdinLinkPattern)
+            if (match) {
+                const crowdinProject = match[1].toLowerCase()
+                const crowdinProjectId = crowdinProjectIds[crowdinProject]
+                const crowdinFileId = match[2]
+                
+                const token = process.env.crowdintoken
+                if (!token || !crowdinProjectId ||!crowdinFileId) return null;
+        
+                try {
+                    const api = new TranslationStatus({ token })
+                    const response = await api.getFileProgress(
+                        Number(crowdinProjectId),
+                        Number(crowdinFileId)
+                    );
+                    const { translationProgress, approvalProgress } = response.data[0].data
+                    
+                    return {
+                        translationProgress,
+                        approvalProgress
+                    }
+
+                } catch (error) {
+                    const message = error instanceof Error ? error.message : "Unknown error"
+                    console.error(`Error fetching Crowdin progress for "${this.title}": ${message}`)
+                    return null
+                }
+            }
         }
+        return null
     }
 
     private async getProductStatus() {
-        const crowdinData = await this.getCrowdinData() ?? {translationProgress: null, approvalProgress: null}
         const published = this.datePublished
-        if (published) return 'published'
+        if (published) {
+            const crowdinUrl = this.urls.crowdinUrl
+            if (crowdinUrl) {
+                const crowdinData = await this.getCrowdinData(crowdinUrl) ?? {translationProgress: null, approvalProgress: null}
+                return {
+                    status: 'published',
+                    translationProgress: crowdinData.translationProgress,
+                    approvalProgress: crowdinData.translationProgress
+                }
+            } else {
+                return {
+                    status: published,
+                    translationProgress: null,
+                    approvalProgress: null
+                }
+            }
+            
+        }
+
         const sevenDaysAgo = new Date()
         sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7)
         const hasRecentActivity = new Date(this.dateLastActivity) >= sevenDaysAgo
-        if (crowdinData || hasRecentActivity) return 'pending'
-        return 'unknown'
+
+        if (hasRecentActivity){
+            const crowdinUrl = this.urls.crowdinUrl
+            if (crowdinUrl) {
+                const crowdinData = await this.getCrowdinData(crowdinUrl) ?? {translationProgress: null, approvalProgress: null}
+                return {
+                    status: 'pending',
+                    translationProgress: crowdinData.translationProgress,
+                    approvalProgress: crowdinData.approvalProgress
+                }
+            } else {
+                return {
+                    status: 'pending',
+                    translationProgress: null,
+                    approvalProgress: null
+                }
+            }
+               
+        }
+        return {status: 'unknown'}
     }
 
     async parseActiveCard() {
         const fields = this.getCustomFields()
-        const urls = this.getUrls()
-        const crowdinData = await this.getCrowdinData() ?? { 
-            translationProgress: 0, 
-            approvalProgress: 0 
-        };
+       
+     
         const productStatus = await this.getProductStatus()
 
         const parsedActiveCard: ActiveProduct = {
@@ -273,18 +322,18 @@ export class ActiveCard extends BaseCard {
             title: this.title,
             productCode: this.productCode,
             targetLanguage: this.targetLanguage,
-            productStatus: productStatus,
+            productStatus: productStatus.status,
             mediaGroups: this.getMediaGroups(),
             excluded: fields.exclude,
             dateLastActivity: this.dateLastActivity,
             datePublished: this.datePublished,
             dueDate: this.dueDate,
             trelloUrl: this.trelloUrl,
-            editorUrl: urls.editorUrl,
-            crowdinUrl: urls.crowdinUrl,
-            articleUrl: urls.articleUrl,
-            translationProgress: crowdinData?.translationProgress,
-            approvalProgress: crowdinData?.approvalProgress,
+            editorUrl: this.urls.editorUrl,
+            crowdinUrl: this.urls.crowdinUrl,
+            articleUrl: this.urls.articleUrl,
+            translationProgress: productStatus.translationProgress ?? null,
+            approvalProgress: productStatus.approvalProgress ?? null,
             wordCount: this.wordCount
         }
         return parsedActiveCard
