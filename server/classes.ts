@@ -10,6 +10,7 @@ import { TranslationStatus } from '@crowdin/crowdin-api-client';
 import ISO6391 from "iso-639-1"
 import { getlocalizedTitle } from "./services/functions.js";
 import { url } from "node:inspector";
+import { createBuilderStatusReporter } from "typescript";
 
 
 const groupLookup = new Map();
@@ -239,12 +240,10 @@ export class ActiveCard extends BaseCard {
                 const crowdinProjectId = crowdinProjectIds[crowdinProject]
                 const crowdinFileId = match[2]
                 
-                const token = process.env.crowdintoken
-                if (!token || !crowdinProjectId ||!crowdinFileId) return null;
+                if (!crowdinProjectId ||!crowdinFileId) return null;
         
                 try {
-                    const api = new TranslationStatus({ token })
-                    const response = await api.getFileProgress(
+                    const response = await BaseCard.crowdinApi.getFileProgress(
                         Number(crowdinProjectId),
                         Number(crowdinFileId)
                     );
