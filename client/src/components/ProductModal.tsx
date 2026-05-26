@@ -102,11 +102,15 @@ export function ProductModal({record, isOpen, onClose}: ProductModalProps) {
                     </div>
                     <div className="product-modal-info-block">
                         <label className="product-modal-label">Translation Progress:</label>
-                        <p className="product-modal-info">{formData.translationProgress ?? '⛔'}</p>
+                        <p className="product-modal-info">
+                            {formData.translationProgress ? `${formData.approvalProgress}%` : '⛔'}
+                        </p>
                     </div>
                     <div className="product-modal-info-block">
                         <label className="product-modal-label">Approval Progress:</label>
-                        <p className="product-modal-info">{formData.approvalProgress ?? '⛔'}</p>
+                        <p className="product-modal-info">
+                            {formData.approvalProgress ? `${formData.approvalProgress}%` : '⛔'}
+                        </p>
                     </div>
                     <div className="product-modal-info-block">
                         <label className="product-modal-label">Date Published:</label>
