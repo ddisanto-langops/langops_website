@@ -169,17 +169,11 @@ export class BaseCard {
 
     public getCustomFields() {
         const cardCustomFields = this.rawData.customFieldItems ?? null
-        let published = false, crowdinProjectId = null, crowdinFileId = null, exclude = false
+        let published = false, exclude = false
         if (cardCustomFields) {
             for (const field of cardCustomFields) {
                 if (field.idCustomField === customFields.published) {
                     published = field.value.checked === "true";
-                    }
-                    if (field.idCustomField === customFields.crowdinProj) {
-                        crowdinProjectId = field.value.text ?? null;
-                    }
-                    if (field.idCustomField === customFields.crowdinFile) {
-                        crowdinFileId = field.value.text ?? null;
                     }
                     if (field.idCustomField === customFields.exclude) {
                         exclude = field.value.checked === "true";
@@ -188,8 +182,6 @@ export class BaseCard {
         }
         return {
             published: published,
-            crowdinProjectId: crowdinProjectId,
-            crowdinFileId: crowdinFileId,
             exclude: exclude
         }
     }
@@ -204,8 +196,6 @@ export class BaseCard {
             datePublished: this.datePublished,
             mediaGroups: this.getMediaGroups(),
             published: fields.published,
-            crowdinProjectId: fields.crowdinProjectId,
-            crowdinFileId: fields.crowdinFileId,
             exclude: fields.exclude,
             labels: this.labels,
             wordCount: this.wordCount,
@@ -323,7 +313,6 @@ export class ActiveCard extends BaseCard {
             targetLanguage: this.targetLanguage,
             productStatus: productStatus.status,
             mediaGroups: this.getMediaGroups(),
-            excluded: fields.exclude,
             dateLastActivity: this.dateLastActivity,
             datePublished: this.datePublished,
             dueDate: this.dueDate,

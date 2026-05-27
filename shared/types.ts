@@ -7,8 +7,6 @@ export interface BaseProduct {
     mediaGroups: string[]
     labels?: [{ id: string; name: string; }]
     published: boolean
-    crowdinProjectId: string | null
-    crowdinFileId: string | null
     exclude: boolean
     wordCount: number
     trelloUrl: string
@@ -28,7 +26,6 @@ export interface ActiveProduct {
     targetLanguage: string
     productStatus: string
     mediaGroups: string[]
-    excluded: boolean
     dateLastActivity: string
     dueDate: string | null
     datePublished: string | null
