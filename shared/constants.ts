@@ -16,7 +16,10 @@ export const productCodes: string[] = [
     'LIT',
     'LIT-S',
     'LSS',
+    'LT',
     'MB',
+    'OTHER',
+    'PCD',
     'PN',
     'POD',
     'PT',
@@ -25,6 +28,7 @@ export const productCodes: string[] = [
     'SER',
     'SMT',
     'TB',
+    'TE',
     'TW'
 ]
 
