@@ -12,10 +12,12 @@ syncProducts()
 const app = express();
 const PORT = process.env.PORT || 3200;
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
+const nodeEnv = (process.env.NODE_ENV ?? '').toLowerCase()
+const isDev = nodeEnv === 'dev' || nodeEnv === 'development'
 
 app.use(helmet())
 app.use(cors({
-  origin: process.env.NODE_ENV === 'Dev'
+  origin: isDev
     ? 'http://localhost:5173'
     : 'https://pcglangops.com',
   methods: ['GET', 'PUT', 'DELETE', 'POST']

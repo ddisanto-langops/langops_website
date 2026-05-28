@@ -9,6 +9,31 @@ const trelloBoardId = process.env.TrelloBoardId;
 const trelloKey = process.env.TrelloKey;
 const trelloToken = process.env.TrelloToken;
 
+function normalizeCrowdinFileIds(value: unknown): number[] {
+    if (Array.isArray(value)) {
+        return value
+            .map(item => typeof item === 'number' ? item : Number(item))
+            .filter(item => Number.isFinite(item))
+    }
+
+    if (typeof value === 'string') {
+        const trimmed = value.trim()
+        if (!trimmed) return []
+
+        try {
+            const parsed = JSON.parse(trimmed) as unknown
+            return normalizeCrowdinFileIds(parsed)
+        } catch {
+            return trimmed
+                .split(',')
+                .map(part => Number(part.trim()))
+                .filter(item => Number.isFinite(item))
+        }
+    }
+
+    return []
+}
+
 /*
 * Trello
 */
@@ -693,7 +718,10 @@ export async function listIdmlRecords(): Promise<IdmlStorageRecord[]> {
         FROM idml_storage
         ORDER BY created_at DESC
     `)
-    return result.rows
+    return result.rows.map(row => ({
+        ...row,
+        crowdinFileIds: normalizeCrowdinFileIds(row.crowdinFileIds)
+    })) as IdmlStorageRecord[]
 }
 
 export async function getIdmlRecordData(id: number): Promise<{
@@ -715,7 +743,21 @@ export async function getIdmlRecordData(id: number): Promise<{
         FROM idml_storage
         WHERE id = $1
     `, [id])
-    return result.rows[0] ?? null
+    if (result.rows.length === 0) return null
+
+    const row = result.rows[0] as {
+        fileName: string
+        idmlData: Buffer
+        xliffZipData: Buffer
+        crowdinProjectId: string
+        targetLanguage: string
+        crowdinFileIds: unknown
+    }
+
+    return {
+        ...row,
+        crowdinFileIds: normalizeCrowdinFileIds(row.crowdinFileIds)
+    }
 }
 
 export async function completeIdmlRecord(id: number, rebuiltData: Buffer): Promise<void> {
