@@ -352,7 +352,7 @@ router.post('/api/idml/parse', upload.single('idml'), async (req, res) => {
         body: form 
     });
     if (!upstream.ok) {
-        const { error } = await upstream.json();
+        const error = await upstream.text();
         return res.status(502).json({ error });
     }
 
@@ -536,7 +536,7 @@ router.post('/api/idml/storage/:id/reconstruct', async (req, res) => {
             body: form 
         })
         if (!upstreamRes.ok) {
-            const { error } = await upstreamRes.json() as { error: string }
+            const error = await upstreamRes.text()
             throw new Error(error)
         }
         const rebuiltBuffer = Buffer.from(await upstreamRes.arrayBuffer())

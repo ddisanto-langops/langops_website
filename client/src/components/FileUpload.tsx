@@ -255,41 +255,45 @@ export function FileUpload() {
 
             {/* ── XLIFF rename list ── */}
             {uploadStatus === 'ready' && xliffEntries.length > 0 && (
-                <div className='idml-xliff-section'>
-                    <h4>Extracted XLIFF Files</h4>
-                    <p className='idml-hint'>Rename files before uploading.</p>
-                    {xliffEntries.map((entry, i) => (
-                        <div key={entry.originalName} className='idml-xliff-row'>
-                            <span
-                                className='idml-xliff-original'
-                                title={entry.summary}
-                            >
-                                {entry.originalName}
-                            </span>
-                            <p>{entry.summary}</p>
-                            <span>→</span>
-                            <input
-                                className='idml-xliff-input'
-                                value={entry.displayName}
-                                onChange={e => setXliffEntries(prev =>
-                                    prev.map((item, idx) =>
-                                        idx === i ? { ...item, displayName: sanitizeFileName(e.target.value) } : item
-                                    )
-                                )}
-                            />
-                        </div>
-                    ))}
-                    <button
-                        className='idml-upload-btn'
-                        onClick={handleCrowdinUpload}
-                        disabled={!canUpload}
-                    >
-                        Upload to Crowdin &amp; Save
-                    </button>
-                    {(!selectedProject || !targetLanguage) && (
-                        <span className='idml-hint'>Select a project and language above first.</span>
-                    )}
-                </div>
+                <>
+                    <div className='idml-xliff-section'>
+                        <h4>Extracted XLIFF Files</h4>
+                        <p className='idml-hint'>Rename files before uploading.</p>
+                        {xliffEntries.map((entry, i) => (
+                            <div key={entry.originalName} className='idml-xliff-row'>
+                                <span
+                                    className='idml-xliff-original'
+                                    title={entry.summary}
+                                >
+                                    {entry.originalName}
+                                </span>
+                                <p>{entry.summary}</p>
+                                <span>→</span>
+                                <input
+                                    className='idml-xliff-input'
+                                    value={entry.displayName}
+                                    onChange={e => setXliffEntries(prev =>
+                                        prev.map((item, idx) =>
+                                            idx === i ? { ...item, displayName: sanitizeFileName(e.target.value) } : item
+                                        )
+                                    )}
+                                />
+                            </div>
+                        ))}
+                        {(!selectedProject || !targetLanguage) && (
+                            <span className='idml-hint'>Select a project and language above first.</span>
+                        )}
+                    </div>
+                    <div>
+                        <button
+                            className='idml-upload-btn'
+                            onClick={handleCrowdinUpload}
+                            disabled={!canUpload}
+                        >
+                            Upload to Crowdin &amp; Save
+                        </button>
+                    </div>
+                </>
             )}
 
             {/* ── Storage records table ── */}
@@ -328,6 +332,12 @@ export function FileUpload() {
                                         </td>
                                         <td>{new Date(record.createdAt).toLocaleDateString()}</td>
                                         <td className='idml-actions-cell'>
+                                            <button
+                                                className='idml-btn-delete'
+                                                onClick={() => handleDelete(record)}
+                                            >
+                                                Delete
+                                            </button>
                                             {record.status === 'pending' && (
                                                 <button
                                                     className='idml-btn-reconstruct'
@@ -346,12 +356,6 @@ export function FileUpload() {
                                                     Download
                                                 </a>
                                             )}
-                                            <button
-                                                className='idml-btn-delete'
-                                                onClick={() => handleDelete(record)}
-                                            >
-                                                Delete
-                                            </button>
                                         </td>
                                     </tr>
                                 );
