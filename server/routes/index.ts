@@ -27,7 +27,7 @@ import {
 const router = Router();
 
 const idmlServiceSecret = process.env.IdmlServiceSecret ?? ""
-const IdmlServiceId = process.env.IdmlServiceId ?? ""
+const idmlServiceId = process.env.IdmlServiceId ?? ""
 
 function getQueryString(value: unknown): string | undefined {
     return typeof value === 'string' ? value : undefined
@@ -343,7 +343,7 @@ router.post('/api/idml/parse', upload.single('idml'), async (req, res) => {
     form.append('source_lang', sourceLang);
 
     const headers = new Headers() 
-    headers.append("CF-Access-Client-Id", IdmlServiceId )
+    headers.append("CF-Access-Client-Id", idmlServiceId )
     headers.append("CF-Access-Client-Secret", idmlServiceSecret)
 
     const upstream = await fetch('https://idml.pcglangops.com/parse', {
@@ -528,7 +528,7 @@ router.post('/api/idml/storage/:id/reconstruct', async (req, res) => {
         form.append('xliffs', new Blob([new Uint8Array(newZipBuffer)]), 'xliff_out.zip')
 
         const headers = new Headers()
-        headers.append("CF-Access-Client-Id", IdmlServiceId )
+        headers.append("CF-Access-Client-Id", idmlServiceId )
         headers.append("CF-Access-Client-Secret", idmlServiceSecret)
         const upstreamRes = await fetch('https://idml.pcglangops.com/reconstruct', { 
             method: 'POST',

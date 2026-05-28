@@ -18,7 +18,7 @@ app.use(cors({
   origin: process.env.NODE_ENV === 'Dev'
     ? 'http://localhost:5173'
     : 'https://pcglangops.com',
-  methods: ['GET', 'PUT', 'DELETE']
+  methods: ['GET', 'PUT', 'DELETE', 'POST']
 }))
 app.use(express.json())
 app.use(router)
