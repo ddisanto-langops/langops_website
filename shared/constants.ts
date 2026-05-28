@@ -34,7 +34,7 @@ The associated key will be added to 'mediaType' in the API's response.
 Note that one product code can belong to multiple groups.
 */
 export const mediaGroups: { [key: string]: string[] } = {
-    literature: ['CWL', 'LIT', 'LIT-S'],
+    literature: ['CWL', 'LIT'],
     interpretation: ['ANN', 'BS', 'SER', 'SMT'],
     website: ['LIT-S', 'PT', 'TB', 'MB', 'KOD', 'POD'],
     audio_video: ['KOD', 'TW', 'POD', 'PTVID', 'WW', 'OTHER'],
