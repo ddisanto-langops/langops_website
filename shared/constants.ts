@@ -73,7 +73,8 @@ export const groupDisplayNames: { [key: string]: string } = {
     audio_video: "Audio/Video",
     pcgChurch: "PCG.church",
     magazines: "Magazines",
-    emails: "Emails"
+    emails: "Emails",
+    other: "Other"
 }
 
 /*
