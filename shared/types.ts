@@ -8,7 +8,8 @@ export interface BaseProduct {
     labels?: [{ id: string; name: string; }]
     published: boolean
     exclude: boolean
-    wordCount: number
+    wordCount: number | null
+    duration: number | null
     trelloUrl: string
 }
 
@@ -33,9 +34,11 @@ export interface ActiveProduct {
     editorUrl: string | null
     crowdinUrl: string | null
     articleUrl: string | null
+    youTubeUrl: string | null
     translationProgress: number | null
     approvalProgress: number | null
     wordCount: number | null
+    duration: number | null
 }
 
 export interface ArchivedProduct {
@@ -55,7 +58,9 @@ export interface ArchivedProduct {
     trelloUrl: string
     editorUrl: string | null
     articleUrl: string | null
+    youTubeUrl: string | null
     wordCount: number | null
+    duration: number | null
 }
 
 export interface ApiFilters {

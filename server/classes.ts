@@ -9,8 +9,6 @@ import {
 import { TranslationStatus } from '@crowdin/crowdin-api-client';
 import ISO6391 from "iso-639-1"
 import { getlocalizedTitle } from "./services/functions.js";
-import { url } from "node:inspector";
-import { createBuilderStatusReporter } from "typescript";
 
 
 const groupLookup = new Map();
@@ -58,6 +56,7 @@ export class BaseCard {
     static articlePattern = /(?<!editor)\/articles\/posts/
     static crowdinPattern = /crowdin/
     static crowdinLinkPattern = /editor\/([A-z]{4,})\/([0-9]{5})/
+    static youTubeLinkPattern = /youtube/
 
     get isTemplate() {
         return Boolean(this.rawData.isTemplate)
@@ -114,12 +113,13 @@ export class BaseCard {
 
     protected getUrls() {
         const cardAttachments = this.rawData.attachments ?? null
-        let editorUrl = null, articleUrl = null, crowdinUrl = null
+        let editorUrl = null, articleUrl = null, crowdinUrl = null, youTubeUrl = null
         for (const attachment of cardAttachments ?? []) {
             const url = attachment.url
             const editorMatch = url.match(BaseCard.editorPattern)
             const articleMatch = url.match(BaseCard.articlePattern)
             const crowdinMatch = url.match(BaseCard.crowdinPattern)
+            const youTubeMatch = url.match(BaseCard.youTubeLinkPattern)
 
             if (editorMatch) {
                 editorUrl = url
@@ -127,12 +127,15 @@ export class BaseCard {
                 articleUrl = url
             } else if (crowdinMatch) {
                 crowdinUrl = url
+            } else if (youTubeMatch) {
+                youTubeUrl = url
             }
         }
         return {
             crowdinUrl: crowdinUrl,
             editorUrl: editorUrl,
-            articleUrl: articleUrl
+            articleUrl: articleUrl,
+            youTubeUrl: youTubeUrl
         }
     }
 
@@ -152,19 +155,140 @@ export class BaseCard {
         return null;
     }
 
-    protected getMediaGroups() {
+    get isMagazine () {
         const magazineMatch = this.title.match(BaseCard.magazinePattern)
         const magazine = magazineMatch ? magazineMatch[1] : null
         if (magazine) {
-            return ['magazines']
-        } else {
-            const productMediaType = groupLookup.get(this.productCode) ?? []
-            const labelMediaType = (this.labels ?? []).flatMap(label => 
-                groupLookup.get(label.name) ?? []
-            )
-            const mediaType = [...new Set([...productMediaType, ...labelMediaType])]
-            return mediaType
+            return true
         }
+        return false
+    }
+
+    protected getDuration() {
+        //TODO: implement via YouTube API
+        return null
+    }
+
+    protected assignMediaGroups() {
+        /**
+         * Called once per product, assigns one or more media groups.
+         * For source of truth, see productCodes array found in constants.
+         * @return {string[]} mediaGroups - the complete array of assigned media groups.
+        */
+
+        const mediaGroups = []
+        
+        switch (this.productCode) {
+            // handle simple cases first
+            case "AD":
+                mediaGroups.push("audio_video")
+                break
+            case "ANN":
+                mediaGroups.push("interpretation")
+                break
+            case "BCC":
+                mediaGroups.push("literature")
+                break
+            case "BS":
+                mediaGroups.push("interpretation")
+                break
+            case "CWL":
+                mediaGroups.push("literature")
+                break
+            case "LIT":
+                mediaGroups.push("literature")
+                break
+            case "LIT-S":
+                mediaGroups.push("website")
+                break
+            case "LT":
+                mediaGroups.push("audio_video", "website")
+                break
+            case "MB":
+                mediaGroups.push("website")
+                break
+            case "PCD":
+                mediaGroups.push("other")
+                break
+            case "PN":
+                mediaGroups.push("emails")
+                break
+            case "SER":
+                mediaGroups.push("interpretation")
+                break
+            case "SMT":
+                mediaGroups.push("interpretation")
+                break
+            case "TB":
+                mediaGroups.push("website")
+                break
+            case "TE":
+                mediaGroups.push("website")
+                break
+
+            // evaluate complex products
+            case "KOD": {
+                const articleUrl = this.getUrls().articleUrl
+                if (articleUrl) {
+                    mediaGroups.push("audio_video", "website")
+                } else {
+                    mediaGroups.push("audio_video")
+                }
+                break
+            }
+            
+            case "LSS": {
+                const magazine = this.isMagazine
+                magazine ? mediaGroups.push("magazines") : mediaGroups.push("website")
+                break
+            }
+            
+            case "OTHER": {
+                const duration = this.getDuration()
+                if (duration) {
+                    mediaGroups.push("audio_video")
+                } else {
+                    mediaGroups.push("other")
+                }
+                break
+            }
+            
+            case "POD": {
+                const articleUrl = this.getUrls().articleUrl
+                const youTubeUrl = this.getUrls().youTubeUrl
+                if (articleUrl || youTubeUrl) {
+                    mediaGroups.push("audio_video", "website")
+                } else {
+                    mediaGroups.push("audio_video")
+                }
+                break
+            }
+
+            case "PT": {
+                const magazine = this.isMagazine
+                magazine ? mediaGroups.push("magazines") : mediaGroups.push("website")
+                break
+            }
+
+            case "PTVID": {
+                const articleUrl = this.getUrls().articleUrl
+                const youTubeUrl = this.getUrls().youTubeUrl
+                if (articleUrl || youTubeUrl) {
+                    mediaGroups.push("audio_video", "website")
+                } else {
+                    mediaGroups.push("audio_video")
+                }
+                break
+            }
+
+            case "RV": {
+                const magazine = this.isMagazine
+                magazine ? mediaGroups.push("magazines") : mediaGroups.push("website") 
+                break
+            }
+            
+        }
+        return mediaGroups
     }
 
     public getCustomFields() {
@@ -194,11 +318,12 @@ export class BaseCard {
             productCode: this.productCode,
             targetLanguage: this.targetLanguage,
             datePublished: this.datePublished,
-            mediaGroups: this.getMediaGroups(),
+            mediaGroups: this.assignMediaGroups(),
             published: fields.published,
             exclude: fields.exclude,
             labels: this.labels,
             wordCount: this.wordCount,
+            duration: this.getDuration(),
             trelloUrl: this.trelloUrl
         }
         return parsedBaseCard
@@ -312,7 +437,7 @@ export class ActiveCard extends BaseCard {
             productCode: this.productCode,
             targetLanguage: this.targetLanguage,
             productStatus: productStatus.status,
-            mediaGroups: this.getMediaGroups(),
+            mediaGroups: this.assignMediaGroups(),
             dateLastActivity: this.dateLastActivity,
             datePublished: this.datePublished,
             dueDate: this.dueDate,
@@ -320,9 +445,11 @@ export class ActiveCard extends BaseCard {
             editorUrl: this.urls.editorUrl,
             crowdinUrl: this.urls.crowdinUrl,
             articleUrl: this.urls.articleUrl,
+            youTubeUrl: this.urls.youTubeUrl,
             translationProgress: productStatus.translationProgress ?? null,
             approvalProgress: productStatus.approvalProgress ?? null,
-            wordCount: this.wordCount
+            wordCount: this.wordCount,
+            duration: this.getDuration()
         }
         return parsedActiveCard
     }
@@ -352,13 +479,15 @@ export class ArchivedCard extends BaseCard {
             localizedTitle: await this.getLocalizedTitle(),
             productCode: this.productCode,
             targetLanguage: this.targetLanguage,
-            mediaGroups: this.getMediaGroups(),
+            mediaGroups: this.assignMediaGroups(),
             datePublished: this.datePublished,
             dateArchived: this.dateArchived,
             trelloUrl: this.trelloUrl,
             editorUrl: urls.editorUrl,
             articleUrl: urls.articleUrl,
-            wordCount: this.wordCount
+            youTubeUrl: urls.youTubeUrl,
+            wordCount: this.wordCount,
+            duration: this.getDuration()
         }
         return parsedArchivedCard
     }
