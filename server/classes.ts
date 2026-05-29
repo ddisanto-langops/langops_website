@@ -50,7 +50,7 @@ export class BaseCard {
 
     static wordcountPattern = /(?<=-)(?:[A-Z+]*)([0-9]{1,})(?=_)/
     static productCodePattern = /^([A-Z-]*)([0-9]*[A-Z]*)(?=_)/
-    static magazinePattern = /^[A-Z]{2}([0-9]{6})_([A-Z]{2}$)/
+    static magazinePattern = /^[A-Z]{2}([0-9]{6})_([A-Z]{2}-[A-Z]{2}$)/
     static targetLangPattern = /[A-Z]{2}$/
     static editorPattern = /\/editor\/articles\/posts/
     static articlePattern = /(?<!editor)\/articles\/posts/
