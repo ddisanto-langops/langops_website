@@ -76,7 +76,6 @@ router.get("/api/deletions", async (_req, res) => {
  * byproduct endpoint which lists individual numbers of products.
 */
 router.get('/api/completions/wordcount', async (req, res) => {
-
     const filters: Partial<ApiFilters> = {
         lang: getQueryString(req.query.lang),
         code: getQueryString(req.query.code),

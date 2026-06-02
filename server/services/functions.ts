@@ -4,6 +4,7 @@ import { ActiveCard, ArchivedCard } from "../classes.js";
 import pool from '../database/databaseConfig.js';
 import fetch from 'node-fetch'
 import * as cheerio from 'cheerio'
+import { response } from "express";
 
 const trelloBoardId = process.env.TrelloBoardId;
 const trelloKey = process.env.TrelloKey;
@@ -187,10 +188,10 @@ export async function parseProducts(rawCards: RawTrelloCard[], mode: "active" | 
     return products
 }
 
-/*
-* Database
-*/
 
+/*
+ * Database
+*/
 export async function upsertProducts(products: ActiveProduct[]) {
     for (const product of products) {
         await pool.query(`
@@ -415,31 +416,43 @@ export async function getFilteredCompletions(filters: ApiFilters): Promise<{data
 // GET /api/completions/wordcount
 export async function getCount(filters: Partial<ApiFilters>) {
     const request = await pool.query(`
-        SELECT 
-            SUM(c.wordcount) AS "totalWords",
-            COUNT(c.*) AS "totalProducts",
-            SUM(p.wordcount) FILTER (WHERE p.product_status = 'published') AS "totalPublishedProductWords"
-        FROM completions c
-        LEFT JOIN products p ON c.product_code = p.product_code
-        WHERE
-            ($1::text IS NULL OR c.target_language = $1)
-            AND ($2::text IS NULL OR c.product_code = $2)
-            AND ($3::text IS NULL OR $3::text = ANY(c.media_groups))
-            AND ($4::date IS NULL OR c.date_published >= $4)
-            AND ($5::date IS NULL OR c.date_published <= $5)
+        SELECT
+            COALESCE((
+            SELECT SUM(wordcount)
+            FROM completions
+            WHERE
+                ($1::text IS NULL OR target_language = $1)
+                AND ($2::text IS NULL OR product_code = $2)
+                AND ($3::text IS NULL OR $3::text = ANY(media_groups))
+                AND ($4::date IS NULL OR date_published >= $4)
+                AND ($5::date IS NULL OR date_published <= $5)
+
+            ), 0)
+            +
+            COALESCE(
+            (SELECT SUM(wordcount)
+            FROM products
+            WHERE
+                product_status = 'published'
+                AND ($1::text IS NULL OR target_language = $1)
+                AND ($2::text IS NULL OR product_code = $2)
+                AND ($3::text IS NULL OR $3::text = ANY(media_groups))
+                AND ($4::date IS NULL OR date_published >= $4)
+                AND ($5::date IS NULL OR date_published <= $5)
+            ), 0)
+            as wordcount
         `, [
             filters.lang ?? null, 
             filters.code ?? null, 
-            filters.group, 
+            filters.group ?? null, 
             filters.from ?? null, 
             filters.to ?? null
         ]
     );
-    const count = {
-            totalWords: Number(request.rows[0].totalWords),
-            totalProducts: Number(request.rows[0].totalProducts)
-        };
-    return count
+    if (request.rowCount && request.rowCount > 0) {
+        const count = Number(request.rows[0].wordcount)
+        return {totalWords: count}
+    }
 }
 
 
