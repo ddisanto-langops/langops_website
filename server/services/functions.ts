@@ -4,6 +4,7 @@ import { ActiveCard, ArchivedCard } from "../classes.js";
 import pool from '../database/databaseConfig.js';
 import fetch from 'node-fetch'
 import * as cheerio from 'cheerio'
+import { response } from "express";
 
 const trelloBoardId = process.env.TrelloBoardId;
 const trelloKey = process.env.TrelloKey;
@@ -187,10 +188,10 @@ export async function parseProducts(rawCards: RawTrelloCard[], mode: "active" | 
     return products
 }
 
-/*
-* Database
-*/
 
+/*
+ * Database
+*/
 export async function upsertProducts(products: ActiveProduct[]) {
     for (const product of products) {
         await pool.query(`
@@ -244,9 +245,9 @@ export async function upsertArchivedProducts(archivedProducts: ArchivedProduct[]
             INSERT INTO completions (
                 id, title, localized_title, product_code, target_language,
                 media_groups, wordcount, date_published, trello_url,
-                article_url, editor_url, date_archived, provenance
+                article_url, editor_url, date_archived, duration_seconds, provenance
             )
-            SELECT $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13
+            SELECT $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14
             WHERE NOT EXISTS (
                 SELECT 1 FROM deletions WHERE deletions.id = $1
             )
@@ -258,7 +259,9 @@ export async function upsertArchivedProducts(archivedProducts: ArchivedProduct[]
                 article_url      = EXCLUDED.article_url,
                 editor_url       = EXCLUDED.editor_url,
                 trello_url       = EXCLUDED.trello_url,
-                date_archived    = EXCLUDED.date_archived
+                date_archived    = EXCLUDED.date_archived,
+                wordcount        = EXCLUDED.wordcount,
+                duration_seconds = EXCLUDED.duration_seconds
             RETURNING id, (xmax = 0) AS is_insert
         `, [
             product.id,
@@ -273,6 +276,7 @@ export async function upsertArchivedProducts(archivedProducts: ArchivedProduct[]
             product.articleUrl ?? null,
             product.editorUrl ?? null,
             product.dateArchived ?? null,
+            product.durationSeconds ?? null,
             'completions'
         ])
         if (response.rowCount === 0) {
@@ -323,6 +327,7 @@ export async function getCompletions(): Promise<ArchivedProduct[]> {
             target_language     AS "targetLanguage",
             media_groups        AS "mediaGroups",
             wordcount           AS "wordCount",
+            duration_seconds    AS "durationSeconds",
             date_published      AS "datePublished",
             date_archived       AS "dateArchived",
             trello_url          AS "trelloUrl",
@@ -347,6 +352,7 @@ export async function getDeletions(): Promise<ArchivedProduct[]> {
             target_language     AS "targetLanguage",
             media_groups        AS "mediaGroups",
             wordcount           AS "wordCount",
+            duration_seconds    AS "durationSeconds",
             date_published      AS "datePublished",
             date_archived       AS "dateArchived",
             trello_url          AS "trelloUrl",
@@ -388,6 +394,7 @@ export async function getFilteredCompletions(filters: ApiFilters): Promise<{data
             target_language     AS "targetLanguage",
             media_groups        AS "mediaGroups",
             wordcount           AS "wordCount",
+            duration_seconds    AS "durationSeconds",
             date_published      AS "datePublished",
             date_archived       AS "dateArchived",
             trello_url          AS "trelloUrl",
@@ -415,31 +422,43 @@ export async function getFilteredCompletions(filters: ApiFilters): Promise<{data
 // GET /api/completions/wordcount
 export async function getCount(filters: Partial<ApiFilters>) {
     const request = await pool.query(`
-        SELECT 
-            SUM(c.wordcount) AS "totalWords",
-            COUNT(c.*) AS "totalProducts",
-            SUM(p.wordcount) FILTER (WHERE p.product_status = 'published') AS "totalPublishedProductWords"
-        FROM completions c
-        LEFT JOIN products p ON c.product_code = p.product_code
-        WHERE
-            ($1::text IS NULL OR c.target_language = $1)
-            AND ($2::text IS NULL OR c.product_code = $2)
-            AND ($3::text IS NULL OR $3::text = ANY(c.media_groups))
-            AND ($4::date IS NULL OR c.date_published >= $4)
-            AND ($5::date IS NULL OR c.date_published <= $5)
+        SELECT
+            COALESCE((
+            SELECT SUM(wordcount)
+            FROM completions
+            WHERE
+                ($1::text IS NULL OR target_language = $1)
+                AND ($2::text IS NULL OR product_code = $2)
+                AND ($3::text IS NULL OR $3::text = ANY(media_groups))
+                AND ($4::date IS NULL OR date_published >= $4)
+                AND ($5::date IS NULL OR date_published <= $5)
+
+            ), 0)
+            +
+            COALESCE(
+            (SELECT SUM(wordcount)
+            FROM products
+            WHERE
+                product_status = 'published'
+                AND ($1::text IS NULL OR target_language = $1)
+                AND ($2::text IS NULL OR product_code = $2)
+                AND ($3::text IS NULL OR $3::text = ANY(media_groups))
+                AND ($4::date IS NULL OR date_published >= $4)
+                AND ($5::date IS NULL OR date_published <= $5)
+            ), 0)
+            as wordcount
         `, [
             filters.lang ?? null, 
             filters.code ?? null, 
-            filters.group, 
+            filters.group ?? null, 
             filters.from ?? null, 
             filters.to ?? null
         ]
     );
-    const count = {
-            totalWords: Number(request.rows[0].totalWords),
-            totalProducts: Number(request.rows[0].totalProducts)
-        };
-    return count
+    if (request.rowCount && request.rowCount > 0) {
+        const count = Number(request.rows[0].wordcount)
+        return {totalWords: count}
+    }
 }
 
 
@@ -495,8 +514,9 @@ export async function editCompletion(id: string, record: Partial<ArchivedProduct
             date_published = $7,
             date_archived = $8,
             editor_url = $9,
-            article_url = $10
-        WHERE id = $11
+            article_url = $10,
+            duration_seconds = $11
+        WHERE id = $12
         RETURNING
             id,
             provenance,
@@ -510,7 +530,8 @@ export async function editCompletion(id: string, record: Partial<ArchivedProduct
             date_archived       AS "dateArchived",
             editor_url          AS "editorUrl",
             article_url         AS "articleUrl",
-            trello_url          AS "trelloUrl"
+            trello_url          AS "trelloUrl",
+            duration_seconds    AS "durationSeconds"
         `, [
             record.title,
             record.localizedTitle || null,
@@ -522,6 +543,7 @@ export async function editCompletion(id: string, record: Partial<ArchivedProduct
             record.dateArchived,
             record.editorUrl,
             record.articleUrl,
+            record.durationSeconds || null,
             id
         ]
     )
@@ -619,19 +641,19 @@ export async function deleteCompletion(id: string) {
             RETURNING 
             id, provenance, title, localized_title, product_code, 
             target_language, media_groups, 
-            wordcount, date_published, date_archived, 
+            wordcount, duration_seconds, date_published, date_archived, 
             trello_url, article_url, editor_url
         )
         INSERT INTO deletions (
             id, provenance, title, localized_title, product_code, 
             target_language, media_groups, 
-            wordcount, date_published, date_archived, 
+            wordcount, duration_seconds, date_published, date_archived, 
             trello_url, article_url, editor_url
         ) 
         SELECT
             id, 'deletions', title, localized_title, product_code,
             target_language, media_groups,
-            wordcount, date_published, date_archived,
+            wordcount, duration_seconds, date_published, date_archived,
             trello_url, article_url, editor_url
         FROM moved_record
         RETURNING *;
@@ -648,20 +670,20 @@ export async function restoreCompletion(id: string) {
             RETURNING 
             id, provenance, title, localized_title, product_code, 
             target_language, media_groups, 
-            wordcount, date_published, date_archived, 
+            wordcount, duration_seconds, date_published, date_archived, 
             trello_url, article_url, editor_url
         )
         INSERT INTO completions (
             id, provenance, title, localized_title, product_code, 
             target_language, media_groups, 
-            wordcount, date_published, date_archived, 
+            wordcount, duration_seconds, date_published, date_archived, 
             trello_url, article_url, editor_url
         ) 
         SELECT
             id, 'completions',
             title, localized_title, product_code, 
             target_language, media_groups, 
-            wordcount, date_published, date_archived, 
+            wordcount, duration_seconds date_published, date_archived, 
             trello_url, article_url, editor_url
         FROM moved_record
         RETURNING *;

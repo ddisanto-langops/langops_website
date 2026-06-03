@@ -60,7 +60,7 @@ export interface ArchivedProduct {
     articleUrl: string | null
     youTubeUrl: string | null
     wordCount: number | null
-    duration: number | null
+    durationSeconds: number | null
 }
 
 export interface ApiFilters {
