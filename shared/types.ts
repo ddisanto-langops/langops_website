@@ -56,6 +56,7 @@ export interface ArchivedProduct {
     editorUrl: string | null
     articleUrl: string | null
     wordCount: number | null
+    durationSeconds: number | null
 }
 
 export interface ApiFilters {
