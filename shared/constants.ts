@@ -6,30 +6,47 @@ export const customFields: { [key: string]: string } = {
     exclude: "69ef857e7b87bddeafa48757"
 }
 
-// Defines all valid product codes
+
 export const productCodes: string[] = [
-    'ANN',
-    'BCC',
-    'BS',
-    'CWL',
+    /*
+     * productCodes is an Alphabetized array defining all valid product codes,
+     * which also acts as a source of truth for conditions
+     * governing media group assignment via the assignMediaGroups function
+     * found in the BaseCard class.
+     * TODO: implement assignMediaGroups
+    */ 
+
+    'AD',       // always audio_video
+    'ANN',      // always interpretation
+    'BCC',      // always literature
+    'BS',       // always interpretation
+    'CWL',      // always literature
+    /**
+     * KOD: if has article URL, classify as website as well as audio_video.
+     * If no article URL, classify as audio_video only.
+    */
     'KOD',
-    'LIT',
-    'LIT-S',
-    'LSS',
-    'LT',
-    'MB',
+    'LIT',      // always literature
+    'LIT-S',    // website only, never literature
+    'LSS',      // magazine if has edition code; else website
+    'LT',       // always audio_video AND website
+    'MB',       // website only
+    /**
+     * OTHER: can be text or audio. If has duration, classify as audio_video.
+     * Else, classify as emails. 
+     */
     'OTHER',
-    'PCD',
-    'PN',
-    'POD',
-    'PT',
-    'PTVID',
-    'RV',
-    'SER',
-    'SMT',
-    'TB',
-    'TE',
-    'TW'
+    'PCD',      // other only
+    'PN',       // emails only
+    'POD',      // always audio_video; also website if has URL
+    'PT',       // magazine if has edition code; else website
+    'PTVID',    // always audio_video; also website if has URL
+    'RV',       // magazine if has edition code; else website
+    'SER',      // always interpretation
+    'SMT',      // always interpretation
+    'TB',       // always website
+    'TE',       // always website
+    'TW'        // always audio_video; also website if has URL
 ]
 
 /*
@@ -38,12 +55,14 @@ The associated key will be added to 'mediaType' in the API's response.
 Note that one product code can belong to multiple groups.
 */
 export const mediaGroups: { [key: string]: string[] } = {
-    literature: ['CWL', 'LIT'],
+    literature: ['CWL', 'LIT', 'BCC'],
     interpretation: ['ANN', 'BS', 'SER', 'SMT'],
     website: ['LIT-S', 'PT', 'TB', 'MB', 'KOD', 'POD'],
-    audio_video: ['KOD', 'TW', 'POD', 'PTVID', 'WW', 'OTHER'],
+    audio_video: ['AD', 'KOD', 'TW', 'POD', 'PTVID', 'WW', 'OTHER'],
     pcgChurch: ['PCG.CHURCH'],
-    //DEPRECATED: magazines: ['Royal Vision', 'Let the Stones Speak', 'The Philadelphia Trumpet']
+    emails: ['PN'],
+    magazines: ['RV', 'LSS', 'PT'],
+    other: ['PCD']
 }
 
 // Abstraction to display UI-friendly product group names
@@ -53,7 +72,9 @@ export const groupDisplayNames: { [key: string]: string } = {
     website: "Website",
     audio_video: "Audio/Video",
     pcgChurch: "PCG.church",
-    magazines: "Magazines"
+    magazines: "Magazines",
+    emails: "Emails",
+    other: "Other"
 }
 
 /*
