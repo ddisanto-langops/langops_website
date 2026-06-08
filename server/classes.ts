@@ -487,7 +487,7 @@ export class ArchivedCard extends BaseCard {
             articleUrl: urls.articleUrl,
             youTubeUrl: urls.youTubeUrl,
             wordCount: this.wordCount,
-            duration: this.getDuration()
+            durationSeconds: this.getDuration()
         }
         return parsedArchivedCard
     }
