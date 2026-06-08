@@ -142,7 +142,7 @@ export function CompletionTable() {
     <>
       <GuardedCompletionModal  />
       <ClickFilter selectedGroups={groupFilter} onSelectionChange={handleGroupChange}/>
-      <div className="date-picker-row">
+      <div className="date-filter-row">
         <label>From: <input type="date" className="date-picker" value={fromDate} onChange={e => { setFromDate(e.target.value); setPagination(prev => ({ ...prev, pageIndex: 0 })) }} /></label>
         <label>To: <input type="date" className="date-picker" value={toDate} onChange={e => { setToDate(e.target.value); setPagination(prev => ({ ...prev, pageIndex: 0 })) }} /></label>
       </div>
