@@ -688,6 +688,14 @@ td {
     font-family: Arial, Helvetica, sans-serif;
 }
 
+.date-filter-row {
+    color: white;
+    display: flex;
+    gap: 40px;
+    justify-content: center;
+    margin: 10px;
+}
+
 /* =====================
    IDML UPLOAD PAGE
    ===================== */

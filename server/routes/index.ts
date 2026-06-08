@@ -33,6 +33,15 @@ function getQueryString(value: unknown): string | undefined {
     return typeof value === 'string' ? value : undefined
 }
 
+function getQueryArray(value: unknown): string[] | undefined {
+    if (typeof value === 'string') return value ? [value] : undefined
+    if (Array.isArray(value)) {
+        const filtered = value.filter((v): v is string => typeof v === 'string' && v !== '')
+        return filtered.length ? filtered : undefined
+    }
+    return undefined
+}
+
 router.get("/api/products", async (req, res) => {
     console.log("Querying transient data...")
     try {
@@ -79,7 +88,7 @@ router.get('/api/completions/wordcount', async (req, res) => {
     const filters: Partial<ApiFilters> = {
         lang: getQueryString(req.query.lang),
         code: getQueryString(req.query.code),
-        group: getQueryString(req.query.group),
+        group: getQueryArray(req.query.group),
         from: getQueryString(req.query.from),
         to: getQueryString(req.query.to)
     }
@@ -104,7 +113,7 @@ router.get("/api/completions/byproduct", async (req, res) => {
     const filters: Partial<ApiFilters> = {
         lang: getQueryString(req.query.lang),
         code: getQueryString(req.query.code),
-        group: getQueryString(req.query.group),
+        group: getQueryArray(req.query.group),
         from: getQueryString(req.query.from),
         to: getQueryString(req.query.to)
     }
@@ -129,7 +138,7 @@ router.get('/api/completions/filter', async (req, res) => {
     const filters: ApiFilters = {
         lang: getQueryString(req.query.lang),
         code: getQueryString(req.query.code),
-        group: getQueryString(req.query.group),
+        group: getQueryArray(req.query.group),
         from: getQueryString(req.query.from),
         to: getQueryString(req.query.to),
         title: getQueryString(req.query.title),
@@ -157,7 +166,7 @@ router.get('/api/all-products/filter', async (req, res) => {
     const filters: ApiFilters = {
         lang: getQueryString(req.query.lang),
         code: getQueryString(req.query.code),
-        group: getQueryString(req.query.group),
+        group: getQueryArray(req.query.group),
         from: getQueryString(req.query.from),
         to: getQueryString(req.query.to),
         title: getQueryString(req.query.title),

@@ -30,7 +30,7 @@ export function DashboardFilter({filters, onFilterChange}: DashboardFilterProps)
       value={filters.group ?? ''}
       onChange={e => onFilterChange({
         ...filters,
-        group: e.target.value || null
+        group: e.target.value ? [e.target.value] : undefined
       })}
     >
       <option value="">All Media Groups</option>

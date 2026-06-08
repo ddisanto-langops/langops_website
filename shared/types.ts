@@ -66,7 +66,7 @@ export interface ArchivedProduct {
 export interface ApiFilters {
     lang?: string | undefined
     code?: string | undefined
-    group?: string | undefined
+    group?: string[] | undefined
     from?: string | undefined
     to?: string | undefined
     title?: string | undefined

@@ -1,5 +1,5 @@
 import type { ActiveProduct, AllProduct, ApiFilters, ArchivedProduct, RawTrelloCard, IdmlStorageRecord } from "../../shared/types.js"
-import { productCodes, supportedLanguages } from "../../shared/constants.js"
+import { mediaGroups, productCodes, supportedLanguages } from "../../shared/constants.js"
 import { ActiveCard, ArchivedCard } from "../classes.js";
 import pool from '../database/databaseConfig.js';
 import fetch from 'node-fetch'
@@ -375,6 +375,7 @@ export async function getFilteredCompletions(filters: ApiFilters): Promise<{data
     const allowedSortColumns = {
         title: 'title',
         productCode: 'product_code',
+        mediaGroups: 'media_groups',
         targetLang: 'target_language',
         datePublished: 'date_published',
         wordCount: 'wordcount',
@@ -405,13 +406,13 @@ export async function getFilteredCompletions(filters: ApiFilters): Promise<{data
         WHERE
             ($1::text IS NULL OR target_language ILIKE '%' || $1 || '%')
             AND ($2::text IS NULL OR product_code ILIKE '%' || $2 || '%')
-            AND ($3::text IS NULL OR $3 = ANY(media_groups))
+            AND ($3::text IS NULL OR media_groups && $3::TEXT[])
             AND ($4::date IS NULL OR date_published >= $4)
             AND ($5::date IS NULL OR date_published <= $5)
             AND ($6::text IS NULL OR title ILIKE '%' || $6 || '%')
         ORDER BY ${sortColumn} ${sortDirection} NULLS LAST
         LIMIT $7 OFFSET $8
-    `, [filters.lang ?? null, filters.code ?? null, filters.group ?? null, filters.from ?? null, filters.to ?? null, filters.title ?? null, limitNum, offset])
+    `, [filters.lang ?? null, filters.code ?? null, filters.group?.length ? filters.group : null, filters.from ?? null, filters.to ?? null, filters.title ?? null, limitNum, offset])
 
     const totalCount = response.rows.length > 0 ? parseInt(response.rows[0].total_count, 10) : 0
     const data = response.rows.map(({ total_count, ...row }) => row)
@@ -429,7 +430,7 @@ export async function getCount(filters: Partial<ApiFilters>) {
             WHERE
                 ($1::text IS NULL OR target_language = $1)
                 AND ($2::text IS NULL OR product_code = $2)
-                AND ($3::text IS NULL OR $3::text = ANY(media_groups))
+                AND ($3::text IS NULL OR media_groups && $3::TEXT[])
                 AND ($4::date IS NULL OR date_published >= $4)
                 AND ($5::date IS NULL OR date_published <= $5)
 
@@ -442,7 +443,7 @@ export async function getCount(filters: Partial<ApiFilters>) {
                 product_status = 'published'
                 AND ($1::text IS NULL OR target_language = $1)
                 AND ($2::text IS NULL OR product_code = $2)
-                AND ($3::text IS NULL OR $3::text = ANY(media_groups))
+                AND ($3::text IS NULL OR media_groups && $3::TEXT[])
                 AND ($4::date IS NULL OR date_published >= $4)
                 AND ($5::date IS NULL OR date_published <= $5)
             ), 0)
@@ -450,7 +451,7 @@ export async function getCount(filters: Partial<ApiFilters>) {
         `, [
             filters.lang ?? null, 
             filters.code ?? null, 
-            filters.group ?? null, 
+            filters.group?.length ? filters.group : null, 
             filters.from ?? null, 
             filters.to ?? null
         ]
@@ -472,7 +473,7 @@ export async function getProductCount(filters: Partial<ApiFilters>) {
             WHERE
                 ($1::text IS NULL OR target_language = $1)
                 AND ($2::text IS NULL OR product_code = $2)
-                AND ($3::text IS NULL OR $3::text = ANY(media_groups))
+                AND ($3::text IS NULL OR media_groups && $3::TEXT[])
                 AND ($4::date IS NULL OR date_published >= $4)
                 AND ($5::date IS NULL OR date_published <= $5)
 
@@ -484,7 +485,7 @@ export async function getProductCount(filters: Partial<ApiFilters>) {
                 product_status = 'published'
                 AND ($1::text IS NULL OR target_language = $1)
                 AND ($2::text IS NULL OR product_code = $2)
-                AND ($3::text IS NULL OR $3::text = ANY(media_groups))
+                AND ($3::text IS NULL OR media_groups && $3::TEXT[])
                 AND ($4::date IS NULL OR date_published >= $4)
                 AND ($5::date IS NULL OR date_published <= $5)
         ) AS matching_records
@@ -492,7 +493,7 @@ export async function getProductCount(filters: Partial<ApiFilters>) {
         [
             filters.lang ?? null, 
             filters.code ?? null, 
-            filters.group, 
+            filters.group?.length ? filters.group : null, 
             filters.from ?? null, 
             filters.to ?? null
         ]
@@ -813,6 +814,7 @@ export async function getFilteredAllProducts(filters: ApiFilters): Promise<{ dat
         source: 'source',
         title: 'title',
         productCode: 'product_code',
+        mediaGroups: 'media_groups',
         targetLanguage: 'target_language',
         datePublished: 'date_published',
         wordCount: 'wordcount',
@@ -915,14 +917,14 @@ export async function getFilteredAllProducts(filters: ApiFilters): Promise<{ dat
         WHERE
             ($1::text IS NULL OR target_language ILIKE '%' || $1 || '%')
             AND ($2::text IS NULL OR product_code ILIKE '%' || $2 || '%')
-            AND ($3::text IS NULL OR $3 = ANY(media_groups))
+            AND ($3::text IS NULL OR media_groups && $3::TEXT[])
             AND ($4::date IS NULL OR date_published >= $4::date)
             AND ($5::date IS NULL OR date_published <= $5::date)
             AND ($6::text IS NULL OR title ILIKE '%' || $6 || '%')
             AND ($9::text IS NULL OR source = $9)
         ORDER BY ${sortColumn} ${sortDirection} NULLS LAST, id
         LIMIT $7 OFFSET $8
-    `, [filters.lang ?? null, filters.code ?? null, filters.group ?? null, filters.from ?? null, filters.to ?? null, filters.title ?? null, limitNum, offset, filters.source ?? null])
+    `, [filters.lang ?? null, filters.code ?? null, filters.group?.length ? filters.group : null, filters.from ?? null, filters.to ?? null, filters.title ?? null, limitNum, offset, filters.source ?? null])
 
     const totalCount = response.rows.length > 0 ? parseInt(response.rows[0].total_count, 10) : 0
     const data: AllProduct[] = response.rows.map(({ total_count, ...row }) => row)

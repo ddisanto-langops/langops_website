@@ -4,7 +4,7 @@ import { ProductModal } from "./ProductModal";
 import { fetchProducts } from "../../services/api"
 import { ClickFilter } from "./clickFilter";
 import { useQuery } from "@tanstack/react-query"
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import {
   useReactTable,
   getCoreRowModel,
@@ -69,16 +69,29 @@ export function ProductTable() {
 
   const [sorting, setSorting] = useState<SortingState>([])
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
-  const [activeTab, setActiveTab] = useState<string | null>(null)
+  const [selectedGroups, setSelectedGroups] = useState<string[]>([])
+  const [fromDate, setFromDate] = useState('')
+  const [toDate, setToDate] = useState('')
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({ mediaType: false })
   const [selectedRow, setSelectedRow] = useState<ActiveProduct | undefined>(undefined)
   const [modalIsOpen, setModalIsOpen] = useState(false)
 
 
 
+  const filteredData = useMemo(() => {
+    if (!fromDate && !toDate) return data
+    return data.filter(product => {
+      if (!product.datePublished) return false
+      const pubDate = product.datePublished.slice(0, 10)
+      if (fromDate && pubDate < fromDate) return false
+      if (toDate && pubDate > toDate) return false
+      return true
+    })
+  }, [data, fromDate, toDate])
+
   // eslint-disable-next-line react-hooks/incompatible-library
   const table = useReactTable({
-    data,
+    data: filteredData,
     columns,
     state: { sorting, columnFilters, columnVisibility },
     onSortingChange: setSorting,
@@ -89,9 +102,9 @@ export function ProductTable() {
     getFilteredRowModel: getFilteredRowModel(),
   })
 
-  const handleTabClick = (value: string | null) => {
-    setActiveTab(value)
-    table.getColumn('mediaType')?.setFilterValue(value)
+  const handleGroupChange = (groups: string[]) => {
+    setSelectedGroups(groups)
+    table.getColumn('mediaType')?.setFilterValue(groups.length ? groups : null)
   }
 
   const handleRowClick = (row: ActiveProduct) => {
@@ -116,7 +129,11 @@ export function ProductTable() {
   return (
   <>
   <GuardedProductModal />
-  <ClickFilter activeTab={activeTab} onTabClick={handleTabClick}/>
+  <ClickFilter selectedGroups={selectedGroups} onSelectionChange={handleGroupChange}/>
+  <div className="date-filter-row">
+    <label>From: <input type="date" className="date-picker" value={fromDate} onChange={e => setFromDate(e.target.value)} /></label>
+    <label>To: <input type="date" className="date-picker" value={toDate} onChange={e => setToDate(e.target.value)} /></label>
+  </div>
   <table id="product-table">
     <thead id="product-table-head">
         {table.getHeaderGroups().map(headerGroup => (

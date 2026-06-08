@@ -1,20 +1,43 @@
+const GROUPS = [
+    { value: 'audio_video',    label: 'Audio/Video' },
+    { value: 'literature',     label: 'Literature' },
+    { value: 'website',        label: 'Website' },
+    { value: 'interpretation', label: 'Interpretation' },
+    { value: 'pcgChurch',      label: 'PCG.church' },
+    { value: 'magazines',      label: 'Magazines' },
+    { value: 'emails',         label: 'Emails' },
+    { value: 'other',          label: 'Other' },
+]
+
 interface ClickFilterProps {
-    activeTab: string | null
-    onTabClick: (mediaGroups: string | null) => void
+    selectedGroups: string[]
+    onSelectionChange: (groups: string[]) => void
 }
 
-export function ClickFilter({ onTabClick, activeTab }: ClickFilterProps) {
+export function ClickFilter({ selectedGroups, onSelectionChange }: ClickFilterProps) {
+    const toggle = (value: string) => {
+        if (selectedGroups.includes(value)) {
+            onSelectionChange(selectedGroups.filter(g => g !== value))
+        } else {
+            onSelectionChange([...selectedGroups, value])
+        }
+    }
+
     return (
         <div id="click-filter">
-            <button className={activeTab === null ? "click-filter-button-selected" : "click-filter-button"} onClick={() => onTabClick(null)}>All</button>
-            <button className={activeTab === 'audio_video' ? "click-filter-button-selected" : "click-filter-button"} onClick={() => onTabClick('audio_video')}>Audio/Video</button>
-            <button className={activeTab === 'literature' ? "click-filter-button-selected" : "click-filter-button"} onClick={() => onTabClick('literature')}>Literature</button>
-            <button className={activeTab === 'website' ? "click-filter-button-selected" : "click-filter-button"} onClick={() => onTabClick('website')}>Website</button>
-            <button className={activeTab === 'interpretation' ? "click-filter-button-selected" : "click-filter-button"} onClick={() => onTabClick('interpretation')}>Interpretation</button>
-            <button className={activeTab === 'pcgChurch' ? "click-filter-button-selected" : "click-filter-button"} onClick={() => onTabClick('pcgChurch')}>PCG.church</button>
-            <button className={activeTab === 'magazines' ? "click-filter-button-selected" : "click-filter-button"} onClick={() => onTabClick('magazines')}>Magazines</button>
-            <button className={activeTab === 'emails' ? "click-filter-button-selected" : "click-filter-button"} onClick={() => onTabClick('emails')}>Emails</button>
-            <button className={activeTab === 'other' ? "click-filter-button-selected" : "click-filter-button"} onClick={() => onTabClick('other')}>Other</button>
+            <button
+                className={selectedGroups.length === 0 ? "click-filter-button-selected" : "click-filter-button"}
+                onClick={() => onSelectionChange([])}
+            >All</button>
+            {GROUPS.map(({ value, label }) => (
+                <button
+                    key={value}
+                    className={selectedGroups.includes(value) ? "click-filter-button-selected" : "click-filter-button"}
+                    onClick={() => toggle(value)}
+                >
+                    {label}
+                </button>
+            ))}
         </div>
     )
 }

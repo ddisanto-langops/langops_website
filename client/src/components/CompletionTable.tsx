@@ -47,12 +47,13 @@ const PAGE_SIZE = 50
 export function CompletionTable() {
   const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: PAGE_SIZE })
   const [sorting, setSorting] = useState([{ id: 'datePublished', desc: true }])
-  const [groupFilter, setGroupFilter] = useState<string | null>(null)
+  const [groupFilter, setGroupFilter] = useState<string[]>([])
+  const [fromDate, setFromDate] = useState('')
+  const [toDate, setToDate] = useState('')
   const [titleInput, setTitleInput] = useState('')
   const [codeInput, setCodeInput] = useState('')
   const [langInput, setLangInput] = useState('')
   const [debouncedTextFilters, setDebouncedTextFilters] = useState({ title: '', code: '', lang: '' })
-  const [activeTab, setActiveTab] = useState<string | null>(null)
   const [selectedRow, setSelectedRow] = useState<ArchivedProduct | null>(null)
   const [modalIsOpen, setModalIsOpen] = useState(false)
 
@@ -77,7 +78,9 @@ export function CompletionTable() {
     title: normalizedTextFilters.title || undefined,
     code: normalizedTextFilters.code || undefined,
     lang: normalizedTextFilters.lang || undefined,
-    group: groupFilter || undefined,
+    group: groupFilter.length ? groupFilter : undefined,
+    from: fromDate || undefined,
+    to: toDate || undefined,
     sortBy: sortState?.id,
     sortDir: sortState?.desc === false ? 'asc' : 'desc',
   }
@@ -105,9 +108,8 @@ export function CompletionTable() {
     pageCount,
   })
 
-  const handleTabClick = (value: string | null) => {
-    setActiveTab(value)
-    setGroupFilter(value ? value : null)
+  const handleGroupChange = (groups: string[]) => {
+    setGroupFilter(groups)
     setPagination(prev => ({ ...prev, pageIndex: 0 }))
   }
 
@@ -139,7 +141,11 @@ export function CompletionTable() {
   return (
     <>
       <GuardedCompletionModal  />
-      <ClickFilter activeTab={activeTab} onTabClick={handleTabClick}/>
+      <ClickFilter selectedGroups={groupFilter} onSelectionChange={handleGroupChange}/>
+      <div className="date-picker-row">
+        <label>From: <input type="date" className="date-picker" value={fromDate} onChange={e => { setFromDate(e.target.value); setPagination(prev => ({ ...prev, pageIndex: 0 })) }} /></label>
+        <label>To: <input type="date" className="date-picker" value={toDate} onChange={e => { setToDate(e.target.value); setPagination(prev => ({ ...prev, pageIndex: 0 })) }} /></label>
+      </div>
       <div className="pagination-controls">
         <button className="pagination-button" onClick={() => table.previousPage()} disabled={!table.getCanPreviousPage()}>
           Previous

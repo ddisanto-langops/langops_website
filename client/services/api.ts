@@ -15,11 +15,14 @@ export async function fetchCompletions() {
 export async function fetchFilteredCompletions(filters: ApiFilters) {
     const params = new URLSearchParams()
 
-    if (filters.lang) params.append('lang', filters.lang)
-    if (filters.code) params.append('code', filters.code)
-    if (filters.group) params.append('group', filters.group.toLowerCase())
-    if (filters.from) params.append('from', filters.from)
-    if (filters.to) params.append('to', filters.to)
+    for (const [key, value] of Object.entries(filters)) {
+        if (value === undefined || value === null || value === '') continue
+        if (Array.isArray(value)) {
+            value.forEach(item => params.append(key, String(item)));
+        } else {
+            params.append(key, String(value))
+        }
+    }
 
     const query = params.toString()
     const url = query ? `/api/completions/wordcount?${query}` : '/api/completions/wordcount'
@@ -32,16 +35,14 @@ export async function fetchFilteredCompletions(filters: ApiFilters) {
 export async function queryAllCompletions(filters: ApiFilters) {
     const params = new URLSearchParams()
 
-    if (filters.lang) params.append('lang', filters.lang)
-    if (filters.code) params.append('code', filters.code)
-    if (filters.group) params.append('group', filters.group)
-    if (filters.from) params.append('from', filters.from)
-    if (filters.to) params.append('to', filters.to)
-    if (filters.title) params.append('title', filters.title)
-    if (filters.page != null) params.append('page', String(filters.page))
-    if (filters.pageSize != null) params.append('limit', String(filters.pageSize))
-    if (filters.sortBy) params.append('sortBy', filters.sortBy)
-    if (filters.sortDir) params.append('sortDir', filters.sortDir)
+   for (const [key, value] of Object.entries(filters)) {
+        if (value === undefined || value === null || value === '') continue
+        if (Array.isArray(value)) {
+            value.forEach(item => params.append(key, String(item)));
+        } else {
+            params.append(key, String(value))
+        }
+    }
 
     const query = params.toString()
     const url = `/api/completions/filter${query ? `?${query}` : ''}`
@@ -54,17 +55,14 @@ export async function queryAllCompletions(filters: ApiFilters) {
 export async function queryAllProducts(filters: ApiFilters): Promise<{ data: AllProduct[], totalCount: number, page: number, pageSize: number }> {
     const params = new URLSearchParams()
 
-    if (filters.lang) params.append('lang', filters.lang)
-    if (filters.code) params.append('code', filters.code)
-    if (filters.group) params.append('group', filters.group)
-    if (filters.from) params.append('from', filters.from)
-    if (filters.to) params.append('to', filters.to)
-    if (filters.title) params.append('title', filters.title)
-    if (filters.source) params.append('source', filters.source)
-    if (filters.page != null) params.append('page', String(filters.page))
-    if (filters.pageSize != null) params.append('limit', String(filters.pageSize))
-    if (filters.sortBy) params.append('sortBy', filters.sortBy)
-    if (filters.sortDir) params.append('sortDir', filters.sortDir)
+    for (const [key, value] of Object.entries(filters)) {
+        if (value === undefined || value === null || value === '') continue
+        if (Array.isArray(value)) {
+            value.forEach(item => params.append(key, String(item)));
+        } else {
+            params.append(key, String(value))
+        }
+    }
 
     const query = params.toString()
     const url = `/api/all-products/filter${query ? `?${query}` : ''}`
@@ -77,11 +75,14 @@ export async function queryAllProducts(filters: ApiFilters): Promise<{ data: All
 export async function fetchCompletionsByProduct(filters: ApiFilters): Promise<{product_code: string, occurence_count: number}[]> {
     const params = new URLSearchParams()
 
-    if (filters.lang) params.append('lang', filters.lang)
-    if (filters.code) params.append('code', filters.code)
-    if (filters.group) params.append('group', filters.group)
-    if (filters.from) params.append('from', filters.from)
-    if (filters.to) params.append('to', filters.to)
+   for (const [key, value] of Object.entries(filters)) {
+        if (value === undefined || value === null || value === '') continue
+        if (Array.isArray(value)) {
+            value.forEach(item => params.append(key, String(item)));
+        } else {
+            params.append(key, String(value))
+        }
+    }
     
     const query = params.toString()
     const url = `/api/completions/byproduct${query ? `?${query}` : ''}`
