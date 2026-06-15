@@ -297,6 +297,10 @@ const CROWDIN_TOKEN = process.env.crowdinToken!
 
 router.post('/api/crowdin/upload', upload.single('xliff'), async (req, res) => {
     const { projectId, fileName } = req.body;
+
+    if (!req.file?.filename.match(/idml/) ) {
+        res.status(400).json({error: "Only .idml files are accepted"})
+    }
     const fileBuffer = req.file?.buffer;
 
     if (!fileBuffer || !projectId || !fileName) {
