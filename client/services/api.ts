@@ -137,7 +137,7 @@ export async function restoreCompletion(id: string) {
 }
 
 export async function resync(id: string, mode: "active" | "archived") {
-    const response = await fetch(`/api/resync/${id}/${mode}`, {
+    const response = await fetch(`/api/resync/${mode}/${id}`, {
         method: 'PUT'
     })
     if (!response.ok) throw new Error('Failed to restore completion')

@@ -256,9 +256,11 @@ router.put('/api/completions/restore/:id', async (req, res) => {
     }
 })
 
-router.put('/api/resync/:id/:mode', async (req, res) => {
-    const { id, mode } = req.params
-
+router.put('/api/resync/:mode/:id', async (req, res) => {
+    const { mode, id} = req.params
+    if (!mode || !mode.includes("active") || !mode.includes("archived")) {
+        return res.status(400).json({error: "Mode must be one of 'active' or 'archived'"})
+    }
     try {
         const card: RawTrelloCard = await getCard(id)
         
