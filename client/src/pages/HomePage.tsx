@@ -11,6 +11,14 @@ export function HomePage() {
                 <Link to={"/dashboard"} className='homepage-link'>View Translation Stats</Link>
                 <Link to={"/products"} className='homepage-link'>Explore Active & Completed Products</Link>
                 <Link to={"/manage-idmls"} className='homepage-link'>Manage IDMLs</Link>
+                <a 
+                    href='https://api.pcglangops.com/redoc'
+                    className='homepage-link'
+                    target='_blank'
+                    rel='noopener noreferrer'
+                >
+                    View API Documentation
+                </a>
             </div>
         </>
     )
