@@ -1,82 +1,51 @@
-export interface BaseProduct {
-    id: string
-    title: string
-    productCode: string
-    targetLanguage: string
-    datePublished: string | null
-    mediaGroups: string[]
-    labels?: [{ id: string; name: string; }]
-    published: boolean
-    exclude: boolean
-    wordCount: number | null
-    duration: number | null
-    trelloUrl: string
-}
+import * as z from "zod"
+
+// Sub-domain: Trello
+export const TrelloDataSchema = z.object({
+  id: z.string().nullable(),
+  url: z.string().nullable(),
+  title: z.string().nullable(),
+  productCode: z.string().nullable(),
+  targetLanguage: z.string().nullable(),
+  dueDate: z.string().datetime().nullable(),
+  datePublished: z.string().datetime().nullable(),
+  dateLastActivity: z.string().datetime().nullable(),
+  mediaGroups: z.array(z.string()),
+  editorUrl: z.string().nullable(),
+  articleUrl: z.string().nullable(),
+  wordCount: z.number().int().nullable(),
+});
+
+// Sub-domain: YouTube
+export const YouTubeDataSchema = z.object({
+  id: z.string().nullable(),
+  localizedTitle: z.string().nullable(),
+  url: z.string().nullable(),
+  durationSeconds: z.number().int().nullable(),
+});
+
+// Sub-domain: Crowdin
+export const CrowdinDataSchema = z.object({
+  id: z.string().nullable(),
+  translationProgress: z.number().nullable(),
+  approvalProgress: z.number().nullable(),
+  url: z.string().nullable(),
+});
+
+// The Clean API Object (Domain Model)
+export const LangOpsProductSchema = z.object({
+  id: z.string().uuid(),
+  dateCreated: z.string().datetime(),
+  dateDeleted: z.string().datetime().nullable(),
+  trello: TrelloDataSchema,
+  youtube: YouTubeDataSchema,
+  crowdin: CrowdinDataSchema,
+});
+
+// Extract the TypeScript types from the schemas
+export type LangOpsProduct = z.infer<typeof LangOpsProductSchema>;
 
 
-export interface ActiveProduct {
-    /*
-     * Defined as a card on the LangOps Trello Board
-     * whose title contains a valid product code, 
-     * target language, and is not archived, 
-     * though it may be published.
-    */
-    id: string
-    title: string
-    productCode: string
-    targetLanguage: string
-    productStatus: string
-    mediaGroups: string[]
-    dateLastActivity: string
-    dueDate: string | null
-    datePublished: string | null
-    trelloUrl: string,
-    editorUrl: string | null
-    crowdinUrl: string | null
-    articleUrl: string | null
-    youTubeUrl: string | null
-    translationProgress: number | null
-    approvalProgress: number | null
-    wordCount: number | null
-    duration: number | null
-}
-
-export interface ArchivedProduct {
-    /*
-    * Defined as a closed (archived) card on the LangOps Trello board
-    * which has also been published. If not published, it is not
-    * considered archived.
-    */
-    id: string
-    title: string
-    localizedTitle: string | null
-    productCode: string
-    targetLanguage: string
-    mediaGroups: string[]
-    datePublished: string | null
-    dateArchived: string
-    trelloUrl: string
-    editorUrl: string | null
-    articleUrl: string | null
-    youTubeUrl: string | null
-    wordCount: number | null
-    durationSeconds: number | null
-}
-
-export interface ApiFilters {
-    lang?: string | undefined
-    code?: string | undefined
-    group?: string[] | undefined
-    from?: string | undefined
-    to?: string | undefined
-    title?: string | undefined
-    source?: string | undefined
-    page?: number | undefined
-    limit?: number | undefined
-    pageSize?: number | undefined
-    sortBy?: string | undefined
-    sortDir?: string | undefined
-}
 
 export interface RawTrelloCard {
   id: string
@@ -123,24 +92,9 @@ export interface RawTrelloCard {
   idLabels: string[]
 }
 
-export interface XliffEntry {
-    originalName: string   // the filename as it came out of the ZIP
-    displayName: string    // what the user has typed in the rename box
-    content: Blob          // the raw file bytes, ready to POST
-    summary?: string       // first few source segments, shown as a tooltip
-}
 
-export interface IdmlStorageRecord {
-    id: number
-    fileName: string
-    crowdinProjectId: string | null
-    crowdinProjectName: string | null
-    targetLanguage: string | null
-    crowdinFileIds: number[]
-    status: 'pending' | 'complete'
-    createdAt: string
-    updatedAt: string
-}
+
+
 
 export type CrowdinProject = {
     id: number
@@ -148,26 +102,3 @@ export type CrowdinProject = {
     targetLanguages: { id: string; name: string }[]
 }
 
-export interface AllProduct {
-    source: 'active' | 'archived' | 'deleted'
-    id: string
-    title: string
-    productCode: string
-    targetLanguage: string
-    mediaGroups: string[]
-    wordCount: number | null
-    datePublished: string | null
-    trelloUrl: string
-    editorUrl: string | null
-    articleUrl: string | null
-    // active-only
-    productStatus: string | null
-    dueDate: string | null
-    dateLastActivity: string | null
-    translationProgress: number | null
-    approvalProgress: number | null
-    crowdinUrl: string | null
-    // archived-only
-    localizedTitle: string | null
-    dateArchived: string | null
-}

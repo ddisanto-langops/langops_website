@@ -1,4 +1,4 @@
-import type { BaseProduct, ActiveProduct, ArchivedProduct, RawTrelloCard } from "../shared/types.js"
+import type { RawTrelloCard, LangOpsProduct } from "../shared/types.js"
 
 import { 
     customFields,
