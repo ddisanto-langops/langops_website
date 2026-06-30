@@ -1,15 +1,17 @@
 import * as z from "zod"
 
 // Sub-domain: Trello
-export const TrelloDataSchema = z.object({
+const TrelloDataSchema = z.object({
   id: z.string().nullable(),
   url: z.string().nullable(),
   title: z.string().nullable(),
+  localizedTitle: z.string().nullable(),
   productCode: z.string().nullable(),
   targetLanguage: z.string().nullable(),
-  dueDate: z.string().datetime().nullable(),
-  datePublished: z.string().datetime().nullable(),
-  dateLastActivity: z.string().datetime().nullable(),
+  dueDate: z.iso.datetime().nullable(),
+  datePublished: z.iso.datetime().nullable(),
+  dateLastActivity: z.iso.datetime().nullable(),
+  dateArchived: z.iso.datetime().nullable(),
   mediaGroups: z.array(z.string()),
   editorUrl: z.string().nullable(),
   articleUrl: z.string().nullable(),
@@ -17,7 +19,7 @@ export const TrelloDataSchema = z.object({
 });
 
 // Sub-domain: YouTube
-export const YouTubeDataSchema = z.object({
+const YouTubeDataSchema = z.object({
   id: z.string().nullable(),
   localizedTitle: z.string().nullable(),
   url: z.string().nullable(),
@@ -25,7 +27,7 @@ export const YouTubeDataSchema = z.object({
 });
 
 // Sub-domain: Crowdin
-export const CrowdinDataSchema = z.object({
+const CrowdinDataSchema = z.object({
   id: z.string().nullable(),
   translationProgress: z.number().nullable(),
   approvalProgress: z.number().nullable(),
@@ -33,17 +35,21 @@ export const CrowdinDataSchema = z.object({
 });
 
 // The Clean API Object (Domain Model)
-export const LangOpsProductSchema = z.object({
-  id: z.string().uuid(),
-  dateCreated: z.string().datetime(),
-  dateDeleted: z.string().datetime().nullable(),
+const LangOpsProductSchema = z.object({
+  id: z.uuid(),
+  dateCreated: z.iso.datetime(),
+  dateDeleted: z.iso.datetime().nullable(),
   trello: TrelloDataSchema,
   youtube: YouTubeDataSchema,
   crowdin: CrowdinDataSchema,
 });
 
 // Extract the TypeScript types from the schemas
-export type LangOpsProduct = z.infer<typeof LangOpsProductSchema>;
+export type LangOpsProductSchema = z.infer<typeof LangOpsProductSchema>
+export type TrelloDataSchema = z.infer<typeof TrelloDataSchema>
+export type YouTubeDataSchema = z.infer<typeof YouTubeDataSchema>
+export type CrowdinDataSchema = z.infer<typeof CrowdinDataSchema>
+
 
 
 
@@ -93,7 +99,31 @@ export interface RawTrelloCard {
 }
 
 
+export interface RawYouTubeData {
+    /**
+     * Defines the shape of a raw YouTube Data V3 API response,
+     * extracting localized title and duration to be added to LangOps product.
+     * Note that duration will be in format PT00M00S, where 'M' is minutes and 
+     * 'S' is seconds; this will need to be parsed in the class getter.
+    */
+   items: [
+    {
+        snippet: {
+            localized: {
+                title: string
+            }
+        }
+        contentDetails: {
+            duration: string
+        }
+    }
+   ]
+}
 
+// TODO: Define shape of Crowdin raw data fetch
+export interface RawCrowdinData {
+
+}
 
 
 export type CrowdinProject = {

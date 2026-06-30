@@ -1,4 +1,4 @@
-import { getActiveProducts, getCount, getFilteredCompletions, getProductCount } from "../services/functions.js";
+import { getActiveProducts, getCount, getFilteredCompletions, getProductCount } from "../services/trelloFunctions.js";
 import type { ApiFilters } from "../../shared/types.js";
 const filters: Partial<ApiFilters> = {
         lang: "French",

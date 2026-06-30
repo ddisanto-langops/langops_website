@@ -1,6 +1,5 @@
-import type { LangOpsProduct, RawTrelloCard } from "../../shared/types.js"
+import type { RawTrelloCard } from "../../shared/types.js"
 import { productCodes, supportedLanguages } from "../../shared/constants.js"
-import { ActiveCard, ArchivedCard } from "../classes.js";
 import fetch from 'node-fetch'
 import * as cheerio from 'cheerio'
 
@@ -10,33 +9,6 @@ const trelloToken = process.env.TrelloToken;
 
 
 
-/*
-* Trello
-*/
-
-export async function getActiveCards(since?: string): Promise<RawTrelloCard[]> {
-    if (!trelloBoardId || !trelloKey || !trelloToken) throw new Error("Get active cards: missing credentials")
-    
-    const date = new Date();
-    date.setDate(date.getDate() -1)
-    const yesterday = date.toISOString().split('T')[0]
-
-    try {
-        const response = await fetch(
-            `https://api.trello.com/1/boards/${trelloBoardId}/cards?key=${trelloKey}&token=${trelloToken}&fields=all&attachments=true&attachment_fields=all&customFieldItems=true&actions=all&since=${since ?? yesterday}`,
-            { method: 'GET' }
-        )
-        if (!response.ok) {
-            throw new Error(`Trello API error: ${response.statusText}`)
-        }
-        const cards: RawTrelloCard[] = await response.json() as RawTrelloCard[]
-        return cards
-    } catch (error) {
-        error instanceof Error ? console.log(`Get Active Cards: ${error.message}`) : 
-            console.log("Get Active Cards: Unkown error")
-        return []
-    }
-}
 
 export async function getArchivedCards(since?: string): Promise<RawTrelloCard[]> {
     if (!trelloBoardId || !trelloKey || !trelloToken) throw new Error("Get archived cards: missing credentials!")

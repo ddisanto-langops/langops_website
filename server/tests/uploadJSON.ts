@@ -1,4 +1,4 @@
-import { upsertArchivedProducts } from "../services/functions.js";
+import { upsertArchivedProducts } from "../services/trelloFunctions.js";
 import { readFileSync } from "node:fs";
 /*
 const websiteCompletions = readFileSync("C:/Users/dadisanto/Downloads/drive-download-20260603T170730Z-3-001/websiteCompletions.json", 'utf-8')

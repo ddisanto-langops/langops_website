@@ -22,7 +22,7 @@ import {
     getRebuiltIdml,
     deleteIdmlRecord,
     permanentDelete,
-} from '../services/functions.js';
+} from '../services/trelloFunctions.js';
 
 const router = Router();
 

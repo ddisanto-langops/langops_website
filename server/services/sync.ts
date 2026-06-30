@@ -7,7 +7,7 @@ import {
   parseProducts,
   getActiveIds,
   deleteProducts,
-} from './functions.js'
+} from './trelloFunctions.js'
 import cron from 'node-cron'
 
 export async function syncProducts() {

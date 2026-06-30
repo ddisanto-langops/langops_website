@@ -1,4 +1,4 @@
-import { getArchivedCards, parseProducts } from "../services/functions.js"
+import { getArchivedCards, parseProducts } from "../services/trelloFunctions.js"
 
 const cards = await getArchivedCards()
 
