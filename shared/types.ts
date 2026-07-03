@@ -2,10 +2,9 @@ import * as z from "zod"
 
 // Sub-domain: Trello
 const TrelloDataSchema = z.object({
-  id: z.string().nullable(),
-  url: z.string().nullable(),
-  title: z.string().nullable(),
-  localizedTitle: z.string().nullable(),
+  id: z.string(),
+  url: z.string(),
+  title: z.string(),
   productCode: z.string().nullable(),
   targetLanguage: z.string().nullable(),
   dueDate: z.iso.datetime().nullable(),
@@ -20,18 +19,18 @@ const TrelloDataSchema = z.object({
 
 // Sub-domain: YouTube
 const YouTubeDataSchema = z.object({
-  id: z.string().nullable(),
+  id: z.string(),
   localizedTitle: z.string().nullable(),
-  url: z.string().nullable(),
+  url: z.string(),
   durationSeconds: z.number().int().nullable(),
 });
 
 // Sub-domain: Crowdin
 const CrowdinDataSchema = z.object({
-  id: z.string().nullable(),
+  id: z.string(),
   translationProgress: z.number().nullable(),
   approvalProgress: z.number().nullable(),
-  url: z.string().nullable(),
+  url: z.string(),
 });
 
 // The Clean API Object (Domain Model)
@@ -39,9 +38,11 @@ const LangOpsProductSchema = z.object({
   id: z.uuid(),
   dateCreated: z.iso.datetime(),
   dateDeleted: z.iso.datetime().nullable(),
-  trello: TrelloDataSchema,
-  youtube: YouTubeDataSchema,
-  crowdin: CrowdinDataSchema,
+  status: z.string(),
+  localizedTitle: z.string().nullable(),
+  trello: TrelloDataSchema.nullable(),
+  youtube: YouTubeDataSchema.nullable(),
+  crowdin: CrowdinDataSchema.nullable(),
 });
 
 // Extract the TypeScript types from the schemas

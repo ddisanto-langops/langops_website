@@ -1,7 +1,13 @@
 # Refactor of LangOps Website Backend
 
+## Webhooks
+As much as possible, this should shift to a webhook-based architecture. Trello posts a webhook to the LangOps website server, the API or a router service. All we need to get is the ID and the action type, and then call the appropriate Adapter method to get the desired data. E.g. a product was updated => call getCard() using its ID. Then that data gets fed to the API, frontend queries refresh, and data is updated.
+
 ## Adapter Layer
 An adapter represents any external data source from which a LangOps product receives data. There can be as many adapters as needed for whatever outside services are desired.  
+The adapter class may contain methods that fetch data from an external service
+
+## Product Factory Layer
 **Goal:** Move the raw data into the required data schema of the adapter (defined in `./shared/types.ts`)
 For example, take raw Trello data and transform it into JSON compliant with `TrelloDataSchema`.
 

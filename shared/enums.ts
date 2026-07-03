@@ -1,5 +1,5 @@
 // Defines all custom fields to extract from Trello cards
-export const customFields: { [key: string]: string } = {
+export const customFieldEnum = {
     published: "688a48647c40d0183e053280",
     crowdinProj: "694efa16d67cda3bf9fabdab",
     crowdinFile: "694ef9fdf5bf21eada294ef4",
@@ -7,7 +7,7 @@ export const customFields: { [key: string]: string } = {
 }
 
 
-export const productCodes: string[] = [
+export const productCodeEnum: string[] = [
     /*
      * productCodes is an Alphabetized array defining all valid product codes,
      * which also acts as a source of truth for conditions
@@ -82,7 +82,7 @@ export const groupDisplayNames: { [key: string]: string } = {
  * Where necessary an ISO-639-1 code can be obtained 
  * by using the ISO6391 library.
 */ 
-export const supportedLanguages: string[] = [
+export const supportedLanguageEnum = [
     'French',
     'German',
     'Spanish',
