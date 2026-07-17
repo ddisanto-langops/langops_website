@@ -1,13 +1,4 @@
 import type { RawTrelloCard } from '../../shared/types.js'
-import {
-  getActiveCards,
-  getArchivedCards,
-  upsertProducts,
-  upsertArchivedProducts,
-  parseProducts,
-  getActiveIds,
-  deleteProducts,
-} from './trelloFunctions.js'
 import cron from 'node-cron'
 
 export async function syncProducts() {

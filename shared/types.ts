@@ -33,20 +33,10 @@ const CrowdinDataSchema = z.object({
   url: z.string(),
 });
 
-// The Clean API Object (Domain Model)
-const LangOpsProductSchema = z.object({
-  id: z.uuid(),
-  dateCreated: z.iso.datetime(),
-  dateDeleted: z.iso.datetime().nullable(),
-  status: z.string(),
-  localizedTitle: z.string().nullable(),
-  trello: TrelloDataSchema.nullable(),
-  youtube: YouTubeDataSchema.nullable(),
-  crowdin: CrowdinDataSchema.nullable(),
-});
+
 
 // Extract the TypeScript types from the schemas
-export type LangOpsProductSchema = z.infer<typeof LangOpsProductSchema>
+
 export type TrelloDataSchema = z.infer<typeof TrelloDataSchema>
 export type YouTubeDataSchema = z.infer<typeof YouTubeDataSchema>
 export type CrowdinDataSchema = z.infer<typeof CrowdinDataSchema>

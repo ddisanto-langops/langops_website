@@ -15,8 +15,7 @@ import {
     type YouTubeDataSchema,
     type CrowdinDataSchema
 } from "../shared/types.js"
-import { support } from "jszip";
-import { workerData } from "node:worker_threads";
+
 
 
 
