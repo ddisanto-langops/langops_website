@@ -1,107 +1,93 @@
-import type { ApiFilters, ArchivedProduct, AllProduct, IdmlStorageRecord, CrowdinProject, ActiveProduct } from "../../shared/types"
+import type { GetProductFilters, PaginatedProductResponse, ProductCountResponse } from "../types/types"
 
-export async function fetchProducts(): Promise<ActiveProduct[]> {
-    const response = await fetch("/api/products")
-    if (!response.ok) throw new Error('Failed to fetch products')
-    return response.json()
-}
+export class LangOpsApiClient {
 
-export async function fetchCompletions() {
-    const response = await fetch("/api/completions")
-    if (!response.ok) throw new Error('Failed to fetch products')
-    return response.json()
-}
+    readonly basePath: string
+    private readonly cfAccessClientId: string
+    private readonly cfAccessClientSecret: string
+    private readonly headers: Headers
 
-export async function fetchFilteredCompletions(filters: ApiFilters) {
+    constructor() {
+        this.cfAccessClientId = import.meta.env.CF_ACCESS_CLIENT_ID ?? ""
+        this.cfAccessClientSecret = import.meta.env.CF_ACCESS_CLIENT_SECRET ?? ""
+        this.basePath = "https://api.pcglangops.com/api/v1"
+
+        if (
+            !this.cfAccessClientId ||
+            !this.cfAccessClientSecret ||
+            !this.basePath
+        ) {
+            throw new Error("Unable to init LangOps API client: missing one or more env variables")
+        }
+
+        this.headers = new Headers()
+        this.headers.append("Content-Type", "application/json")
+        this.headers.append("CF-Access-Client-Id", this.cfAccessClientId)
+        this.headers.append("CF-Access-Client-Secret", this.cfAccessClientSecret)
+    }
+
+
+    public async fetchProducts(filters: GetProductFilters): Promise<PaginatedProductResponse> {
+        const params = new URLSearchParams
+        filters.targetLanguage && params.append("targetLanguage", filters.targetLanguage)
+        filters.dateFrom && params.append("dateFrom", filters.dateFrom.toString())
+        filters.dateTo && params.append("dateTo", filters.dateTo.toString())
+        filters.productCode && params.append("productCode", filters.productCode)
+        filters.mediaGroups && filters.mediaGroups.forEach(group => {
+            params.append("mediaGroups", group)
+        })
+        filters.search && params.append("search", filters.search)
+        filters.limit && params.append("limit", filters.limit.toString())
+        filters.offset && params.append("offset", filters.offset.toString())
+        filters.archivedOnly && params.append("archivedOnly", filters.archivedOnly.toString())
+        filters.publishedOnly && params.append("publishedOnly", filters.publishedOnly.toString())
+        filters.unpublishedOnly && params.append("unpublishedOnly", filters.unpublishedOnly.toString())
+        filters.excludeDeleted && params.append("excludeDeleted", filters.excludeDeleted.toString())
+
+        const response = await fetch(`${this.basePath}/products/${params ? `?${params}` : ''}`,
+            {
+                method: 'GET',
+                headers: this.headers
+            }
+        )
+        if (!response.ok) throw new Error('Failed to fetch products')
+        return response.json()
+    }
+
+    public async fetchProductCount(filters: GetProductFilters): Promise<ProductCountResponse> {
     const params = new URLSearchParams()
-
     for (const [key, value] of Object.entries(filters)) {
-        if (value === undefined || value === null || value === '') continue
-        if (Array.isArray(value)) {
-            value.forEach(item => params.append(key, String(item)));
-        } else {
-            params.append(key, String(value))
+            if (value === undefined || value === null || value === '') continue
+            if (Array.isArray(value)) {
+                value.forEach(item => params.append(key, String(item)));
+            } else {
+                params.append(key, String(value))
+            }
         }
+        
+        const query = params.toString()
+        const url = `${this.basePath}/products/productcount/${query ? `?${query}` : ''}`
+
+        const response = await fetch(url)
+        if (!response.ok) throw new Error("Failed to fetch product count.")
+        return await response.json()
     }
 
-    const query = params.toString()
-    const url = query ? `/api/completions/wordcount?${query}` : '/api/completions/wordcount'
-
-    const response = await fetch(url)
-    if (!response.ok) throw new Error("Failed to fetch completions data.")
-    return response.json()
-}
-
-export async function queryAllCompletions(filters: ApiFilters) {
-    const params = new URLSearchParams()
-
-   for (const [key, value] of Object.entries(filters)) {
-        if (value === undefined || value === null || value === '') continue
-        if (Array.isArray(value)) {
-            value.forEach(item => params.append(key, String(item)));
-        } else {
-            params.append(key, String(value))
-        }
+    public async editProduct(record: LangOpsProduct): Promise<void> {
+        // NEED USER EDIT ENDPOINT
+        const response = await fetch(`${this.basePath}/products/client-edit`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(record)
+        })
+        console.log(JSON.stringify(response))
+        if (!response.ok) throw new Error('Failed to update completion')
+        return response.json()
     }
 
-    const query = params.toString()
-    const url = `/api/completions/filter${query ? `?${query}` : ''}`
-
-    const response = await fetch(url)
-    if (!response.ok) throw new Error("Failed to fetch completions data.")
-    return await response.json()
 }
 
-export async function queryAllProducts(filters: ApiFilters): Promise<{ data: AllProduct[], totalCount: number, page: number, pageSize: number }> {
-    const params = new URLSearchParams()
 
-    for (const [key, value] of Object.entries(filters)) {
-        if (value === undefined || value === null || value === '') continue
-        if (Array.isArray(value)) {
-            value.forEach(item => params.append(key, String(item)));
-        } else {
-            params.append(key, String(value))
-        }
-    }
-
-    const query = params.toString()
-    const url = `/api/all-products/filter${query ? `?${query}` : ''}`
-
-    const response = await fetch(url)
-    if (!response.ok) throw new Error('Failed to fetch all products data.')
-    return response.json()
-}
-
-export async function fetchCompletionsByProduct(filters: ApiFilters): Promise<{product_code: string, occurence_count: number}[]> {
-    const params = new URLSearchParams()
-
-   for (const [key, value] of Object.entries(filters)) {
-        if (value === undefined || value === null || value === '') continue
-        if (Array.isArray(value)) {
-            value.forEach(item => params.append(key, String(item)));
-        } else {
-            params.append(key, String(value))
-        }
-    }
-    
-    const query = params.toString()
-    const url = `/api/completions/byproduct${query ? `?${query}` : ''}`
-
-    const response = await fetch(url)
-    if (!response.ok) throw new Error("Failed to fetch completions data.")
-    return await response.json()
-}
-
-export async function updateCompletion(record: ArchivedProduct) {
-    const response = await fetch(`/api/completions/${record.id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(record)
-    })
-    console.log(JSON.stringify(response))
-    if (!response.ok) throw new Error('Failed to update completion')
-    return response.json()
-}
 
 
 /**
@@ -144,37 +130,9 @@ export async function resync(id: string, mode: "active" | "archived") {
     return response.json()
 }
 
-/** Send an IDML, receive xliff_out.zip (keep this for /reconstruct later) */
-export async function parseIdml(idmlFile: File, sourceLang = 'fr'): Promise<Blob> {
-    const form = new FormData();
-    form.append('idml', idmlFile);
-    form.append('source_lang', sourceLang);
 
-    const res = await fetch(`/api/idml/parse`, { method: 'POST', body: form });
-    if (!res.ok) {
-        const { error } = await res.json();
-        throw new Error(error);
-    }
-    return res.blob(); // store this ZIP — it contains style_map.json needed for reconstruct
-}
 
-export async function uploadXliffToCrowdin(
-    fileName: string,
-    content: Blob,
-    projectId: string
-): Promise<{ crowdinFileId: number }> {
-    const form = new FormData();
-    form.append('xliff', content, fileName);
-    form.append('fileName', fileName);
-    form.append('projectId', projectId);
 
-    const res = await fetch('/api/crowdin/upload', { method: 'POST', body: form });
-    if (!res.ok) {
-        const { error } = await res.json();
-        throw new Error(error);
-    }
-    return res.json();
-}
 
 export async function fetchCrowdinProjects(): Promise<CrowdinProject[]> {
     const res = await fetch('/api/crowdin/projects')
@@ -182,55 +140,10 @@ export async function fetchCrowdinProjects(): Promise<CrowdinProject[]> {
     return res.json()
 }
 
-export async function listIdmlStorage(): Promise<IdmlStorageRecord[]> {
-    const res = await fetch('/api/idml/storage')
-    if (!res.ok) throw new Error('Failed to fetch IDML storage records')
-    return res.json()
-}
 
-export async function saveIdmlStorage(
-    idmlFile: File,
-    xliffZip: Blob,
-    projectId: string,
-    projectName: string,
-    targetLanguage: string,
-    crowdinFileIds: number[]
-): Promise<{ id: number }> {
-    const form = new FormData()
-    form.append('idml', idmlFile, idmlFile.name)
-    form.append('xliffZip', xliffZip, 'xliff_out.zip')
-    form.append('fileName', idmlFile.name)
-    form.append('projectId', projectId)
-    form.append('projectName', projectName)
-    form.append('targetLanguage', targetLanguage)
-    form.append('crowdinFileIds', JSON.stringify(crowdinFileIds))
-
-    const res = await fetch('/api/idml/storage', { method: 'POST', body: form })
-    if (!res.ok) {
-        const { error } = await res.json()
-        throw new Error(error)
-    }
-    return res.json()
-}
-
-export async function deleteIdmlStorage(id: number): Promise<void> {
-    const res = await fetch(`/api/idml/storage/${id}`, { method: 'DELETE' })
-    if (!res.ok) {
-        const { error } = await res.json()
-        throw new Error(error)
-    }
-}
 
 export async function fetchDeletions(): Promise<ArchivedProduct[]> {
     const res = await fetch('/api/deletions')
     if (!res.ok) throw new Error('Failed to fetch deletions')
     return res.json()
-}
-
-export async function triggerReconstruct(id: number): Promise<void> {
-    const res = await fetch(`/api/idml/storage/${id}/reconstruct`, { method: 'POST' })
-    if (!res.ok) {
-        const { error } = await res.json()
-        throw new Error(error)
-    }
 }

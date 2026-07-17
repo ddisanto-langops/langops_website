@@ -1,0 +1,15 @@
+services:
+  web:
+    env_file:
+      - /etc/langops-website/secrets.env
+    build:
+      context: .
+      target: builder
+    ports:
+      - "5173:5173"   # Maps local machine port 5173 to Vite's container port
+
+    volumes:
+      - .:/app            # Mounts your local folder so changes sync instantly
+      - /app/node_modules # Directs Docker to safeguard the container's built node_modules
+    # Instructs Node to spin up Vite's HMR dev server and expose it on the local host network
+    command: npm run dev -- --host 0.0.0.0

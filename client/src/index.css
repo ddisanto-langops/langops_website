@@ -43,6 +43,7 @@ h2 { overflow-wrap: break-word; }
 #website-title {
     color: white;
     text-align: center;
+    font-family: serif;
 }
 
 #navbar-div {
@@ -79,6 +80,7 @@ h2 { overflow-wrap: break-word; }
     color: white;
     justify-self: center;
     padding: 20px;
+    font-family: serif;
 }
 
 /* =====================

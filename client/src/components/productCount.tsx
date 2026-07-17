@@ -1,16 +1,19 @@
-import type { ApiFilters } from "../../../shared/types"
 import { useQuery } from "@tanstack/react-query"
-import { fetchCompletionsByProduct } from "../../services/api"
+import type { GetProductFilters } from "../../types/types"
+import { LangOpsApiClient } from "../../services/api"
 
 interface ProductCountProps {
-	filters: ApiFilters
+	filters: GetProductFilters
 }
+
+const client = new LangOpsApiClient()
+
 
 export function ProductCount({filters}: ProductCountProps) {
 
 	const { data, isLoading, isError, error } = useQuery({
 	queryKey: ['byproduct', filters],
-	queryFn: () => fetchCompletionsByProduct(filters)
+	queryFn: () => client.fetchProductCount(filters)
   })
 
   if (isLoading) return <p>Loading...</p>

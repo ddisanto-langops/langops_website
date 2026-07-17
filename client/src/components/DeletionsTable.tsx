@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { fetchDeletions, restoreCompletion, permanentlyDeleteCompletion } from "../../services/api";
 import { formatDate } from "../../services/formatDate";
-import type { ArchivedProduct } from "../../../shared/types";
+import type { LangOpsProduct } from "../../types/types";
 
 
 export function DeletionsTable() {
-    const [data, setData] = useState<ArchivedProduct[]>([])
+    const [data, setData] = useState<LangOpsProduct[]>([])
     const [search, setSearch] = useState("")
 
     useEffect(() => {
@@ -17,7 +17,7 @@ export function DeletionsTable() {
         setSearch(e.target.value)
     }
 
-    const filteredData = data.filter((item) => item.title.toLowerCase().includes(search.toLowerCase()))
+    const filteredData = data.filter((item) => item.trelloData.title.toLowerCase().includes(search.toLowerCase()))
 
     const handleRestore = (id: string) => {
         restoreCompletion(id).then(() => {
@@ -57,9 +57,9 @@ export function DeletionsTable() {
                 <tbody>
                     {filteredData.map(item => (
                         <tr key={item.id}>
-                            <td>{item.title}</td>
-                            <td>{item.targetLanguage}</td>
-                            <td>{formatDate(item.dateArchived)}</td>
+                            <td>{item.trelloData.title}</td>
+                            <td>{item.trelloData.targetLanguage}</td>
+                            <td>{formatDate(item.trelloData.dateArchived)}</td>
                             <td>
                                 <button
                                     id="restore-button"

@@ -1,7 +1,6 @@
-import type { ActiveProduct } from "../../../shared/types";
+import type { LangOpsProduct } from "../../types/types";
 import type { SortingState, ColumnFiltersState, Row, VisibilityState } from "@tanstack/react-table"
 import { ProductModal } from "./ProductModal";
-import { fetchProducts } from "../../services/api"
 import { ClickFilter } from "./clickFilter";
 import { useQuery } from "@tanstack/react-query"
 import { useState, useMemo } from "react";
@@ -14,8 +13,12 @@ import {
   flexRender
 } from '@tanstack/react-table'
 import { formatDate } from "../../services/formatDate";
+import { LangOpsApiClient } from "../../services/api";
 
-const includesMediaType = (row: Row<ActiveProduct>, columnId: string, filterValue: string) => {
+
+const client = new LangOpsApiClient()
+
+const includesMediaType = (row: Row<LangOpsProduct>, columnId: string, filterValue: string) => {
   if (!filterValue || (Array.isArray(filterValue) && filterValue.length === 0)) return true
   const cellValue = row.getValue(columnId)
   if (cellValue == null) return false
@@ -26,21 +29,21 @@ const includesMediaType = (row: Row<ActiveProduct>, columnId: string, filterValu
   )
 }
 
-const caseInsensitiveFilter = (row: Row<ActiveProduct>, columnId: string, filterValue: string) => {
+const caseInsensitiveFilter = (row: Row<LangOpsProduct>, columnId: string, filterValue: string) => {
   if (!filterValue) return true;
   const cellValue = row.getValue(columnId);
   if (!cellValue) return false;
   return cellValue.toString().toLowerCase().trim().includes(filterValue.toLowerCase().trim());
 };
 
-const columnHelper = createColumnHelper<ActiveProduct>()
+const columnHelper = createColumnHelper<LangOpsProduct>()
 
 const columns = [
-  columnHelper.accessor('title', {
+  columnHelper.accessor('trelloData.title', {
     header: 'Title',
     filterFn: caseInsensitiveFilter 
   }),
-  columnHelper.accessor('targetLanguage', {
+  columnHelper.accessor('trelloData.targetLanguage', {
     header: 'Language',
     filterFn: caseInsensitiveFilter
   }),
@@ -48,7 +51,7 @@ const columns = [
     header: 'Status',
     filterFn: caseInsensitiveFilter
   }),
-  columnHelper.accessor('dueDate', {
+  columnHelper.accessor('trelloData.dueDate', {
     header: 'Due',
     cell: info => formatDate(info.getValue())
   }),
@@ -60,10 +63,9 @@ const columns = [
 ]
 
 export function ProductTable() {
- 
   const { data = [], isLoading, isError } = useQuery({
     queryKey: ['products'],
-    queryFn: fetchProducts
+    queryFn: () => client.fetchProducts
   })
 
 
@@ -73,7 +75,7 @@ export function ProductTable() {
   const [fromDate, setFromDate] = useState('')
   const [toDate, setToDate] = useState('')
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({ mediaType: false })
-  const [selectedRow, setSelectedRow] = useState<ActiveProduct | undefined>(undefined)
+  const [selectedRow, setSelectedRow] = useState<LangOpsProduct | undefined>(undefined)
   const [modalIsOpen, setModalIsOpen] = useState(false)
 
 
@@ -107,7 +109,7 @@ export function ProductTable() {
     table.getColumn('mediaType')?.setFilterValue(groups.length ? groups : null)
   }
 
-  const handleRowClick = (row: ActiveProduct) => {
+  const handleRowClick = (row: LangOpsProduct) => {
     setSelectedRow(row)
     setModalIsOpen(true)
   }

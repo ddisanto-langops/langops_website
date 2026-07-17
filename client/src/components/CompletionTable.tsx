@@ -1,6 +1,6 @@
-import type { ArchivedProduct } from "../../../shared/types";
+import type { GetProductFilters, LangOpsProduct } from "../../types/types";
 
-import { queryAllCompletions } from "../../services/api"
+import { LangOpsApiClient } from "../../services/api"
 import { ClickFilter } from "./clickFilter";
 import { useQuery, keepPreviousData } from "@tanstack/react-query"
 import { useState, useEffect } from "react";
@@ -13,19 +13,21 @@ import {
   flexRender
 } from '@tanstack/react-table'
 import { formatDate } from "../../services/formatDate"
-import { groupDisplayNames } from "../../../shared/constants"
+import { groupDisplayNames } from "../../types/enums"
 import { EditModal } from "./CompletionModal";
 
-const columnHelper = createColumnHelper<ArchivedProduct>()
+const client = new LangOpsApiClient()
+
+const columnHelper = createColumnHelper<LangOpsProduct>()
 
 const columns = [
-  columnHelper.accessor('title', {
+  columnHelper.accessor('trelloData.title', {
     header: 'Title',
   }),
-  columnHelper.accessor('productCode', {
+  columnHelper.accessor('trelloData.productCode', {
     header: 'Product Code',
   }),
-  columnHelper.accessor('targetLanguage', {
+  columnHelper.accessor('trelloData.targetLanguage', {
     header: 'Language',
   }),
   columnHelper.accessor('mediaGroups', {
@@ -36,7 +38,7 @@ const columns = [
     },
     enableSorting: false,
   }),
-  columnHelper.accessor('datePublished', {
+  columnHelper.accessor('trelloData.datePublished', {
     header: 'Date Published',
     cell: info => formatDate(info.getValue())
   })
@@ -54,7 +56,7 @@ export function CompletionTable() {
   const [codeInput, setCodeInput] = useState('')
   const [langInput, setLangInput] = useState('')
   const [debouncedTextFilters, setDebouncedTextFilters] = useState({ title: '', code: '', lang: '' })
-  const [selectedRow, setSelectedRow] = useState<ArchivedProduct | null>(null)
+  const [selectedRow, setSelectedRow] = useState<LangOpsProduct | null>(null)
   const [modalIsOpen, setModalIsOpen] = useState(false)
 
   useEffect(() => {
@@ -72,7 +74,7 @@ export function CompletionTable() {
   }
 
   const sortState = sorting[0]
-  const queryFilters = {
+  const filters: GetProductFilters = {
     page: pagination.pageIndex + 1,
     pageSize: pagination.pageSize,
     title: normalizedTextFilters.title || undefined,
@@ -86,8 +88,8 @@ export function CompletionTable() {
   }
 
   const { data: response = { data: [], totalCount: 0 }, isLoading, isError } = useQuery({
-    queryKey: ['completions', queryFilters],
-    queryFn: () => queryAllCompletions(queryFilters),
+    queryKey: ['completions', filters],
+    queryFn: () => client.fetchProducts(filters),
     placeholderData: keepPreviousData,
   })
 
@@ -119,7 +121,7 @@ export function CompletionTable() {
     targetLanguage: [langInput, setLangInput],
   }
 
-  const handleRowClick = (row: ArchivedProduct) => {
+  const handleRowClick = (row: LangOpsProduct) => {
     setSelectedRow(row)
     setModalIsOpen(true)
   }

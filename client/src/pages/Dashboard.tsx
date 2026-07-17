@@ -1,4 +1,4 @@
-import type { ApiFilters } from '../../../shared/types'
+import type { GetProductFilters } from '../../types/types'
 
 import { NavBar } from '../components/NavBar'
 import { useState } from 'react'
@@ -8,12 +8,19 @@ import { ProductCount } from '../components/productCount'
 
 export function Dashboard() {
 
-  const [ filters, setFilters ] = useState<ApiFilters>({
-    lang: undefined,
-    code: undefined,
-    group: undefined,
-    from: undefined,
-    to: undefined,
+  const [ filters, setFilters ] = useState<GetProductFilters>({
+    targetLanguage: undefined,
+    productCode: undefined,
+    mediaGroups: undefined,
+    dateFrom: undefined,
+    dateTo: undefined,
+    limit: undefined,
+    offset: undefined,
+    archivedOnly: undefined,
+    publishedOnly: undefined,
+    excludeDeleted: undefined,
+    unpublishedOnly: undefined
+
   })
 
   return (

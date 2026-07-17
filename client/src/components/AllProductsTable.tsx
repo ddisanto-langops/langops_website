@@ -1,4 +1,4 @@
-import type { AllProduct, ActiveProduct, ArchivedProduct } from "../../../shared/types"
+import type { LangOpsProduct } from "../../types/types"
 import { queryAllProducts } from "../../services/api"
 import { ClickFilter } from "./clickFilter"
 import { useQuery, useQueryClient, keepPreviousData } from "@tanstack/react-query"
@@ -13,11 +13,11 @@ import {
 } from "@tanstack/react-table"
 import { useVirtualizer } from "@tanstack/react-virtual"
 import { formatDate } from "../../services/formatDate"
-import { groupDisplayNames } from "../../../shared/constants"
+import { groupDisplayNames } from "../../types/enums"
 import { ProductModal } from "./ProductModal"
 import { EditModal as CompletionModal } from "./CompletionModal"
 
-const columnHelper = createColumnHelper<AllProduct>()
+const columnHelper = createColumnHelper<LangOpsProduct>()
 
 const SOURCE_OPTIONS = [
     { value: '', label: 'All' },
