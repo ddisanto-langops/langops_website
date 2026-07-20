@@ -5,7 +5,8 @@ import { GetProductFilters,
     LangOpsProduct,
     WordCountResponse,
     DeleteResponse,
-    RestoreResponse
+    RestoreResponse,
+    EditProductRequest
 } from "../../shared/types.js"
 
 export class LangOpsApiClient {
@@ -84,9 +85,9 @@ export class LangOpsApiClient {
         return await response.json()
     }
 
-    public async editProduct(record: LangOpsProduct): Promise<void> {
-        // NEED USER EDIT ENDPOINT
-        const response = await fetch(`${this.basePath}/products/client-edit`, {
+    public async editProduct(record: EditProductRequest): Promise<void> {
+        const url = `${this.basePath}/products/user-edit`
+        const response = await fetch(url, {
             method: 'PATCH',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(record)

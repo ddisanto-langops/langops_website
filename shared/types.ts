@@ -79,6 +79,44 @@ export interface ProductMetaFilters {
 
 }
 
+
+export interface EditProductRequest {
+  date_created?: string | undefined
+  date_deleted?: string | undefined
+  media_groups?: string[] | undefined
+  product_status?: string | undefined
+  trello_id?: string | undefined
+  trello_url?: string | undefined
+  trello_title?: string | undefined
+  trello_localized_title?: string | undefined
+  trello_product_code?: string | undefined
+  trello_target_language?: string | undefined
+  trello_due_date?: string | undefined
+  trello_date_published?: string | undefined
+  trello_date_last_activity?: string | undefined
+  trello_date_archived?: string | undefined
+  trello_editor_url?: string | undefined
+  trello_article_url?: string | undefined
+  trello_word_count?: number | undefined
+  youtube_id?: string | undefined
+  youtube_localized_title?: string | undefined
+  youtube_url?: string | undefined
+  youtube_duration_seconds?: number | undefined
+  crowdin_file_id?: number | undefined
+  crowdin_project_id?: number | undefined
+  crowdin_translation_progress?: number | undefined
+  crowdin_approval_progress?: number | undefined
+  crowdin_url?: string | undefined
+}
+
+
+
+/**
+ * ----------------------------------------------
+ * RESPONSES
+ * ---------------------------------------------- 
+*/
+
 export interface PaginatedProductResponse {
     total: number
     offset: number
@@ -111,84 +149,3 @@ export interface DeleteResponse {
     id: string
     deleted_at: string
 }
-
-
-export interface RawTrelloCard {
-  id: string
-  name: string
-  labels?: [
-    {
-        id: string
-        name: string
-    }
-  ]
-  due?: string | null
-  dateLastActivity: string
-  url: string
-  isTemplate: string
-  dateClosed?: string
-  actions: [
-    {
-        data: {
-            checkItem?: {
-                id: string
-                name: string
-                state: string
-            }
-        }
-        type: string
-        date: string
-    }
-  ]
-  attachments?: [
-    {
-        name: string
-        url: string
-    }
-  ]
-  customFieldItems?: [
-    {
-        idCustomField: string
-        value: {
-            checked?: string
-            text?: string
-        }
-    }
-  ]
-  idLabels: string[]
-}
-
-
-export interface RawYouTubeData {
-    /**
-     * Defines the shape of a raw YouTube Data V3 API response,
-     * extracting localized title and duration to be added to LangOps product.
-     * Note that duration will be in format PT00M00S, where 'M' is minutes and 
-     * 'S' is seconds; this will need to be parsed in the class getter.
-    */
-   items: [
-    {
-        snippet: {
-            localized: {
-                title: string
-            }
-        }
-        contentDetails: {
-            duration: string
-        }
-    }
-   ]
-}
-
-// TODO: Define shape of Crowdin raw data fetch
-export interface RawCrowdinData {
-
-}
-
-
-export type CrowdinProject = {
-    id: number
-    name: string
-    targetLanguages: { id: string; name: string }[]
-}
-
