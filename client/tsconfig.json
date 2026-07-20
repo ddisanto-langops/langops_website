@@ -1,24 +1,17 @@
 {
   "compilerOptions": {
     "target": "es2025",
-    "jsx": "react-jsx",
-
-    /* Modules & Resolution */
     "module": "ESNext",
     "moduleResolution": "Bundler",
-    "resolveJsonModule": true,
-    "verbatimModuleSyntax": true,
+    "jsx": "react-jsx",
     "strict": true,
-    "skipLibCheck": true,
-    "allowJs": true,
-    "checkJs": false,
-    
-    /* Vite & Build Specifics */
     "noEmit": true,
-    "types": ["vite/client", "node"]
+    "skipLibCheck": true,
+    "types": ["vite/client"]
   },
   "include": [
-    "src", 
-    "types"
-  ]
+    "src/**/*",
+    "../shared/**/*"
+  ],
+  "exclude": ["node_modules", "dist"]
 }

@@ -5,6 +5,7 @@ const TrelloDataSchema = z.object({
   id: z.string(),
   url: z.string(),
   title: z.string(),
+  localizedTitle: z.string(),
   productCode: z.string().nullable(),
   targetLanguage: z.string().nullable(),
   dueDate: z.iso.datetime().nullable(),
@@ -41,7 +42,75 @@ export type TrelloDataSchema = z.infer<typeof TrelloDataSchema>
 export type YouTubeDataSchema = z.infer<typeof YouTubeDataSchema>
 export type CrowdinDataSchema = z.infer<typeof CrowdinDataSchema>
 
+export interface LangOpsProduct {
+    id: string
+    dateCreated: Date
+    datedeleted: Date
+    mediaGroups: string[]
+    productStatus: string
+    trelloData: TrelloDataSchema
+    youtubeData: YouTubeDataSchema
+    crowdinData: CrowdinDataSchema
+}
 
+
+export interface GetProductFilters {
+    targetLanguage?: string
+    dateFrom?: string
+    dateTo?: string
+    productCode?: string
+    mediaGroups?: string[]
+    search: string | undefined
+    limit?: number
+    offset?: number
+    archivedOnly?: boolean
+    publishedOnly?: boolean
+    unpublishedOnly?: boolean
+    excludeDeleted?: boolean
+}
+
+
+export interface ProductMetaFilters {
+    targetLanguage?: string | undefined
+    dateFrom?: string | undefined
+    dateTo?: string | undefined
+    productCode?: string | undefined
+    mediaGroups?: string[] | undefined
+
+}
+
+export interface PaginatedProductResponse {
+    total: number
+    offset: number
+    limit: number
+    data: LangOpsProduct[]
+}
+
+export interface WordCountResponse {
+    totalWords: number
+}
+
+
+export interface ProductCountResponse {
+    totalProducts: number
+    data: [
+        {
+            productCode: string
+            count: number
+        }
+    ]
+    
+}
+
+export interface RestoreResponse {
+    id: string
+    restored_at: string
+}
+
+export interface DeleteResponse {
+    id: string
+    deleted_at: string
+}
 
 
 export interface RawTrelloCard {

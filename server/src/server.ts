@@ -1,13 +1,9 @@
 import express, { type ErrorRequestHandler } from 'express';
 import router from './routes/index.js'
-import helmet from 'helmet'
+import helmet from "helmet"
 import cors from 'cors'
 import path from 'path'
 import { fileURLToPath } from 'url'
-import { syncProducts } from './services/sync.js';
-
-// sync every time the server restarts
-syncProducts()
 
 const app = express();
 const PORT = process.env.PORT || 3200;
@@ -20,7 +16,7 @@ app.use(cors({
   origin: isDev
     ? 'http://localhost:5173'
     : 'https://pcglangops.com',
-  methods: ['GET', 'PUT', 'DELETE', 'POST']
+  methods: ['GET', 'PATCH', 'DELETE', 'POST']
 }))
 app.use(express.json())
 app.use(router)
