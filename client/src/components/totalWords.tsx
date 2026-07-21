@@ -1,21 +1,20 @@
-import type { GetProductFilters } from "../../types/types"
-
+import type { ProductMetaFilters } from "../../../shared/types"
 import { useQuery } from "@tanstack/react-query"
-import { LangOpsApiClient } from "../../services/api"
+import { getWordCount } from "../../services/api"
+
+
 
 interface TotalWordsProps {
-  filters: GetProductFilters
+  filters: ProductMetaFilters
 }
-
-const client = new LangOpsApiClient
 
 export function TotalWords({filters}: TotalWordsProps) {
 
     const { data, isLoading } = useQuery({
     queryKey: ['completions', filters],
-    queryFn: () => client.fetchProducts(filters)
+    queryFn: () => getWordCount(filters)
   })
 
   if (isLoading) return <p>Loading...</p>
-  //return <p id="total-words">{data?.trello.toLocaleString() ?? 0} words</p>
+  return <p id="total-words">{(data.totalWords).toString().toLocaleString() ?? 0} words</p>
 }

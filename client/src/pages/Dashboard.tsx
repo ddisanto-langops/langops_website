@@ -1,26 +1,18 @@
-import type { GetProductFilters } from '../../types/types'
-
 import { NavBar } from '../components/NavBar'
 import { useState } from 'react'
 import { TotalWords } from '../components/totalWords'
 import { DashboardFilter } from '../components/dashboardFilters'
 import { ProductCount } from '../components/productCount'
+import { ProductMetaFilters } from '../../../shared/types'
 
 export function Dashboard() {
 
-  const [ filters, setFilters ] = useState<GetProductFilters>({
+  const [ filters, setFilters ] = useState<ProductMetaFilters>({
     targetLanguage: undefined,
     productCode: undefined,
     mediaGroups: undefined,
     dateFrom: undefined,
-    dateTo: undefined,
-    limit: undefined,
-    offset: undefined,
-    archivedOnly: undefined,
-    publishedOnly: undefined,
-    excludeDeleted: undefined,
-    unpublishedOnly: undefined
-
+    dateTo: undefined
   })
 
   return (

@@ -1,7 +1,6 @@
 import { Router, Request } from "express"
 import { LangOpsApiClient } from "../langopsApiClient.js";
 import type { GetProductFilters, LangOpsProduct, ProductMetaFilters } from "../../../shared/types.js";
-import { mediaGroups } from "../../../shared/enums.js";
 
 const router = Router()
 const client = new LangOpsApiClient()
@@ -76,7 +75,7 @@ router.get('/api/products/wordcount', async (req, res) => {
         
     } catch (error) {
         error instanceof Error ? res.status(500).json({ error: error.message }) :
-            res.status(500).json({ error: "GET /api/completions/wordcount: Unknown error" })
+            res.status(500).json({ error: "GET /api/products/wordcount: Unknown error" })
     }
 })
 
@@ -90,7 +89,7 @@ router.get("/api/products/productcount", async (req, res) => {
 
     } catch (error) {
         error instanceof Error ? res.status(500).json({ error: error.message }) :
-            res.status(500).json({ error: "GET /api/data/completions/byproduct: Unknown error" })
+            res.status(500).json({ error: "GET /api/products/productcount: Unknown error" })
     }
 })
 
@@ -105,7 +104,7 @@ router.patch('/api/products/edit/:id', async (req, res) => {
         
     } catch (error) {
         error instanceof Error ? res.status(500).json({ error: error.message }) :
-            res.status(500).json({ error: "PUT /api/completions/:id: Unknown error" })
+            res.status(500).json({ error: "PATCH /api/products/edit:id: Unknown error" })
     }
 })
 
@@ -118,7 +117,7 @@ router.patch('/api/products/restore/:id', async (req, res) => {
 
     } catch (error) {
         error instanceof Error ? res.status(500).json({ error: error.message }) :
-            res.status(500).json({ error: "PUT /api/completions/restore/:id: Unknown error" })
+            res.status(500).json({ error: "PATCH /api/completions/restore:id: Unknown error" })
     }
 })
 
@@ -131,7 +130,7 @@ router.delete('/api/products/delete/:id', async (req, res) => {
 
     } catch (error) {
         error instanceof Error ? res.status(500).json({ error: error.message }) :
-            res.status(500).json({ error: "DEL /api/products/delete/:id: Unknown error" })
+            res.status(500).json({ error: "DEL /api/products/delete:id: Unknown error" })
     }
 })
 
@@ -143,7 +142,7 @@ router.delete('/api/products/permanent-delete/:id', async (req, res) => {
         res.json(response)
     } catch (error) {
         error instanceof Error ? res.status(500).json({error: error.message}) :
-            res.status(500).json({error: "DEL /api/products/permanent-delete/:id: Unknown error"})
+            res.status(500).json({error: "DEL /api/products/permanent-delete:id: Unknown error"})
     }
 })
 

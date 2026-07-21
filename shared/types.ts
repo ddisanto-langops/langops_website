@@ -55,18 +55,18 @@ export interface LangOpsProduct {
 
 
 export interface GetProductFilters {
-    targetLanguage?: string
-    dateFrom?: string
-    dateTo?: string
-    productCode?: string
-    mediaGroups?: string[]
-    search: string | undefined
-    limit?: number
-    offset?: number
-    archivedOnly?: boolean
-    publishedOnly?: boolean
-    unpublishedOnly?: boolean
-    excludeDeleted?: boolean
+    targetLanguage?: string | undefined
+    dateFrom?: string | undefined
+    dateTo?: string | undefined
+    productCode?: string | undefined
+    mediaGroups?: string[] | undefined
+    search?: string | undefined
+    limit?: number | undefined
+    offset?: number | undefined
+    archivedOnly?: boolean | undefined
+    publishedOnly?: boolean | undefined
+    unpublishedOnly?: boolean | undefined
+    excludeDeleted?: boolean | undefined
 }
 
 

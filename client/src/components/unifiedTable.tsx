@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { useQuery, keepPreviousData } from '@tanstack/react-query';
-import { LangOpsApiClient } from '../../services/api';
-import type { GetProductFilters } from '../../types/types';
+import { getProducts } from '../../services/api';
+import type { GetProductFilters, LangOpsProduct } from '../../../shared/types';
 
-const client = new LangOpsApiClient();
+
 const DEFAULT_LIMIT = 25; // Define a global fallback constraint
 
 export function UnifiedProductTable() {
@@ -27,7 +27,7 @@ export function UnifiedProductTable() {
   // Fetch data with TanStack Query
   const { data, isLoading, isError, error } = useQuery({
     queryKey: ['products', queryParams],
-    queryFn: () => client.fetchProducts(queryParams),
+    queryFn: () => getProducts(),
     placeholderData: keepPreviousData, 
     staleTime: 5000,
   });
@@ -97,7 +97,7 @@ export function UnifiedProductTable() {
           </tr>
         </thead>
         <tbody>
-          {data?.data.map((product) => (
+          {data?.data.map((product: LangOpsProduct) => (
             <tr key={product.id}>
               <td>{product.trelloData.productCode}</td>
               <td>{product.trelloData.targetLanguage}</td>

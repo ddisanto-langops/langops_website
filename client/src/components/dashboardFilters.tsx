@@ -1,8 +1,8 @@
 import { productCodeEnum, supportedLanguageEnum, groupDisplayNames } from "../../types/enums"
-import type { GetProductFilters } from "../../types/types"
+import type { ProductMetaFilters } from "../../../shared/types"
 
 interface DashboardFilterProps {
-  filters: GetProductFilters
+  filters: ProductMetaFilters
   onFilterChange: CallableFunction
 }
 
@@ -16,7 +16,7 @@ export function DashboardFilter({filters, onFilterChange}: DashboardFilterProps)
       value={filters.targetLanguage ?? ''}
       onChange={e => onFilterChange({
         ...filters,
-        lang: e.target.value || null
+        targetLanguage: e.target.value || null
       })}
     >
       <option value="">All Languages</option>
@@ -30,7 +30,7 @@ export function DashboardFilter({filters, onFilterChange}: DashboardFilterProps)
       value={filters.mediaGroups ?? ''}
       onChange={e => onFilterChange({
         ...filters,
-        group: e.target.value ? [e.target.value] : undefined
+        mediaGroups: e.target.value ? [e.target.value] : undefined
       })}
     >
       <option value="">All Media Groups</option>
@@ -44,7 +44,7 @@ export function DashboardFilter({filters, onFilterChange}: DashboardFilterProps)
       value={filters.productCode ?? ''}
       onChange={e => onFilterChange({
         ...filters,
-        code: e.target.value || null
+        productCode: e.target.value || null
       })}
     >
       <option value="">All Codes</option>
@@ -59,10 +59,10 @@ export function DashboardFilter({filters, onFilterChange}: DashboardFilterProps)
         type="date"
         id="from"
         name="filter-start"
-        value={filters.dateFrom ? filters.dateFrom.toISOString().split('T')[0] : undefined}
+        value={filters.dateFrom ? filters.dateFrom.split('T')[0] : undefined}
         onChange={e => onFilterChange({
           ...filters,
-          from: e.target.value || null
+          dateFrom: e.target.value || null
         })}
         />
       </label>
@@ -74,10 +74,10 @@ export function DashboardFilter({filters, onFilterChange}: DashboardFilterProps)
         type="date"
         id="to"
         name="filter-end"
-        value={filters.dateFrom ? filters.dateFrom.toISOString().split('T')[0] : undefined}
+        value={filters.dateFrom ? filters.dateFrom.split('T')[0] : undefined}
         onChange={e => onFilterChange({
           ...filters,
-          to: e.target.value || null
+          dateTo: e.target.value || null
         })}
         />
       </label>

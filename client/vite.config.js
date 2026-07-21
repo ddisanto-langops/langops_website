@@ -1,25 +1,25 @@
+import path from 'path'
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
-  resolve: {
-    alias: {
-      '@shared': path.resolve(__dirname, '../shared')
-    }
-  },
   server: {
+    fs: {
+      allow: ['/app', '/shared']
+    },
     proxy: {
       '/api': {
-        target: 'http://localhost:3200',
-        changeOrigin: true
+        target: 'http://langops-website-server:3200',
+        changeOrigin: true,
+        secure: false
       }
     },
-    host: true, 
+    host: true,
+    port: 5173, 
     hmr: {
-      host: 'localhost',
-      protocol: 'ws',
+      clientPort: 5173
     }
   }
 })

@@ -1,0 +1,37 @@
+services:
+  client:
+    depends_on:
+      - server
+    container_name: langops-website-client
+    env_file:
+      - /etc/langops-website/secrets.env
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+      target: builder
+    ports:
+      - "5173:5173"
+
+    volumes:
+      - ./client:/app            # Mounts local folder so changes sync instantly
+      - ./shared:/shared
+      - /app/node_modules # Directs Docker to safeguard the container's built node_modules
+    # Instructs Node to spin up Vite's HMR dev server and expose it on the local host network
+    command: npm run dev -- --host 0.0.0.0
+  server:
+    container_name: langops-website-server
+    env_file:
+      - /etc/langops-website/secrets.env
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+      target: development
+    ports:
+      - "3200:3200"
+
+    volumes:
+      - ./server:/app            # Mounts your local folder so changes sync instantly
+      - ./shared:/shared
+      - /app/node_modules # Directs Docker to safeguard the container's built node_modules
+    # Instructs Node to spin up Vite's HMR dev server and expose it on the local host network
+    command: npm run dev -- --host 0.0.0.0

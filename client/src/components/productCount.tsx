@@ -1,37 +1,30 @@
 import { useQuery } from "@tanstack/react-query"
-import type { GetProductFilters } from "../../types/types"
-import { LangOpsApiClient } from "../../services/api"
+import type { GetProductFilters } from "../../../shared/types"
+import { getProductCount } from "../../services/api"
 
 interface ProductCountProps {
 	filters: GetProductFilters
 }
 
-const client = new LangOpsApiClient()
-
 
 export function ProductCount({filters}: ProductCountProps) {
-
 	const { data, isLoading, isError, error } = useQuery({
-	queryKey: ['byproduct', filters],
-	queryFn: () => client.fetchProductCount(filters)
-  })
+		queryKey: ['byproduct', filters],
+		queryFn: () => getProductCount(filters)
+  	})
 
   if (isLoading) return <p>Loading...</p>
   if (isError) return <p>Error: {error.message}</p>;
 
   if (!data) return (<p>NO DATA</p>);
 
-   if (!Array.isArray(data)) {
-	return <p>Data is not in the expected format.</p>;
-  }
-
   return (
 	<>
   	<div className="product-count-container">
-		{data
-			.sort((key, value) => key.product_code.localeCompare(value.product_code))
+		{data.data
+			
 			.map((item) => (
-				<div key={item.product_code} className="product-count-data">{`${item.product_code}: ${item.occurence_count}`}</div>
+				<div key={item.productCode} className="product-count-data">{`${item.productCode}: ${item.count}`}</div>
 			))
 		}
 	</div>

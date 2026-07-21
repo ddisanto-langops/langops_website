@@ -12,7 +12,7 @@ CMD ["npm", "run", "dev"]
 # --- Build Stage (Compile TS to JS) ---
 FROM base AS build
 RUN npm ci
-COPY . .
+COPY . . 
 RUN npm run build
 
 # --- Production Stage (Tiny, fast runtime) ---
