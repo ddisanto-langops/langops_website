@@ -1,6 +1,6 @@
 import { Router, Request } from "express"
 import { LangOpsApiClient } from "../langopsApiClient.js";
-import type { GetProductFilters, ProductMetaFilters } from "../../../shared/types.js";
+import type { GetProductFilters, LangOpsProduct, ProductMetaFilters } from "../../../shared/types.js";
 import { mediaGroups } from "../../../shared/enums.js";
 
 const router = Router()
@@ -97,30 +97,12 @@ router.get("/api/products/productcount", async (req, res) => {
 
 
 router.patch('/api/products/edit/:id', async (req, res) => {
-    const { id } = req.params
-    const { title, localizedTitle, productCode, targetLanguage, mediaGroups, wordCount, datePublished, dateArchived, editorUrl, articleUrl } = req.body
-    const record: Partial<ArchivedProduct> = {
-        title: title,
-        localizedTitle: localizedTitle,
-        productCode: productCode,
-        targetLanguage: targetLanguage,
-        mediaGroups: mediaGroups,
-        wordCount: wordCount,
-        datePublished: datePublished ?? null,
-        dateArchived: dateArchived,
-        editorUrl: editorUrl,
-        articleUrl: articleUrl
-    }
-     
     try {
-        const response = await editCompletion(id, record )
-
-        if (response.rowCount === 0) {
-            return res.status(404).json({ error: 'Record not found' })
-        }
-
-        res.json(response.rows)
-
+        const { id } = req.params
+        const product = req.body as LangOpsProduct
+        const response = await client.editProduct(id, product)
+        res.json(response)
+        
     } catch (error) {
         error instanceof Error ? res.status(500).json({ error: error.message }) :
             res.status(500).json({ error: "PUT /api/completions/:id: Unknown error" })

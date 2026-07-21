@@ -85,17 +85,18 @@ export class LangOpsApiClient {
         return await response.json()
     }
 
-    public async editProduct(record: EditProductRequest): Promise<void> {
-        const url = `${this.basePath}/products/user-edit`
+    
+    public async editProduct(id: string, record: LangOpsProduct): Promise<LangOpsProduct> {
+        const url = `${this.basePath}/products/user-edit/${id}`
         const response = await fetch(url, {
             method: 'PATCH',
-            headers: { 'Content-Type': 'application/json' },
+            headers: this.headers,
             body: JSON.stringify(record)
         })
-        console.log(JSON.stringify(response))
         if (!response.ok) throw new Error('Failed to update completion')
-        return response.json()
+        return await response.json()
     }
+
 
     public async restoreProduct(id: string): Promise<RestoreResponse> {
         const response = await fetch(`${this.basePath}/products/restore/${id}`, {
