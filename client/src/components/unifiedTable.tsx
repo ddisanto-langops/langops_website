@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
 import { useQuery, keepPreviousData } from '@tanstack/react-query';
+import ISO6391 from "iso-639-1"
+
 import { getProducts } from '../../services/api';
+import { ProductModal } from "./ProductModal";
 import { ClickFilter } from './clickFilter';
 import { NavBar } from './NavBar';
 import type { GetProductFilters, LangOpsProduct } from '../../../shared/types';
@@ -35,7 +38,7 @@ export function UnifiedProductTable() {
   });
 
   // Fix signature: forms require React.FormEvent, not ChangeEvent
-  const handleSearchSubmit = (e: React.FormEvent) => {
+  const handleSearchSubmit = (e: React.SubmitEvent) => {
     e.preventDefault();
     setQueryParams((prev) => ({
       ...prev,
@@ -71,7 +74,7 @@ export function UnifiedProductTable() {
       <form onSubmit={handleSearchSubmit} className="controls" style={{ marginBottom: '1rem' }}>
         <input
           type="text"
-          placeholder="Search product code..."
+          placeholder="Search title/localized title..."
           value={localSearch}
           onChange={(e) => setLocalSearch(e.target.value)}
         />
@@ -97,17 +100,19 @@ export function UnifiedProductTable() {
       <table border={1} cellPadding={8} style={{ width: '100%', borderCollapse: 'collapse' }}>
         <thead>
           <tr>
-            <th>Product Code</th>
-            <th>Target Language</th>
-            <th>Date Created</th>
+            <th>Title</th>
+            <th>Language</th>
+            <th>Status</th>
+            <th>Due</th>
           </tr>
         </thead>
         <tbody>
           {data?.data.map((product: LangOpsProduct) => (
             <tr key={product.id}>
-              <td>{product.trelloData.productCode}</td>
-              <td>{product.trelloData.targetLanguage}</td>
-              <td>{new Date(product.dateCreated).toLocaleDateString()}</td>
+              <td>{product.trelloData.title}</td>
+              <td>{product.trelloData.targetLanguage ? ISO6391.getName(product.trelloData.targetLanguage) : null}</td>
+              <td>{product.productStatus}</td>
+              <td>{product.trelloData.dueDate ? new Date(product.trelloData.dueDate).toLocaleDateString() : null}</td>
             </tr>
           ))}
         </tbody>

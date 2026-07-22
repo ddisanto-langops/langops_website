@@ -16,7 +16,6 @@ services:
       - ./client:/app            # Mounts local folder so changes sync instantly
       - ./shared:/shared
       - /app/node_modules # Directs Docker to safeguard the container's built node_modules
-    # Instructs Node to spin up Vite's HMR dev server and expose it on the local host network
     command: npm run dev -- --host 0.0.0.0
   server:
     container_name: langops-website-server
@@ -30,8 +29,7 @@ services:
       - "3200:3200"
 
     volumes:
-      - ./server:/app            # Mounts your local folder so changes sync instantly
+      - ./server:/app            # Mounts local folder so changes sync instantly
       - ./shared:/shared
       - /app/node_modules # Directs Docker to safeguard the container's built node_modules
-    # Instructs Node to spin up Vite's HMR dev server and expose it on the local host network
     command: npm run dev -- --host 0.0.0.0

@@ -6,16 +6,14 @@ const router = Router()
 const client = new LangOpsApiClient()
 
 function extractMediaGroups(req: Request) {
-    const mediaGroups: string[] = []
+    let mediaGroups: string[] = []
     const reqMediaGroups = req.query.mediaGroups
-    if (Array.isArray(reqMediaGroups)) {
-        for (const item of reqMediaGroups) {
-            if (typeof item === "string") {
-                mediaGroups.push(item)
-            }
-        }
-        return mediaGroups
+    if (Array.isArray(reqMediaGroups)) {  
+        mediaGroups = reqMediaGroups.map(String)
+    } else if (typeof reqMediaGroups === "string") {
+        mediaGroups = [reqMediaGroups]
     }
+    return mediaGroups    
 }
 
 function buildGetProductFilters(req: Request): GetProductFilters {
