@@ -79,7 +79,6 @@ h2 { overflow-wrap: break-word; }
 #deletions-page-title {
     color: white;
     justify-self: center;
-    padding: 20px;
     font-family: serif;
 }
 
@@ -154,7 +153,6 @@ h2 { overflow-wrap: break-word; }
     color: white;
     justify-content: center;
     gap: 15px;
-    padding: 20px;
     border-radius: 12px;
     margin-bottom: 20px;
 }
@@ -196,16 +194,14 @@ h2 { overflow-wrap: break-word; }
     color: #ffffff;
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 8px;
-    padding: 10px 15px;
+    align-self: center;
     font-size: 0.95rem;
     outline: none;
     transition: all 0.3s ease;
     cursor: pointer;
     appearance: none;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org' width='12' height='12' fill='white' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: calc(100% - 12px) center;
-    padding-right: 35px;
+    padding: 10px;
+   
 }
 
 .dashboard-dropdown:hover,
@@ -216,6 +212,43 @@ h2 { overflow-wrap: break-word; }
 
 .dashboard-dropdown:focus {
     box-shadow: 0 0 0 3px rgba(255, 127, 80, 0.2);
+}
+
+#dashboard-media-groups {
+    justify-content: center;
+    align-self: center;
+    display: flex;
+    flex-direction: row;
+    flex-basis: 40%;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-items: center;
+    
+}
+
+.dashboard-mediaGroup-checkbox {
+    opacity: 0;
+    width: 0;
+    height: 0;
+    position: absolute;
+}
+
+.dashboard-mediaGroup-label {
+    text-justify: center;
+    display: flex;
+    background-color: #007bff;
+    cursor: pointer;
+    border-radius: 6px;
+    padding: 5px;
+}
+
+.dashboard-mediaGroup-label-selected {
+    text-justify: center;
+    display: flex;
+    background-color: coral;
+    cursor: pointer;
+    border-radius: 6px;
+    padding: 5px;
 }
 
 /* =====================
@@ -668,6 +701,7 @@ td {
 
 .date-picker-div {
     background-color: hsla(204, 85%, 56%, 0.747);
+    align-self: center;
     border: 1px solid transparent;
     border-radius: 8px;
     display: flex;

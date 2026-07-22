@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { useQuery, keepPreviousData } from '@tanstack/react-query';
 import { getProducts } from '../../services/api';
+import { ClickFilter } from './clickFilter';
+import { NavBar } from './NavBar';
 import type { GetProductFilters, LangOpsProduct } from '../../../shared/types';
 
 
@@ -27,7 +29,7 @@ export function UnifiedProductTable() {
   // Fetch data with TanStack Query
   const { data, isLoading, isError, error } = useQuery({
     queryKey: ['products', queryParams],
-    queryFn: () => getProducts(),
+    queryFn: () => getProducts(queryParams),
     placeholderData: keepPreviousData, 
     staleTime: 5000,
   });
@@ -60,6 +62,10 @@ export function UnifiedProductTable() {
   const hasMoreItems = data ? data.total === currentLimit : false;
 
   return (
+    <>
+    <div>
+      <NavBar />
+    </div>
     <div className="table-container">
       
       <form onSubmit={handleSearchSubmit} className="controls" style={{ marginBottom: '1rem' }}>
@@ -141,5 +147,6 @@ export function UnifiedProductTable() {
         </button>
       </div>
     </div>
+    </>
   );
 }
