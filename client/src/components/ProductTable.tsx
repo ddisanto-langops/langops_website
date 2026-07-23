@@ -1,11 +1,12 @@
 import { LangOpsProduct } from "../../../shared/types"
+import { supportedLanguageEnum, statusEnum } from "../../../shared/enums"
 import { NavBar } from "./NavBar"
 import { GetProductFilters } from "../../../shared/types"
 import { ProductModal } from "./ProductModal"
 import { EditModal } from "./EditModal"
 import { ClickFilter } from "./clickFilter"
 import { useQuery } from "@tanstack/react-query"
-import { useState, useMemo } from "react"
+import React, { useState, useMemo } from "react"
 import {
   useReactTable,
   getCoreRowModel,
@@ -21,6 +22,7 @@ import {
 import ISO6391 from "iso-639-1"
 import { formatDate } from "../../services/formatDate";
 import { getProducts } from "../../services/api";
+import { data } from "react-router-dom"
 
 
 const includesMediaType = (row: Row<LangOpsProduct>, columnId: string, filterValue: string) => {
@@ -49,6 +51,7 @@ const columns = [
     filterFn: caseInsensitiveFilter 
   }),
   columnHelper.accessor('trelloData.targetLanguage', {
+    id: "Language",
     header: 'Language',
     filterFn: caseInsensitiveFilter,
     cell: info => {
@@ -57,6 +60,7 @@ const columns = [
     }
   }),
   columnHelper.accessor('productStatus', {
+    id: "Status",
     header: 'Status',
     filterFn: caseInsensitiveFilter
   }),
@@ -80,7 +84,7 @@ export function ProductTable() {
     productCode: undefined,
     mediaGroups: undefined,
     search: undefined,
-    limit: undefined,
+    limit: 50,
     offset: undefined,
     archivedOnly: undefined,
     publishedOnly: undefined,
@@ -129,6 +133,28 @@ export function ProductTable() {
     getFilteredRowModel: getFilteredRowModel(),
   })
 
+
+  const handleTableLimit = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const value = e.target.value
+    setFilters({...filters, limit: Number(value)})
+    e.preventDefault()
+  }
+
+  const handleLanguageSelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const value = e.target.value
+    value === undefined ? 
+    setFilters({...filters, targetLanguage: undefined}) : 
+    setFilters({...filters, targetLanguage: ISO6391.getCode(value)})
+    e.preventDefault()
+  }
+
+  // NEED API FILTER FOR PRODUCT STATUS
+  const handleStatusSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value
+    if (value === 'published') setFilters({...filters, publishedOnly: true})
+    if (value === 'pending') setFilters({...filters, unpublishedOnly: true})
+  }
+
   const handleGroupChange = (groups: string[]) => {
     setSelectedGroups(groups)
     table.getColumn('mediaType')?.setFilterValue(groups.length ? groups : null)
@@ -162,35 +188,87 @@ export function ProductTable() {
   <GuardedProductModal />
   <ClickFilter selectedGroups={selectedGroups} onSelectionChange={handleGroupChange}/>
   <div className="date-filter-row">
-    <label>From: <input type="date" className="date-picker" value={fromDate} onChange={e => setFromDate(e.target.value)} /></label>
-    <label>To: <input type="date" className="date-picker" value={toDate} onChange={e => setToDate(e.target.value)} /></label>
+    <label>From: <input id="date-picker" type="date" className="date-picker" value={fromDate} onChange={e => setFromDate(e.target.value)} /></label>
+    <label>To: <input id="date-picker" type="date" className="date-picker" value={toDate} onChange={e => setToDate(e.target.value)} /></label>
+  </div>
+  <div className="pagination-div">
+    <label>Products to display: 
+      <select className="pagination-select" defaultValue={filters.limit} onChange={handleTableLimit}>
+        <option value={10}>10</option>
+        <option value={20}>20</option>
+        <option value={30}>30</option>
+        <option value={50}>50</option>
+        <option value={100}>100</option>
+        <option value={100}>200</option>
+        <option value={100}>300</option>
+        <option value={100}>400</option>
+        <option value={100}>500</option>
+      </select>
+    </label>
   </div>
   <table id="product-table">
     <thead id="product-table-head">
         {table.getHeaderGroups().map(headerGroup => (
             <tr key={headerGroup.id}>
               {headerGroup.headers.map(header => {
-                if (header.column.id === 'mediaType') return null
-                return (
-                <th key={header.id}>
+                if (header.column.id === 'mediaType') {
+                  return null
+                }  else if (header.column.id === "Language") {
+                  return (
+                    <th>{header.id}
+                      <div>
+                      <label>
+                        <select defaultValue={filters.targetLanguage} onChange={handleLanguageSelect}>
+                          <option value={undefined}>All</option>
+                          {supportedLanguageEnum.map((lang) => (
+                            <option key={lang}>{lang}</option>
+                          ))}
+                        </select>
+                      </label>
+                      </div>
+                    </th>
+                  )
+
+                } else if (header.column.id === "Status") {
+                  return (
+                  <th>{header.id}
+                    <div>
+                      <label>
+                        <select>
+                          {statusEnum.map((productStatus) => (
+                            <option key={productStatus}>{productStatus}</option>
+                          ))}
+                        </select>
+                      </label>
+                    </div>
+                  </th>
+                )
+                } else {
+                  return (
+                  <th key={header.id}>
                   <div
                     className="table-sort-div"
                     title="Click to sort"
                     onClick={header.column.getToggleSortingHandler()}
                     style={{ cursor: 'pointer' }}
-                >
+                  >
                     {flexRender(header.column.columnDef.header, header.getContext())}
                     {header.column.getIsSorted() === 'asc' ? ' ↑'
                     : header.column.getIsSorted() === 'desc' ? ' ↓' : ''}
                   </div>
-                <input
-                  className="table-filter"
-                  placeholder="Filter..."
-                  value={header.column.getFilterValue() as string}
-                  onChange={e => header.column.setFilterValue(e.target.value)}
-                />
-                </th>
-            )})}
+                  <input
+                    className="table-filter"
+                    placeholder="Filter..."
+                    value={header.column.getFilterValue() as string}
+                    onChange={e => header.column.setFilterValue(e.target.value)}
+                  />
+                  </th>
+            )
+                }
+                
+          
+
+                 })}
             </tr>
         ))}
     </thead>

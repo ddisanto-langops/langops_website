@@ -303,6 +303,10 @@ h2 { overflow-wrap: break-word; }
    TABLES
    ===================== */
 
+.table-header {
+    display: flex;
+}
+
 #product-table-body, #completions-table-body {
     text-align: center;
 }
@@ -318,6 +322,21 @@ h2 { overflow-wrap: break-word; }
 
 .table-sort-div:hover {
     color: coral;
+}
+
+.pagination-div {
+    justify-self: center;
+    color: white;
+    padding: 10px;
+}
+
+.pagination-div select {
+    margin-left: 10px;
+    background-color: hsla(204, 85%, 56%, 0.747);
+    color: white;
+    border-radius: 6px;
+    font-size: medium;
+    cursor: pointer;
 }
 
 #product-table-head th {
@@ -715,7 +734,7 @@ td {
 }
 
 .date-picker {
-    background-color: transparent;
+    background-color: hsla(204, 85%, 56%, 0.747);
     color: white;
     border-radius: 8px;
     font-size: 1rem;
