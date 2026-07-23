@@ -1,8 +1,6 @@
-import type { LangOpsProduct } from "../../types/types"
+import type { LangOpsProduct } from "../../../shared/types"
 import { formatDate } from "../../services/formatDate"
 import { useState, useEffect } from "react"
-import { resync } from "../../services/api"
-import { useMutation, useQueryClient } from '@tanstack/react-query'
 
 interface ProductModalProps {
     record: LangOpsProduct,
@@ -11,21 +9,12 @@ interface ProductModalProps {
 }
 
 export function ProductModal({record, isOpen, onClose}: ProductModalProps) {
-    
-    const queryClient = useQueryClient()
     const [formData, setFormData] = useState(record)
 
     useEffect(() => {
         setFormData(record)
     }, [record])
 
-    const resyncMutation = useMutation({
-        mutationFn: (id: string) => resync(id, "active"),
-        onSuccess: (result: LangOpsProduct[]) => {
-            queryClient.invalidateQueries({queryKey: ['products']})
-            if (result[0]) setFormData(result[0])
-        }
-    })
 
     if (!isOpen) return null
     return (
@@ -51,13 +40,13 @@ export function ProductModal({record, isOpen, onClose}: ProductModalProps) {
                 </p>
                 : null
                 }
-                {formData.crowdinData.url ? 
+                {formData.crowdinData?.crowdinUrl ? 
                 <p
                     style={{justifySelf: 'center'}}
                 >
                     <a
                         style={{color: 'coral'}} 
-                        href={formData.crowdinData.url} 
+                        href={formData.crowdinData.crowdinUrl} 
                         target="_blank"
                         rel="noopener"
                     >
@@ -66,15 +55,6 @@ export function ProductModal({record, isOpen, onClose}: ProductModalProps) {
                 </p>
                 : null
                 }
-                <div className="modal-resync-div">
-                    <button
-                        type="button"
-                        className="resync-button"
-                        onClick={() => resyncMutation.mutate(String(formData.id))}
-                    >
-                        {resyncMutation.isPending ? "Loading..." : "Re-Sync Data"}
-                    </button>
-                </div>
                 <div className="modal-body">
                     <div className="product-modal-info-block">
                         <label className="product-modal-label">Title:</label>
@@ -103,13 +83,13 @@ export function ProductModal({record, isOpen, onClose}: ProductModalProps) {
                     <div className="product-modal-info-block">
                         <label className="product-modal-label">Translation Progress:</label>
                         <p className="product-modal-info">
-                            {formData.crowdinData.translationProgress ? `${formData.crowdinData.translationProgress}%` : '⛔'}
+                            {formData.crowdinData?.translationProgress ? `${formData.crowdinData.translationProgress}%` : '⛔'}
                         </p>
                     </div>
                     <div className="product-modal-info-block">
                         <label className="product-modal-label">Approval Progress:</label>
                         <p className="product-modal-info">
-                            {formData.crowdinData.approvalProgress ? `${formData.crowdinData.approvalProgress}%` : '⛔'}
+                            {formData.crowdinData?.approvalProgress ? `${formData.crowdinData.approvalProgress}%` : '⛔'}
                         </p>
                     </div>
                     <div className="product-modal-info-block">

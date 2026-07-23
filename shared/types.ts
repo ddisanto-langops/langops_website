@@ -45,7 +45,7 @@ export type CrowdinDataSchema = z.infer<typeof CrowdinDataSchema>
 export interface LangOpsProduct {
     id: string
     dateCreated: Date
-    datedeleted: Date
+    dateDeleted: Date
     mediaGroups: string[]
     productStatus: string
     trelloData: TrelloDataSchema

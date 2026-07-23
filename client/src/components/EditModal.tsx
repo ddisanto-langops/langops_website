@@ -1,18 +1,16 @@
-import type { LangOpsProduct } from "../../types/types"
-
+import { LangOpsProduct } from "../../../shared/types"
+import { editProduct, deleteProduct } from "../../services/api"
 import { EditableLink} from "./EditableLink"
 import React, { useState, useEffect } from "react"
 import { supportedLanguageEnum, groupDisplayNames, productCodeEnum } from "../../types/enums"
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { LangOpsApiClient } from '../../services/api'
+import ISO6391 from "iso-639-1"
 
 interface CompletionModalProps {
     record: LangOpsProduct,
     isOpen: boolean,
     onClose: () => void
 }
-
-const client = new LangOpsApiClient()
 
 export function EditModal({record, isOpen, onClose}: CompletionModalProps) {
     
@@ -24,38 +22,54 @@ export function EditModal({record, isOpen, onClose}: CompletionModalProps) {
     }, [record])
 
     const saveMutation = useMutation({
-        mutationFn: client.editProduct,
+        mutationFn: (record: LangOpsProduct) => editProduct(record.trelloData.id, record),
+        onSuccess: () => {
+            queryClient.invalidateQueries({queryKey: ['products']})
+            onClose()
+        }
+    })
+
+    const deleteMutation = useMutation({
+        mutationFn: (id: string) => deleteProduct(id),
         onSuccess: () => {
             queryClient.invalidateQueries({queryKey: ['completions']})
             onClose()
         }
     })
 
-    /*
-    const deleteMutation = useMutation({
-        mutationFn: (id: string) => deleteCompletion(id),
-        onSuccess: () => {
-            queryClient.invalidateQueries({queryKey: ['completions']})
-            onClose()
-        }
-    })
-    */
 
 
     const handleLinkEdit = (accessor: string, newLink: string) => {
-        setFormData((prev) => ({...prev, [accessor]: newLink}))
+    setFormData((prev) => ({
+        ...prev,
+        trelloData: {
+            ...prev.trelloData,
+            [accessor]: newLink
+        }
+    }))
+}
 
-    }
+const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target
+    setFormData((prev) => ({
+        ...prev,
+        trelloData: {
+            ...prev.trelloData,
+            [name]: value
+        }
+    }))
+}
 
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const { name, value } = e.target
-        setFormData((prev) => ({...prev, [name]: value}))
-    }
-
-    const handleDropdownChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        const { name, value } = e.target
-        setFormData((prev) => ({...prev, [name]: value}))
-    }
+const handleDropdownChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const { name, value } = e.target
+    setFormData((prev) => ({
+        ...prev,
+        trelloData: {
+            ...prev.trelloData,
+            [name]: value
+        }
+    }))
+}
 
     const handleMediaButtonClick = (key: string) => {
         const exists = formData.mediaGroups.includes(key)
@@ -133,7 +147,7 @@ export function EditModal({record, isOpen, onClose}: CompletionModalProps) {
                             onChange={handleDropdownChange}
                         >
                             {supportedLanguageEnum.map(language => (
-                                <option key={language}>{language}</option>
+                                <option key={language} value={ISO6391.getCode(language)}>{language}</option>
                             ))}
                         </select>
                         <label className="completion-modal-label">Date Published:</label>

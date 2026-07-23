@@ -1,6 +1,5 @@
 import type { GetProductFilters, LangOpsProduct, PaginatedProductResponse, ProductCountResponse, ProductMetaFilters } from "../../shared/types"
 
-
 function buildQuery(filters: GetProductFilters | ProductMetaFilters): URLSearchParams | null {
     if (!filters) return null
     const query = new URLSearchParams()
@@ -19,7 +18,7 @@ function buildQuery(filters: GetProductFilters | ProductMetaFilters): URLSearchP
 
 
 
-export async function getProducts(filters: GetProductFilters) {
+export async function getProducts(filters: GetProductFilters): Promise<PaginatedProductResponse> {
     const query = buildQuery(filters)
     if (query) {
         const response = await fetch(`/api/products?${query}`)
@@ -64,7 +63,10 @@ export async function getProductCount(filters: ProductMetaFilters): Promise<Prod
 
 
 export async function editProduct(id: string, record: LangOpsProduct) {
+    const headers = new Headers()
+    headers.append("Content-Type", "application/json")
     const response = await fetch(`/api/products/edit/${id}`, {
+        headers: headers,
         method: 'PATCH',
         body: JSON.stringify(record)
     })

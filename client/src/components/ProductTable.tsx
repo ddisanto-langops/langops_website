@@ -1,22 +1,27 @@
-import type { LangOpsProduct } from "../../types/types";
-import type { SortingState, ColumnFiltersState, Row, VisibilityState } from "@tanstack/react-table"
-import { ProductModal } from "./ProductModal";
-import { ClickFilter } from "./clickFilter";
+import { LangOpsProduct } from "../../../shared/types"
+import { NavBar } from "./NavBar"
+import { GetProductFilters } from "../../../shared/types"
+import { ProductModal } from "./ProductModal"
+import { EditModal } from "./EditModal"
+import { ClickFilter } from "./clickFilter"
 import { useQuery } from "@tanstack/react-query"
-import { useState, useMemo } from "react";
+import { useState, useMemo } from "react"
 import {
   useReactTable,
   getCoreRowModel,
   getSortedRowModel,
   createColumnHelper,
   getFilteredRowModel,
-  flexRender
+  flexRender,
+  SortingState,
+  ColumnFiltersState,
+  VisibilityState,
+  Row
 } from '@tanstack/react-table'
+import ISO6391 from "iso-639-1"
 import { formatDate } from "../../services/formatDate";
-import { LangOpsApiClient } from "../../services/api";
+import { getProducts } from "../../services/api";
 
-
-const client = new LangOpsApiClient()
 
 const includesMediaType = (row: Row<LangOpsProduct>, columnId: string, filterValue: string) => {
   if (!filterValue || (Array.isArray(filterValue) && filterValue.length === 0)) return true
@@ -45,7 +50,11 @@ const columns = [
   }),
   columnHelper.accessor('trelloData.targetLanguage', {
     header: 'Language',
-    filterFn: caseInsensitiveFilter
+    filterFn: caseInsensitiveFilter,
+    cell: info => {
+      const code = String(info.getValue() ?? '')
+      return ISO6391.getName(code) || code
+    }
   }),
   columnHelper.accessor('productStatus', {
     header: 'Status',
@@ -63,11 +72,21 @@ const columns = [
 ]
 
 export function ProductTable() {
-  const { data = [], isLoading, isError } = useQuery({
-    queryKey: ['products'],
-    queryFn: () => client.fetchProducts
+  
+  const [filters, setFilters] = useState<GetProductFilters>({
+    targetLanguage: undefined,
+    dateFrom: undefined,
+    dateTo: undefined,
+    productCode: undefined,
+    mediaGroups: undefined,
+    search: undefined,
+    limit: undefined,
+    offset: undefined,
+    archivedOnly: undefined,
+    publishedOnly: undefined,
+    unpublishedOnly: undefined,
+    excludeDeleted: undefined
   })
-
 
   const [sorting, setSorting] = useState<SortingState>([])
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
@@ -78,18 +97,24 @@ export function ProductTable() {
   const [selectedRow, setSelectedRow] = useState<LangOpsProduct | undefined>(undefined)
   const [modalIsOpen, setModalIsOpen] = useState(false)
 
+  const { data: response, isLoading, isError } = useQuery({
+    queryKey: ['products', filters],
+    queryFn: () => getProducts(filters)
+  })
 
+  const products = response?.data ?? []
 
   const filteredData = useMemo(() => {
-    if (!fromDate && !toDate) return data
-    return data.filter(product => {
-      if (!product.datePublished) return false
-      const pubDate = product.datePublished.slice(0, 10)
+    if (!fromDate && !toDate) return products
+    return products.filter(product => {
+      const published = product.trelloData.datePublished
+      if (!published) return false
+      const pubDate = published.slice(0, 10)
       if (fromDate && pubDate < fromDate) return false
       if (toDate && pubDate > toDate) return false
       return true
     })
-  }, [data, fromDate, toDate])
+  }, [products, fromDate, toDate])
 
   // eslint-disable-next-line react-hooks/incompatible-library
   const table = useReactTable({
@@ -120,7 +145,10 @@ export function ProductTable() {
 
   const GuardedProductModal = () => {
     if (!selectedRow) return null
-    return (
+    
+    if (selectedRow.productStatus === "published") return ( <EditModal record={selectedRow} isOpen={modalIsOpen} onClose={handleModalClose} />)
+    
+      return (
       <ProductModal record={selectedRow} isOpen={modalIsOpen} onClose={handleModalClose} />
     )
   }
@@ -130,6 +158,7 @@ export function ProductTable() {
   
   return (
   <>
+  <NavBar />
   <GuardedProductModal />
   <ClickFilter selectedGroups={selectedGroups} onSelectionChange={handleGroupChange}/>
   <div className="date-filter-row">
