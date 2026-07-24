@@ -7,6 +7,14 @@ export const customFieldEnum = {
 }
 
 
+export const statusEnum = [
+    "Archived",
+    "Published",
+    "Pending",
+    "Deleted",
+    "Unknown"
+]
+
 export const productCodeEnum: string[] = [
     /*
      * productCodes is an Alphabetized array defining all valid product codes,
