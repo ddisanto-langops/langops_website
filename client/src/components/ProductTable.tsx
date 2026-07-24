@@ -21,7 +21,6 @@ import {
 import ISO6391 from "iso-639-1"
 import { formatDate } from "../../services/formatDate";
 import { getProducts } from "../../services/api";
-import { data } from "react-router-dom"
 
 
 const includesMediaType = (row: Row<LangOpsProduct>, columnId: string, filterValue: string) => {
@@ -141,15 +140,15 @@ export function ProductTable() {
 
   const handleLanguageSelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const value = e.target.value
-    value === undefined ? 
+    value === "" ? 
     setFilters({...filters, targetLanguage: undefined}) : 
     setFilters({...filters, targetLanguage: ISO6391.getCode(value)})
     e.preventDefault()
   }
 
   // NEED API FILTER FOR PRODUCT STATUS
-  const handleStatusSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value
+  const handleStatusSelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const value = e.target.value.toLowerCase()
     if (value === 'published') setFilters({...filters, publishedOnly: true})
     if (value === 'pending') setFilters({...filters, unpublishedOnly: true})
   }
@@ -192,7 +191,7 @@ export function ProductTable() {
   </div>
   <div className="pagination-div">
     <label>Products to display: 
-      <select className="pagination-select" defaultValue={filters.limit} onChange={handleTableLimit}>
+      <select className="pagination-select" value={filters.limit} onChange={handleTableLimit}>
         <option value={10}>10</option>
         <option value={20}>20</option>
         <option value={30}>30</option>
@@ -217,10 +216,10 @@ export function ProductTable() {
                     <th>{header.id}
                       <div>
                       <label>
-                        <select defaultValue={filters.targetLanguage} onChange={handleLanguageSelect}>
-                          <option value={undefined}>All</option>
+                        <select value={filters.targetLanguage ? ISO6391.getName(filters.targetLanguage) : ""} onChange={handleLanguageSelect}>
+                          <option value={""}>All</option>
                           {supportedLanguageEnum.map((lang) => (
-                            <option key={lang}>{lang}</option>
+                            <option key={lang} value={lang}>{lang}</option>
                           ))}
                         </select>
                       </label>
@@ -233,9 +232,10 @@ export function ProductTable() {
                   <th>{header.id}
                     <div>
                       <label>
-                        <select>
+                        <select onChange={handleStatusSelect}>
+                          <option value={""}>All</option>
                           {statusEnum.map((productStatus) => (
-                            <option key={productStatus}>{productStatus}</option>
+                            <option key={productStatus} value={productStatus}>{productStatus}</option>
                           ))}
                         </select>
                       </label>
