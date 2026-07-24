@@ -1,4 +1,4 @@
-import type { ProductMetaFilters } from "../../../shared/types"
+import type { ProductMetaFilters } from "@shared/types"
 import { useQuery } from "@tanstack/react-query"
 import { getWordCount } from "../../services/api"
 

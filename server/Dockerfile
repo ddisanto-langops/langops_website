@@ -1,30 +1,59 @@
 # --- Base Stage (Shared dependencies) ---
 FROM node:26-alpine AS base
+
 WORKDIR /app
-COPY package*.json ./
 
 # --- Development Stage (For hot-reloading) ---
 FROM base AS development
-COPY package*.json ./
-COPY server/package*.json ./server/
+ENV NODE_ENV=development
 COPY shared/package*.json ./shared/
-RUN npm install
+COPY server/package*.json ./server/
+
+WORKDIR /app/shared
+RUN ["npm", "install"]
+
+WORKDIR /app/server
+RUN ["npm", "install"]
+
+WORKDIR /app
 COPY server ./server
 COPY shared ./shared
-CMD ["npm", "run", "dev", "--workspace", "server"]
+
+WORKDIR /app/server
+CMD ["npm", "run", "dev"]
 
 # --- Build Stage (Compile TS to JS) ---
 FROM base AS build
-RUN npm ci
-COPY . . 
+
+COPY server/package*.json ./server/
+COPY shared/package*.json ./shared/
+
+WORKDIR /app/shared
+RUN npm i
+
+WORKDIR /app/server
+RUN npm i
+
+WORKDIR /app
+COPY server ./server
+COPY shared ./shared
+
+WORKDIR /app/server
 RUN npm run build
 
 # --- Production Stage (Tiny, fast runtime) ---
 FROM node:26-alpine AS production
-WORKDIR /app
+
+WORKDIR /app/server
 ENV NODE_ENV=production
-COPY package*.json ./
-RUN npm ci --only=production
-COPY --from=build /app/dist ./dist
+COPY server/package*.json ./
+RUN npm i --omit=dev
+
+WORKDIR /app/shared
+COPY shared/package*.json ./
+RUN npm i --omit=dev
+
+WORKDIR /app/server
+COPY --from=build /app/server/dist ./dist
 EXPOSE 3000
-CMD ["node", "dist/server.js"]
+CMD ["node", "dist/server/src/server.js"]

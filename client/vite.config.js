@@ -5,6 +5,11 @@ import react from '@vitejs/plugin-react'
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
+  resolve: {
+    alias: {
+      '@shared': path.resolve(__dirname, '../shared')
+    }
+  },
   server: {
     fs: {
       allow: ['/app', '/shared']
@@ -16,7 +21,7 @@ export default defineConfig({
         secure: false
       }
     },
-    host: true,
+    host: "0.0.0.0",
     port: 5173, 
     hmr: {
       clientPort: 5173

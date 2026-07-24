@@ -3,7 +3,7 @@ import { useState } from 'react'
 import { TotalWords } from '../components/totalWords'
 import { DashboardFilter } from '../components/dashboardFilters'
 import { ProductCount } from '../components/productCount'
-import { ProductMetaFilters } from '@langops/shared/types'
+import { ProductMetaFilters } from '@shared/types'
 
 export function Dashboard() {
 

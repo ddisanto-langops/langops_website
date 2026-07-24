@@ -1,5 +1,5 @@
-import { productCodeEnum, supportedLanguageEnum, groupDisplayNames } from "@langops/shared/enums"
-import type { ProductMetaFilters } from "@langops/shared/types"
+import { productCodeEnum, supportedLanguageEnum, groupDisplayNames } from "@shared/enums"
+import type { ProductMetaFilters } from "@shared/types"
 import ISO6391 from "iso-639-1"
 import React, { useState } from "react"
 

@@ -1,4 +1,4 @@
-import type { LangOpsProduct } from "../../../shared/types"
+import type { LangOpsProduct } from "@shared/types"
 import { formatDate } from "../../services/formatDate"
 import { useState, useEffect } from "react"
 
@@ -40,13 +40,13 @@ export function ProductModal({record, isOpen, onClose}: ProductModalProps) {
                 </p>
                 : null
                 }
-                {formData.crowdinData?.crowdinUrl ? 
+                {formData.crowdinData?.url ? 
                 <p
                     style={{justifySelf: 'center'}}
                 >
                     <a
                         style={{color: 'coral'}} 
-                        href={formData.crowdinData.crowdinUrl} 
+                        href={formData.crowdinData.url} 
                         target="_blank"
                         rel="noopener"
                     >

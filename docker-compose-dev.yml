@@ -14,8 +14,9 @@ services:
 
     volumes:
       - .:/app            # Mounts local folder so changes sync instantly
-      - /app/node_modules # Directs Docker to safeguard the container's built node_modules
-    command: npm run dev --workspace client -- --host 0.0.0.0
+      - /app/client/node_modules # Directs Docker to safeguard the container's built node_modules
+      - /app/shared/node_modules
+    command: npm run dev
   server:
     container_name: langops-website-server
     env_file:
@@ -29,5 +30,6 @@ services:
 
     volumes:
       - .:/app            # Mounts local folder so changes sync instantly
-      - /app/node_modules # Directs Docker to safeguard the container's built node_modules
-    command: npm run dev --workspace server
+      - /app/server/node_modules # Directs Docker to safeguard the container's built node_modules
+      - /app/shared/node_modules
+    command: npm run dev

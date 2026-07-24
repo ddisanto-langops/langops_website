@@ -1,4 +1,4 @@
-import type { GetProductFilters, LangOpsProduct, PaginatedProductResponse, ProductCountResponse, ProductMetaFilters } from "../../shared/types"
+import type { GetProductFilters, LangOpsProduct, PaginatedProductResponse, ProductCountResponse, ProductMetaFilters } from "@shared/types"
 
 function buildQuery(filters: GetProductFilters | ProductMetaFilters): URLSearchParams | null {
     if (!filters) return null
@@ -106,21 +106,3 @@ export async function permanentlyDeleteProduct(id: string) {
         return response
     }
 }
-
-
-
-
-
-
-
-
-
-export async function fetchCrowdinProjects(): Promise<CrowdinProject[]> {
-    const res = await fetch('/api/crowdin/projects')
-    if (!res.ok) throw new Error('Failed to fetch Crowdin projects')
-    return res.json()
-}
-
-
-
-

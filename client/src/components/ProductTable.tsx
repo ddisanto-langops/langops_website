@@ -1,5 +1,5 @@
-import { LangOpsProduct, GetProductFilters } from "@langops/shared/types"
-import { supportedLanguageEnum, statusEnum } from "@langops/shared/enums"
+import { LangOpsProduct, GetProductFilters } from "@shared/types"
+import { supportedLanguageEnum, statusEnum } from "@shared/enums"
 import { NavBar } from "./NavBar"
 import { ProductModal } from "./ProductModal"
 import { EditModal } from "./EditModal"
@@ -187,8 +187,8 @@ export function ProductTable() {
   <GuardedProductModal />
   <ClickFilter selectedGroups={selectedGroups} onSelectionChange={handleGroupChange}/>
   <div className="date-filter-row">
-    <label>From: <input id="date-picker" type="date" className="date-picker" value={fromDate} onChange={e => setFromDate(e.target.value)} /></label>
-    <label>To: <input id="date-picker" type="date" className="date-picker" value={toDate} onChange={e => setToDate(e.target.value)} /></label>
+    <div className="date-picker-div"><label>From: <input id="date-picker" type="date" className="date-picker" value={fromDate} onChange={e => setFromDate(e.target.value)} /></label></div>
+    <div className="date-picker-div"><label>To: <input id="date-picker" type="date" className="date-picker" value={toDate} onChange={e => setToDate(e.target.value)} /></label></div>
   </div>
   <div className="pagination-div">
     <label>Products to display: 

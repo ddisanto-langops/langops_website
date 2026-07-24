@@ -7,7 +7,7 @@ import { GetProductFilters,
     DeleteResponse,
     RestoreResponse,
     EditProductRequest
-} from "../../shared/types.js"
+} from "@shared/types"
 
 export class LangOpsApiClient {
 
@@ -51,7 +51,7 @@ export class LangOpsApiClient {
     return params
 }
 
-    public async getProducts(filters: GetProductFilters) {
+    public async getProducts(filters: GetProductFilters): Promise<PaginatedProductResponse> {
                 
         const response = await fetch(`${this.basePath}/products/?${this.buildParams(filters)}`,
             {

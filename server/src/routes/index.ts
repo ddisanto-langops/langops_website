@@ -1,6 +1,6 @@
 import { Router, Request } from "express"
 import { LangOpsApiClient } from "../langopsApiClient.js";
-import type { GetProductFilters, LangOpsProduct, ProductMetaFilters } from "@langops/shared/types"
+import type { GetProductFilters, LangOpsProduct, ProductMetaFilters } from "@shared/types"
 
 const router = Router()
 const client = new LangOpsApiClient()
@@ -141,30 +141,6 @@ router.delete('/api/products/permanent-delete/:id', async (req, res) => {
     } catch (error) {
         error instanceof Error ? res.status(500).json({error: error.message}) :
             res.status(500).json({error: "DEL /api/products/permanent-delete:id: Unknown error"})
-    }
-})
-
-
-
-/*
- * GET /api/crowdin/projects
- * Returns all Crowdin projects with their target languages.
-*/
-router.get('/api/crowdin/projects', async (_req, res) => {
-    try {
-        const projRes = await fetch('https://api.crowdin.com/api/v2/projects?limit=500', {
-            headers: { 'Authorization': `Bearer ${CROWDIN_TOKEN}` }
-        })
-        if (!projRes.ok) throw new Error('Failed to fetch Crowdin projects')
-        const body = await projRes.json() as { data: { data: { id: number; name: string; targetLanguages: { id: string; name: string }[] } }[] }
-        const projects = body.data.map(p => ({
-            id: p.data.id,
-            name: p.data.name,
-            targetLanguages: p.data.targetLanguages?.map(l => ({ id: l.id, name: l.name })) ?? []
-        }))
-        res.json(projects)
-    } catch (e) {
-        res.status(500).json({ error: e instanceof Error ? e.message : 'Unknown error' })
     }
 })
 

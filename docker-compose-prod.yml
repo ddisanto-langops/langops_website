@@ -1,0 +1,25 @@
+services:
+  client:
+    depends_on:
+      - server
+    container_name: langops-website-client
+    env_file:
+      - /etc/langops-website/secrets.env
+    build:
+      context: .
+      dockerfile: client/Dockerfile
+      target: runner
+    ports:
+      - "8080:80"
+
+
+  server:
+    container_name: langops-website-server
+    env_file:
+      - /etc/langops-website/secrets.env
+    build:
+      context: .
+      dockerfile: server/Dockerfile
+      target: production
+    ports:
+      - "3200:3200"

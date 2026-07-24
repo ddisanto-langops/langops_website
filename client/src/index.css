@@ -734,7 +734,7 @@ td {
 }
 
 .date-picker {
-    background-color: hsla(204, 85%, 56%, 0.747);
+    background-color: transparent;
     color: white;
     border-radius: 8px;
     font-size: 1rem;
