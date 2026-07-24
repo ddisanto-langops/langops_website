@@ -63,10 +63,7 @@ export interface GetProductFilters {
     search?: string | undefined
     limit?: number | undefined
     offset?: number | undefined
-    archivedOnly?: boolean | undefined
-    publishedOnly?: boolean | undefined
-    unpublishedOnly?: boolean | undefined
-    excludeDeleted?: boolean | undefined
+    status?: string[] | undefined
 }
 
 

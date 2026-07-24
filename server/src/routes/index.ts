@@ -16,6 +16,17 @@ function extractMediaGroups(req: Request) {
     return mediaGroups    
 }
 
+function extractStatuses(req: Request) {
+    let statuses: string[] = []
+    const reqStatuses = req.query.status
+    if (Array.isArray(reqStatuses)) {
+        statuses = reqStatuses.map(String)
+    } else if (typeof reqStatuses === "string") {
+        statuses = [reqStatuses]
+    }
+    return statuses
+}
+
 function buildGetProductFilters(req: Request): GetProductFilters {
     const filters: GetProductFilters = {
             targetLanguage: req.query.targetLanguage?.toString(),
@@ -26,10 +37,7 @@ function buildGetProductFilters(req: Request): GetProductFilters {
             search: req.query.search?.toString(),
             limit: Number(req.query.limit) ? Number(req.query.limit) : undefined,
             offset: Number(req.query.offset) ? Number(req.query.offset): undefined,
-            archivedOnly: Boolean(req.query.archivedOnly),
-            publishedOnly: Boolean(req.query.publishedOnly),
-            unpublishedOnly: Boolean(req.query.unpublishedOnly),
-            excludeDeleted: Boolean(req.query.excludeDeleted)
+            status: extractStatuses(req)
         }
     return filters
 }

@@ -1,19 +1,19 @@
 import type { GetProductFilters, LangOpsProduct, PaginatedProductResponse, ProductCountResponse, ProductMetaFilters } from "@shared/types"
 
-function buildQuery(filters: GetProductFilters | ProductMetaFilters): URLSearchParams | null {
-    if (!filters) return null
-    const query = new URLSearchParams()
+function buildQuery(filters: object): URLSearchParams {
+    const params = new URLSearchParams()
     for (const [key, value] of Object.entries(filters)) {
-        if (key === "mediaGroups" && value != undefined) {
-            for (const item of value) {
-                query.append("mediaGroups", item)
-                continue
-            }
+        if (value === undefined || value === null || value === '') {
+            continue
         } else {
-            if (value != undefined) query.append(key.toString(), value)
+            if (Array.isArray(value)) {
+                value.forEach(item => params.append(key, String(item)))
+            } else {
+                params.append(key, String(value))
+            }
         }
     }
-    return query
+    return params
 }
 
 

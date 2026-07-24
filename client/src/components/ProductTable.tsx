@@ -84,10 +84,7 @@ export function ProductTable() {
     search: undefined,
     limit: 50,
     offset: undefined,
-    archivedOnly: undefined,
-    publishedOnly: undefined,
-    unpublishedOnly: undefined,
-    excludeDeleted: undefined
+    status: undefined
   })
 
   const [sorting, setSorting] = useState<SortingState>([])
@@ -146,11 +143,18 @@ export function ProductTable() {
     e.preventDefault()
   }
 
-  // NEED API FILTER FOR PRODUCT STATUS
+
   const handleStatusSelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const value = e.target.value.toLowerCase()
-    if (value === 'published') setFilters({...filters, publishedOnly: true})
-    if (value === 'pending') setFilters({...filters, unpublishedOnly: true})
+    if (!value) {
+      setFilters({...filters, status: undefined})
+      return
+    } else {
+      if (filters.status?.includes(value)) {
+        setFilters({...filters, status: [...filters.status, value]}
+        )
+      }
+    }
   }
 
   const handleGroupChange = (groups: string[]) => {
@@ -228,14 +232,14 @@ export function ProductTable() {
                   )
 
                 } else if (header.column.id === "Status") {
-                  return (
+                  return ( // NEEDS REACT-SELECT
                   <th>{header.id}
                     <div>
                       <label>
-                        <select onChange={handleStatusSelect}>
+                        <select value={filters.status ? filters.status : ''} onChange={handleStatusSelect}>
                           <option value={""}>All</option>
                           {statusEnum.map((productStatus) => (
-                            <option key={productStatus} value={productStatus}>{productStatus}</option>
+                            <option key={productStatus} value={productStatus.toLowerCase()}>{productStatus}</option>
                           ))}
                         </select>
                       </label>
