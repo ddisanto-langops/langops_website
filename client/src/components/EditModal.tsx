@@ -1,8 +1,8 @@
-import { LangOpsProduct } from "../../../shared/types"
+import { LangOpsProduct } from "@langops/shared/types"
 import { editProduct, deleteProduct } from "../../services/api"
 import { EditableLink} from "./EditableLink"
 import React, { useState, useEffect } from "react"
-import { supportedLanguageEnum, groupDisplayNames, productCodeEnum } from "../../types/enums"
+import { supportedLanguageEnum, groupDisplayNames, productCodeEnum } from "@langops/shared/enums"
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import ISO6391 from "iso-639-1"
 

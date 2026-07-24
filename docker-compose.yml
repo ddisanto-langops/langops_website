@@ -6,30 +6,28 @@ services:
     env_file:
       - /etc/langops-website/secrets.env
     build:
-      context: ./client
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: client/Dockerfile
       target: builder
     ports:
       - "5173:5173"
 
     volumes:
-      - ./client:/app            # Mounts local folder so changes sync instantly
-      - ./shared:/shared
+      - .:/app            # Mounts local folder so changes sync instantly
       - /app/node_modules # Directs Docker to safeguard the container's built node_modules
-    command: npm run dev -- --host 0.0.0.0
+    command: npm run dev --workspace client -- --host 0.0.0.0
   server:
     container_name: langops-website-server
     env_file:
       - /etc/langops-website/secrets.env
     build:
-      context: ./server
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: server/Dockerfile
       target: development
     ports:
       - "3200:3200"
 
     volumes:
-      - ./server:/app            # Mounts local folder so changes sync instantly
-      - ./shared:/shared
+      - .:/app            # Mounts local folder so changes sync instantly
       - /app/node_modules # Directs Docker to safeguard the container's built node_modules
-    command: npm run dev -- --host 0.0.0.0
+    command: npm run dev --workspace server

@@ -5,9 +5,13 @@ COPY package*.json ./
 
 # --- Development Stage (For hot-reloading) ---
 FROM base AS development
+COPY package*.json ./
+COPY server/package*.json ./server/
+COPY shared/package*.json ./shared/
 RUN npm install
-COPY . .
-CMD ["npm", "run", "dev"]
+COPY server ./server
+COPY shared ./shared
+CMD ["npm", "run", "dev", "--workspace", "server"]
 
 # --- Build Stage (Compile TS to JS) ---
 FROM base AS build

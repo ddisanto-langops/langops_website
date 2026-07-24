@@ -1,5 +1,13 @@
 {
-  "name": "shared",
+  "name": "@langops/shared",
   "version": "1.0.0",
-  "type": "module"
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./enums": "./enums.ts",
+    "./types": "./types.ts"
+  },
+  "dependencies": {
+    "zod": "^3.25.76"
+  }
 }

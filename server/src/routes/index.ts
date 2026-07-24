@@ -1,6 +1,6 @@
 import { Router, Request } from "express"
 import { LangOpsApiClient } from "../langopsApiClient.js";
-import type { GetProductFilters, LangOpsProduct, ProductMetaFilters } from "../../../shared/types.js";
+import type { GetProductFilters, LangOpsProduct, ProductMetaFilters } from "@langops/shared/types"
 
 const router = Router()
 const client = new LangOpsApiClient()
