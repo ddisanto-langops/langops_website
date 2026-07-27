@@ -267,7 +267,7 @@ h2 { overflow-wrap: break-word; }
     z-index: 5;
 }
 
-.click-filter-button {
+.interactive-button {
     cursor: pointer;
     background: hsla(202, 99%, 36%, 0.993);
     color: white;
@@ -280,12 +280,12 @@ h2 { overflow-wrap: break-word; }
     margin: 5px;
 }
 
-.click-filter-button:hover {
+.interactive-button:hover {
 
     background: hsla(202, 91%, 47%, 0.973);
 }
 
-.click-filter-button-selected {
+.interactive-button-selected {
     background: hsla(155, 94%, 42%, 0.897);
     color: white;
     border: none;

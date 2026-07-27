@@ -89,11 +89,17 @@ export function GlobalSearchPage() {
                     onKeyDown={handleKeyDown}
                  />
                  <button
+                    className="interactive-button"
+                    style={{cursor: 'pointer'}}
                     onClick={handleSearch}
                     >
                     Search
                  </button>
-                 <button type="submit" onClick={handleClear}>
+                 <button 
+                    className="interactive-button"
+                    style={{cursor: 'pointer'}}
+                    type="submit" onClick={handleClear}
+                    >
                     Clear
                  </button>
             </div>

@@ -25,13 +25,13 @@ export function ClickFilter({ selectedGroups, onSelectionChange }: ClickFilterPr
     return (
         <div id="click-filter">
             <button
-                className={selectedGroups.length === 0 ? "click-filter-button-selected" : "click-filter-button"}
+                className={selectedGroups.length === 0 ? "interactive-button-selected" : "interactive-button"}
                 onClick={() => onSelectionChange([])}
             >All</button>
             {GROUPS.map(({ value, label }) => (
                 <button
                     key={value}
-                    className={selectedGroups.includes(value) ? "click-filter-button-selected" : "click-filter-button"}
+                    className={selectedGroups.includes(value) ? "interactive-button-selected" : "interactive-button"}
                     onClick={() => toggle(value)}
                 >
                     {label}
