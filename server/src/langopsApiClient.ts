@@ -6,8 +6,10 @@ import { GetProductFilters,
     WordCountResponse,
     DeleteResponse,
     RestoreResponse,
-    EditProductRequest
+    ErrorResponse
 } from "@shared/types"
+import { error } from "console"
+import { response } from "express"
 
 export class LangOpsApiClient {
 
@@ -51,7 +53,7 @@ export class LangOpsApiClient {
     return params
 }
 
-    public async getProducts(filters: GetProductFilters): Promise<PaginatedProductResponse> {
+    public async getProducts(filters: GetProductFilters): Promise<PaginatedProductResponse | ErrorResponse> {
                 
         const response = await fetch(`${this.basePath}/products/?${this.buildParams(filters)}`,
             {
@@ -59,69 +61,111 @@ export class LangOpsApiClient {
                 headers: this.headers
             }
         )
-        if (!response.ok) throw new Error('Failed to fetch products')
+        if (!response.ok) {
+            const errorResponse: ErrorResponse = {
+                statusCode: response.status,
+                statusText: response.statusText
+            }
+        }
         return response.json()
-    
     }
 
-    public async getProductCount(filters: ProductMetaFilters): Promise<ProductCountResponse> {
+    public async getProductCount(filters: ProductMetaFilters): Promise<ProductCountResponse | ErrorResponse> {
         const url = `${this.basePath}/products/productcount?${this.buildParams(filters)}`
         const response = await fetch(url, {
             method: 'GET',
             headers: this.headers
         })
-        if (!response.ok) throw new Error("Failed to fetch product count.")
+        if (!response.ok) {
+            const errorResponse: ErrorResponse = {
+                statusCode: response.status,
+                statusText: response.statusText
+            }
+            return errorResponse
+        }
         return await response.json()
     }
 
 
-    public async getWordCount(filters: ProductMetaFilters): Promise<WordCountResponse> {
+    public async getWordCount(filters: ProductMetaFilters): Promise<WordCountResponse | ErrorResponse> {
         const url = `${this.basePath}/products/wordcount?${this.buildParams(filters)}`
         const response = await fetch(url, {
             method: 'GET',
             headers: this.headers
         })
-        if (!response.ok) throw new Error("Failed to fetch wordcount.")
+        if (!response.ok) {
+            const errorResponse: ErrorResponse = {
+                statusCode: response.status,
+                statusText: response.statusText
+            }
+            return errorResponse
+        }
         return await response.json()
     }
 
     
-    public async editProduct(id: string, record: LangOpsProduct): Promise<LangOpsProduct> {
+    public async editProduct(id: string, record: LangOpsProduct): Promise<LangOpsProduct | ErrorResponse> {
         const url = `${this.basePath}/products/user-edit/${id}`
         const response = await fetch(url, {
             method: 'PATCH',
             headers: this.headers,
             body: JSON.stringify(record)
         })
-        if (!response.ok) throw new Error('Failed to update completion')
+        if (!response.ok) {
+            const errorResponse: ErrorResponse = {
+                statusCode: response.status,
+                statusText: response.statusText
+            }
+            return errorResponse
+        }
         return await response.json()
     }
 
 
-    public async restoreProduct(id: string): Promise<RestoreResponse> {
+    public async restoreProduct(id: string): Promise<RestoreResponse | ErrorResponse> {
         const response = await fetch(`${this.basePath}/products/restore/${id}`, {
             method: 'PATCH',
             headers: this.headers
         })
+        if (!response.ok) {
+            const errorResponse: ErrorResponse = {
+                statusCode: response.status,
+                statusText: response.statusText
+            }
+            return errorResponse
+        }
         return await response.json()
     }
 
 
-    public async softDeleteProduct(id: string): Promise<DeleteResponse> {
+    public async softDeleteProduct(id: string): Promise<DeleteResponse | ErrorResponse> {
         const response = await fetch(`${this.basePath}/products/delete/${id}`, {
             method: 'DELETE',
             headers: this.headers
         })
+        if (!response.ok) {
+            const errorResponse: ErrorResponse = {
+                statusCode: response.status,
+                statusText: response.statusText
+            }
+            return errorResponse
+        }
         return await response.json()
     }
 
 
-    public async permanentlyDeleteProduct(id: string): Promise<DeleteResponse> {
+    public async permanentlyDeleteProduct(id: string): Promise<DeleteResponse | ErrorResponse> {
         const response = await fetch(`${this.basePath}/products/permanent-delete/${id}`, {
             method: 'DELETE',
             headers: this.headers
         })
+        if (!response.ok) {
+            const errorResponse: ErrorResponse = {
+                statusCode: response.status,
+                statusText: response.statusText
+            }
+            return errorResponse
+        }
         return await response.json()
     }
-
 }
