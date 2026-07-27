@@ -69,7 +69,7 @@ export function GlobalSearchPage() {
     if (isError) return (
         <>
             <NavBar />
-            <p className="error-message">Error loading products.</p>
+            <p className="error-message">No products found</p>
         </>
     )
 
@@ -119,7 +119,7 @@ export function GlobalSearchPage() {
                             ))}
                         </tbody>
                     </table> : 
-                    <p className="generic-notice">Enter a search term to continue</p>
+                    <p className="generic-notice" style={{maxWidth: '400px'}}>Search for products which don't appear in the table due to age or being deleted. Enter a title or localized title to continue.</p>
             }
                 
             </div>

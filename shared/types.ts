@@ -146,3 +146,8 @@ export interface DeleteResponse {
     id: string
     deleted_at: string
 }
+
+export interface ErrorResponse {
+    statusCode: number
+    statusText: string
+}
