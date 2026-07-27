@@ -8,8 +8,8 @@ import { ProductMetaFilters } from '@shared/types'
 export function Dashboard() {
 
   const [ filters, setFilters ] = useState<ProductMetaFilters>({
-    targetLanguage: undefined,
-    productCode: undefined,
+    targetLanguages: undefined,
+    productCodes: undefined,
     mediaGroups: undefined,
     dateFrom: undefined,
     dateTo: undefined

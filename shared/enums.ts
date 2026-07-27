@@ -91,7 +91,7 @@ export const groupDisplayNames: { [key: string]: string } = {
  * by using the ISO6391 library.
 */ 
 export const supportedLanguageEnum = [
-    'French',
+        'French',
     'German',
     'Spanish',
     'Portuguese',
@@ -102,9 +102,6 @@ export const supportedLanguageEnum = [
     'Hebrew',
 ]
 
-/*Supported target languges
-* ISO-639-1 format
-*/
 
 // Abstraction for product fields display in UI
 export const friendlyFieldNames: { [key: string]: string } = {

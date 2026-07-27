@@ -6,6 +6,7 @@ import { EditModal } from "./EditModal"
 import { ClickFilter } from "./clickFilter"
 import { useQuery } from "@tanstack/react-query"
 import React, { useState, useMemo } from "react"
+import Select, { MultiValue } from "react-select"
 import {
   useReactTable,
   getCoreRowModel,
@@ -21,6 +22,7 @@ import {
 import ISO6391 from "iso-639-1"
 import { formatDate } from "../../services/formatDate";
 import { getProducts } from "../../services/api";
+import { customStyles } from "./styles/dropdowns"
 
 
 const includesMediaType = (row: Row<LangOpsProduct>, columnId: string, filterValue: string) => {
@@ -76,10 +78,10 @@ const columns = [
 export function ProductTable() {
   
   const [filters, setFilters] = useState<GetProductFilters>({
-    targetLanguage: undefined,
+    targetLanguages: undefined,
     dateFrom: undefined,
     dateTo: undefined,
-    productCode: undefined,
+    productCodes: undefined,
     mediaGroups: undefined,
     search: undefined,
     limit: 50,
@@ -135,26 +137,21 @@ export function ProductTable() {
     e.preventDefault()
   }
 
-  const handleLanguageSelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const value = e.target.value
-    value === "" ? 
-    setFilters({...filters, targetLanguage: undefined}) : 
-    setFilters({...filters, targetLanguage: ISO6391.getCode(value)})
-    e.preventDefault()
+  const handleLanguageSelect = (choice: MultiValue<{value: string, label: string}>) => {
+    const languages = []
+    for (const item of choice.values()) {
+      languages.push(item.value)
+    }
+    setFilters({...filters, targetLanguages: languages})
   }
 
 
-  const handleStatusSelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const value = e.target.value.toLowerCase()
-    if (!value) {
-      setFilters({...filters, status: undefined})
-      return
-    } else {
-      if (filters.status?.includes(value)) {
-        setFilters({...filters, status: [...filters.status, value]}
-        )
-      }
+  const handleStatusSelect = (choice: MultiValue<{value: string, label: string}>) => {
+    const statuses = []
+    for (const item of choice.values()) {
+      statuses.push(item.value)
     }
+    setFilters({...filters, status: statuses})
   }
 
   const handleGroupChange = (groups: string[]) => {
@@ -220,28 +217,41 @@ export function ProductTable() {
                     <th>{header.id}
                       <div>
                       <label>
-                        <select value={filters.targetLanguage ? ISO6391.getName(filters.targetLanguage) : ""} onChange={handleLanguageSelect}>
-                          <option value={""}>All</option>
-                          {supportedLanguageEnum.map((lang) => (
-                            <option key={lang} value={lang}>{lang}</option>
-                          ))}
-                        </select>
+                        <Select
+                          isMulti
+                          isClearable
+                          isSearchable
+                          styles={customStyles}
+                          value={(filters.targetLanguages || []).map((code) => ({
+                            value: code,
+                            label: ISO6391.getName(code) || code
+                          }))}
+                          options={supportedLanguageEnum.map((lang) => ({ value: ISO6391.getCode(lang), label: lang}))}
+                          onChange={handleLanguageSelect}                          
+                          />
                       </label>
                       </div>
                     </th>
                   )
 
                 } else if (header.column.id === "Status") {
-                  return ( // NEEDS REACT-SELECT
+                  return (
                   <th>{header.id}
                     <div>
                       <label>
-                        <select value={filters.status ? filters.status : ''} onChange={handleStatusSelect}>
-                          <option value={""}>All</option>
-                          {statusEnum.map((productStatus) => (
-                            <option key={productStatus} value={productStatus.toLowerCase()}>{productStatus}</option>
+                        <Select
+                          isMulti
+                          isClearable
+                          isSearchable
+                          styles={customStyles}
+                          value={(filters.status || []).map((code) => (
+                            {value: code.toLowerCase(), label: code}
                           ))}
-                        </select>
+                          options={statusEnum.map((code) => (
+                            {value: code.toLowerCase(), label: code}
+                          ))}
+                          onChange={handleStatusSelect}
+                        />
                       </label>
                     </div>
                   </th>

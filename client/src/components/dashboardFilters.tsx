@@ -1,7 +1,9 @@
 import { productCodeEnum, supportedLanguageEnum, groupDisplayNames } from "@shared/enums"
+import { customStyles } from "./styles/dropdowns"
 import type { ProductMetaFilters } from "@shared/types"
 import ISO6391 from "iso-639-1"
 import React, { useState } from "react"
+import Select, { MultiValue } from "react-select"
 
 
 interface DashboardFilterProps {
@@ -26,38 +28,54 @@ export function DashboardFilter({filters, onFilterChange}: DashboardFilterProps)
       onFilterChange({...filters, mediaGroups: newMediaGroups})
     }
   }
+
+  const handleLanguageSelect = (choice: MultiValue<{value: string, label: string}>) => {
+      const languages = []
+      for (const item of choice.values()) {
+        languages.push(item.value)
+      }
+      onFilterChange({...filters, targetLanguages: languages})
+  }
+
+  const handleCodeSelect = (choice: MultiValue<{value: string, label: string}>) => {
+    const codes = []
+      for (const item of choice.values()) {
+        codes.push(item.value.toUpperCase())
+      }
+      onFilterChange({...filters, productCodes: codes})
+  }
   
   return (
     
     <>
-    <select
-    id="dashboard-lang-select"
-    className="dashboard-dropdown"
-      value={filters.targetLanguage ?? ''}
-      onChange={e => onFilterChange({
-        ...filters,
-        targetLanguage: e.target.value || null
-      })}
-    >
-      <option value="">All Languages</option>
-      {supportedLanguageEnum.map((option) => (
-        <option key={option} value={ISO6391.getCode(option)}>{option}</option>
-      ))}
-    </select>
-    <select
-    id="dashboard-code-select"
-    className="dashboard-dropdown"
-      value={filters.productCode ?? ''}
-      onChange={e => onFilterChange({
-        ...filters,
-        productCode: e.target.value || null
-      })}
-    >
-      <option value="">All Codes</option>
-      {productCodeEnum.map((code) => (
-        <option value={code}>{code}</option>
-      ))}
-    </select>
+    <Select
+      isMulti
+      isClearable
+      isSearchable
+      placeholder={"Language..."}
+      styles={customStyles}
+      value={(filters.targetLanguages || []).map((code) => ({
+        value: code,
+        label: ISO6391.getName(code) || code
+      }))}
+      options={supportedLanguageEnum.map((lang) => ({ value: ISO6391.getCode(lang), label: lang}))}
+      onChange={handleLanguageSelect}
+
+    />
+    <Select
+      isMulti
+      isClearable
+      isSearchable
+      placeholder={"Product Code..."}
+      styles={customStyles}
+      value={(filters.productCodes || []).map((code) => ({
+        value: code.toLowerCase(),
+        label: code
+      }))}
+      options={productCodeEnum.map((code) => ({ value: code.toLowerCase(), label: code}))}
+      onChange={handleCodeSelect}
+
+    />
     <div className="date-picker-div">
       <label>From: 
         <input 

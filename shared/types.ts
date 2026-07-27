@@ -55,10 +55,10 @@ export interface LangOpsProduct {
 
 
 export interface GetProductFilters {
-    targetLanguage?: string | undefined
+    targetLanguages?: string[] | undefined
     dateFrom?: string | undefined
     dateTo?: string | undefined
-    productCode?: string | undefined
+    productCodes?: string[] | undefined
     mediaGroups?: string[] | undefined
     search?: string | undefined
     limit?: number | undefined
@@ -68,10 +68,10 @@ export interface GetProductFilters {
 
 
 export interface ProductMetaFilters {
-    targetLanguage?: string | undefined
+    targetLanguages?: string[] | undefined
     dateFrom?: string | undefined
     dateTo?: string | undefined
-    productCode?: string | undefined
+    productCodes?: string[] | undefined
     mediaGroups?: string[] | undefined
 
 }

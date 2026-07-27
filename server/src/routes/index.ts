@@ -5,39 +5,28 @@ import type { GetProductFilters, LangOpsProduct, ProductMetaFilters } from "@sha
 const router = Router()
 const client = new LangOpsApiClient()
 
-function extractMediaGroups(req: Request) {
-    let mediaGroups: string[] = []
-    const reqMediaGroups = req.query.mediaGroups
-    if (Array.isArray(reqMediaGroups)) {  
-        mediaGroups = reqMediaGroups.map(String)
-    } else if (typeof reqMediaGroups === "string") {
-        mediaGroups = [reqMediaGroups]
+function extractMultiple(req: Request, key: string) {
+    let args: string[] = []
+    const reqArgs = req.query[key]
+    if (Array.isArray(reqArgs)) {
+        args = reqArgs.map(String)
+    } else if (typeof reqArgs === "string") {
+        args = [reqArgs]
     }
-    return mediaGroups    
-}
-
-function extractStatuses(req: Request) {
-    let statuses: string[] = []
-    const reqStatuses = req.query.status
-    if (Array.isArray(reqStatuses)) {
-        statuses = reqStatuses.map(String)
-    } else if (typeof reqStatuses === "string") {
-        statuses = [reqStatuses]
-    }
-    return statuses
+    return args
 }
 
 function buildGetProductFilters(req: Request): GetProductFilters {
     const filters: GetProductFilters = {
-            targetLanguage: req.query.targetLanguage?.toString(),
+            targetLanguages: extractMultiple(req, "targetLanguages"),
             dateFrom: req.query.dateFrom?.toString(),
             dateTo: req.query.dateTo?.toString(),
-            productCode: req.query.productCode?.toString(),
-            mediaGroups: extractMediaGroups(req),
+            productCodes: extractMultiple(req, "productCodes"),
+            mediaGroups: extractMultiple(req, "mediaGroups"),
             search: req.query.search?.toString(),
             limit: Number(req.query.limit) ? Number(req.query.limit) : undefined,
             offset: Number(req.query.offset) ? Number(req.query.offset): undefined,
-            status: extractStatuses(req)
+            status: extractMultiple(req, "status")
         }
     return filters
 }
@@ -45,11 +34,11 @@ function buildGetProductFilters(req: Request): GetProductFilters {
 
 function builProductMetaFilters(req: Request): ProductMetaFilters {
     const filters: ProductMetaFilters = {
-            targetLanguage: req.query.targetLanguage?.toString(),
+            targetLanguages: extractMultiple(req, "targetLanguages"),
             dateFrom: req.query.dateFrom?.toString(),
             dateTo: req.query.dateTo?.toString(),
-            productCode: req.query.productCode?.toString(),
-            mediaGroups: extractMediaGroups(req)
+            productCodes: extractMultiple(req, "productCodes"),
+            mediaGroups: extractMultiple(req, "mediaGroups")
     }
 
     return filters
