@@ -3,7 +3,6 @@ const GROUPS = [
     { value: 'literature',     label: 'Literature' },
     { value: 'website',        label: 'Website' },
     { value: 'interpretation', label: 'Interpretation' },
-    { value: 'pcgChurch',      label: 'PCG.church' },
     { value: 'magazines',      label: 'Magazines' },
     { value: 'emails',         label: 'Emails' },
     { value: 'other',          label: 'Other' },

@@ -1,5 +1,5 @@
 import { ProductTable } from "../components/ProductTable";
 
-export function GlobalSearchPage() {
+export function ProductsPage() {
     return <ProductTable />
 }

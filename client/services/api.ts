@@ -1,6 +1,6 @@
 import type { GetProductFilters, LangOpsProduct, PaginatedProductResponse, ProductCountResponse, ProductMetaFilters } from "@shared/types"
 
-function buildQuery(filters: object): URLSearchParams {
+function buildQuery(filters: object): string {
     const params = new URLSearchParams()
     for (const [key, value] of Object.entries(filters)) {
         if (value === undefined || value === null || value === '') {
@@ -13,7 +13,7 @@ function buildQuery(filters: object): URLSearchParams {
             }
         }
     }
-    return params
+    return params.toString().replace(/\+/g, '%20')
 }
 
 

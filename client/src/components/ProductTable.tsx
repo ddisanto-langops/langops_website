@@ -20,6 +20,7 @@ import {
   Row
 } from '@tanstack/react-table'
 import ISO6391 from "iso-639-1"
+import { Link } from "react-router-dom"
 import { formatDate } from "../../services/formatDate";
 import { getProducts } from "../../services/api";
 import { customStyles } from "./styles/dropdowns"
@@ -204,6 +205,7 @@ export function ProductTable() {
         <option value={100}>500</option>
       </select>
     </label>
+    <p className="generic-notice">Note: If products do not show up in search, they may be out of range. Use the <Link style={{margin: '0px', fontSize: 'medium'}} to={"/search"} className='navbar-link'>search</Link> page instead.</p>
   </div>
   <table id="product-table">
     <thead id="product-table-head">

@@ -9,6 +9,7 @@ export function NavBar() {
             <nav id='navbar'>
                 <Link to={"/dashboard"} className='navbar-link'>Dashboard</Link>
                 <Link to={"/products"} className='navbar-link'>Products</Link>
+                <Link to={"/search"} className='navbar-link'>Search</Link>
                 <Link to={"/manage-idmls"} className='navbar-link'>Manage IDMLs</Link>
             </nav>
         </div>

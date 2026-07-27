@@ -67,7 +67,6 @@ export const mediaGroups: { [key: string]: string[] } = {
     interpretation: ['ANN', 'BS', 'SER', 'SMT'],
     website: ['LIT-S', 'PT', 'TB', 'MB', 'KOD', 'POD'],
     audio_video: ['AD', 'KOD', 'TW', 'POD', 'PTVID', 'WW', 'OTHER'],
-    pcgChurch: ['PCG.CHURCH'],
     emails: ['PN'],
     magazines: ['RV', 'LSS', 'PT'],
     other: ['PCD']
@@ -79,7 +78,6 @@ export const groupDisplayNames: { [key: string]: string } = {
     interpretation: "Interpretation",
     website: "Website",
     audio_video: "Audio/Video",
-    pcgChurch: "PCG.church",
     magazines: "Magazines",
     emails: "Emails",
     other: "Other"
@@ -91,7 +89,7 @@ export const groupDisplayNames: { [key: string]: string } = {
  * by using the ISO6391 library.
 */ 
 export const supportedLanguageEnum = [
-        'French',
+    'French',
     'German',
     'Spanish',
     'Portuguese',
