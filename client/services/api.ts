@@ -17,6 +17,12 @@ function buildQuery(filters: object): string {
 }
 
 
+export async function getCrowdinProjects() {
+    const response = await fetch('/crowdin/projects')
+    if (!response.ok) throw new Error('Failed to get Crowdin projects')
+        return response.json()
+}
+
 
 export async function getProducts(filters: GetProductFilters): Promise<PaginatedProductResponse> {
     const query = buildQuery(filters)
