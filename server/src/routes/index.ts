@@ -1,6 +1,7 @@
 import { Router, Request } from "express"
 import { LangOpsApiClient } from "../langopsApiClient.js";
 import type { GetProductFilters, LangOpsProduct, ProductMetaFilters } from "@shared/types"
+import { Client, Credentials, CrowdinValidationError, CrowdinError } from "@crowdin/crowdin-api-client"
 
 const router = Router()
 const client = new LangOpsApiClient()
@@ -45,6 +46,27 @@ function builProductMetaFilters(req: Request): ProductMetaFilters {
 }
 
 
+router.get("/crowdin/projects", async (req, res) => {
+    try {
+        if (process.env.crowdinToken) {
+            const credentials: Credentials = {
+                token: process.env.crowdinToken
+            }
+            const crowdinClient = new Client(credentials)
+
+            const response = await crowdinClient.projectsGroupsApi.listProjects()
+            return response.data
+        }
+        
+    } catch (error) {
+        if (error instanceof CrowdinError || error instanceof CrowdinValidationError) {
+            return res.status(error.code).json({
+                error: error.message
+            })
+        }
+    }
+})
+
 
 router.get("/api/products", async (req, res) => {
     try {
@@ -57,8 +79,7 @@ router.get("/api/products", async (req, res) => {
     } catch (error) {
         error instanceof Error ? res.status(500).json({ error: error.message }) :
             res.status(500).json({ error: "GET /api/products: Unknown error" })
-    }
-            
+    }         
 })
 
 
@@ -140,7 +161,6 @@ router.delete('/api/products/permanent-delete/:id', async (req, res) => {
             res.status(500).json({error: "DEL /api/products/permanent-delete:id: Unknown error"})
     }
 })
-
 
 
 
