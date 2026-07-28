@@ -2,7 +2,7 @@ import { StylesConfig } from 'react-select';
 
 type OptionType = { value: string; label: string };
 
-export const customStyles: StylesConfig<OptionType, true> = {
+export const customStylesMulti: StylesConfig<OptionType, true> = {
     container: (provided) => ({
         ...provided,
         backgroundColor: 'transparent',

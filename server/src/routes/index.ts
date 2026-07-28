@@ -46,7 +46,7 @@ function builProductMetaFilters(req: Request): ProductMetaFilters {
 }
 
 
-router.get("/crowdin/projects", async (req, res) => {
+router.get("/api/crowdin/projects", async (req, res) => {
     try {
         if (process.env.crowdinToken) {
             const credentials: Credentials = {
@@ -55,7 +55,33 @@ router.get("/crowdin/projects", async (req, res) => {
             const crowdinClient = new Client(credentials)
 
             const response = await crowdinClient.projectsGroupsApi.listProjects()
-            return response.data
+            res.json(response.data) 
+        } else {
+            throw new Error("Unable to fetch Crowdin projects: no Crowdin token")
+        }
+        
+    } catch (error) {
+        if (error instanceof CrowdinError || error instanceof CrowdinValidationError) {
+            return res.status(error.code).json({
+                error: error.message
+            })
+        }
+    }
+})
+
+router.get("/api/crowdin/files/:projectId", async (req, res) => {
+    const projectId = Number(req.params.projectId)
+    try {
+        if (process.env.crowdinToken) {
+            const credentials: Credentials = {
+                token: process.env.crowdinToken
+            }
+            const crowdinClient = new Client(credentials)
+
+            const response = await crowdinClient.sourceFilesApi.listProjectFiles(projectId)
+            res.json(response.data) 
+        } else {
+            throw new Error("Unable to fetch Crowdin files: no Crowdin token")
         }
         
     } catch (error) {

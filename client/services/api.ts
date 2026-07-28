@@ -1,4 +1,12 @@
-import type { GetProductFilters, LangOpsProduct, PaginatedProductResponse, ProductCountResponse, ProductMetaFilters } from "@shared/types"
+import { ResponseList, ProjectsGroupsModel } from '@crowdin/crowdin-api-client';
+import type { 
+    GetProductFilters, 
+    LangOpsProduct, 
+    PaginatedProductResponse, 
+    ProductCountResponse, 
+    ProductMetaFilters 
+} from "@shared/types"
+
 
 function buildQuery(filters: object): string {
     const params = new URLSearchParams()
@@ -17,10 +25,18 @@ function buildQuery(filters: object): string {
 }
 
 
-export async function getCrowdinProjects() {
-    const response = await fetch('/crowdin/projects')
+export async function getCrowdinProjects()  {
+    const response = await fetch('/api/crowdin/projects')
     if (!response.ok) throw new Error('Failed to get Crowdin projects')
-        return response.json()
+    
+    return response.json()
+}
+
+export async function getCrowdinFiles(projectId: number | null)  {
+    const response = await fetch(`/api/crowdin/files/${projectId}`)
+    if (!response.ok) throw new Error('Failed to get Crowdin projects')
+    
+    return response.json()
 }
 
 

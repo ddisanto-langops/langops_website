@@ -23,7 +23,7 @@ import ISO6391 from "iso-639-1"
 import { Link } from "react-router-dom"
 import { formatDate } from "../../services/formatDate";
 import { getProducts } from "../../services/api";
-import { customStyles } from "./styles/dropdowns"
+import { customStylesMulti } from "./styles/dropdownMulti"
 
 
 const includesMediaType = (row: Row<LangOpsProduct>, columnId: string, filterValue: string) => {
@@ -223,7 +223,7 @@ export function ProductTable() {
                           isMulti
                           isClearable
                           isSearchable
-                          styles={customStyles}
+                          styles={customStylesMulti}
                           value={(filters.targetLanguages || []).map((code) => ({
                             value: code,
                             label: ISO6391.getName(code) || code
@@ -245,7 +245,7 @@ export function ProductTable() {
                           isMulti
                           isClearable
                           isSearchable
-                          styles={customStyles}
+                          styles={customStylesMulti}
                           value={(filters.status || []).map((code) => (
                             {value: code.toLowerCase(), label: code}
                           ))}

@@ -1,5 +1,5 @@
 import { productCodeEnum, supportedLanguageEnum, groupDisplayNames } from "@shared/enums"
-import { customStyles } from "./styles/dropdowns"
+import { customStylesMulti } from "./styles/dropdownMulti"
 import type { ProductMetaFilters } from "@shared/types"
 import ISO6391 from "iso-639-1"
 import React, { useState } from "react"
@@ -53,7 +53,7 @@ export function DashboardFilter({filters, onFilterChange}: DashboardFilterProps)
       isClearable
       isSearchable
       placeholder={"Language..."}
-      styles={customStyles}
+      styles={customStylesMulti}
       value={(filters.targetLanguages || []).map((code) => ({
         value: code,
         label: ISO6391.getName(code) || code
@@ -67,7 +67,7 @@ export function DashboardFilter({filters, onFilterChange}: DashboardFilterProps)
       isClearable
       isSearchable
       placeholder={"Product Code..."}
-      styles={customStyles}
+      styles={customStylesMulti}
       value={(filters.productCodes || []).map((code) => ({
         value: code.toLowerCase(),
         label: code
