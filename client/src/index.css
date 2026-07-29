@@ -132,10 +132,11 @@ h2 { overflow-wrap: break-word; }
 }
 .homepage-links-div {
     display: flex;
-    flex-direction: column;
-    align-items: center;
-    margin: 0 auto;
-    width: fit-content;
+    flex-wrap: wrap;
+    gap: 30px;
+    justify-content: center;
+    align-content: center;
+    
 }
 
 .homepage-links-div > .homepage-link {
@@ -297,6 +298,11 @@ h2 { overflow-wrap: break-word; }
     box-shadow: 0 1px 5px hsl(143, 92%, 60%);
     
     margin: 5px;
+}
+
+.interactive-button:disabled {
+    background-color: #a9b3bd;
+    cursor: not-allowed;
 }
 
 /* =====================
@@ -704,226 +710,6 @@ td {
     margin: 10px;
 }
 
-/* =====================
-   IDML UPLOAD PAGE
-   ===================== */
-
-.idml-page {
-    justify-self: center;
-    padding: 1rem;
-    max-width: 95%;
-    color: white;
-    justify-items: center;
-}
-
-.idml-page h3,
-.idml-page h4 {
-    color: white;
-
-}
-
-.idml-selectors {
-    display: flex;
-    gap: 16px;
-    margin-bottom: 25px;
-    margin-top: 25px;
-    flex-wrap: wrap;
-}
-
-.idml-selector-label {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    font-size: 0.9rem;
-    color: white;
-}
-
-.idml-file-label {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    width: fit-content;
-    font-size: 0.9rem;
-    color: white;
-    margin-bottom: 16px;
-    margin: 40px;
-}
-
-.idml-status-info  { color: hsl(28, 94%, 69%); }
-.idml-status-success { color: hsl(155, 81%, 43%); }
-.idml-status-error { color: coral; }
-
-.idml-xliff-section {
-    display: flex;
-    flex-direction: column;
-    margin-bottom: 16px;
-    justify-items: center;
-    text-align: center;
-}
-
-.idml-hint {
-    font-size: 0.875rem;
-    color: #aaa;
-}
-
-.idml-xliff-row {
-    display: grid;
-    grid-template-columns: 1fr 4fr 1fr 1fr;
-    gap: 10px;
-    margin-bottom: 4px;
-    align-items: center;
-    justify-items: center;
-}
-
-.idml-xliff-original {
-    color: #aaa;
-    font-size: 0.875rem;
-    min-width: 220px;
-}
-
-.idml-xliff-input {
-    width: 260px;
-    background-color: hsl(211, 38%, 15%);
-    color: white;
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    border-radius: 4px;
-    padding: 4px 8px;
-    font-size: 0.9rem;
-}
-
-.idml-xliff-input:focus {
-    outline: none;
-    box-shadow: 0 0 0 3px rgba(255, 127, 80, 0.2);
-    border-color: coral;
-}
-
-.idml-upload-btn {
-    margin: 25px;
-    cursor: pointer;
-    background: hsla(202, 99%, 36%, 0.993);
-    color: white;
-    border: none;
-    padding: 8px 18px;
-    border-radius: 8px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    justify-self: center;
-}
-
-.idml-upload-btn:hover:not(:disabled) {
-    background: hsla(202, 91%, 47%, 0.973);
-}
-
-.idml-upload-btn:disabled {
-    background: hsl(0, 0%, 50%);
-    cursor: not-allowed;
-    box-shadow: none;
-}
-
-.idml-storage-title {
-    margin-top: 32px;
-}
-
-.idml-empty {
-    color: #aaa;
-}
-
-.idml-table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 0.875rem;
-    color: white;
-}
-
-.idml-table thead tr {
-    text-align: left;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-.idml-table th {
-    padding: 6px 8px;
-    font-size: 0.875rem;
-    position: static;
-    background: transparent;
-    color: white;
-}
-
-.idml-table td {
-    padding: 10px;
-    height: auto;
-    font-size: 0.875rem;
-    border: none;
-    overflow: visible;
-}
-
-.idml-table tbody tr {
-    border-bottom: 1px solid hsla(207, 71%, 43%, 0.4);
-    background: transparent;
-    box-shadow: none;
-}
-
-.idml-table tbody tr:hover {
-    background-color: hsla(207, 71%, 43%, 0.25);
-    box-shadow: none;
-    cursor: default;
-}
-
-.idml-table tbody tr td:first-child,
-.idml-table tbody tr td:last-child {
-    border-radius: 0;
-}
-
-.idml-status-pending       { color: hsl(28, 94%, 69%); }
-.idml-status-complete      { color: hsl(155, 81%, 43%); }
-.idml-status-reconstructing { color: #aaa; }
-
-.idml-row-error {
-    color: coral;
-    font-size: 0.75rem;
-    margin-top: 2px;
-}
-
-.idml-actions-cell {
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-    align-items: center;
-}
-
-.idml-btn-reconstruct {
-    cursor: pointer;
-    background: hsla(202, 99%, 36%, 0.993);
-    color: white;
-    border: 1px solid transparent;
-    padding: 4px 10px;
-    border-radius: 6px;
-    font-size: 0.8rem;
-    font-weight: 600;
-}
-
-.idml-btn-reconstruct:hover:not(:disabled) {
-    background-color: hsla(202, 91%, 47%, 0.973);
-}
-
-.idml-btn-reconstruct:disabled {
-    background: hsl(0, 0%, 50%);
-    cursor: not-allowed;
-}
-
-.idml-btn-download {
-    cursor: pointer;
-    background: hsla(152, 95%, 34%, 0.89);
-    color: white;
-    border: 1px solid transparent;
-    padding: 4px 10px;
-    border-radius: 6px;
-    font-size: 0.8rem;
-    font-weight: 600;
-    text-decoration: none;
-    display: inline-block;
-}
-
 .idml-btn-download:hover {
     background: hsla(152, 90%, 45%, 0.842);
 }
@@ -1118,4 +904,59 @@ td {
     border-radius: 0 8px 8px 0;
     width: 50%;
     box-shadow: 8px 0 8px -4px hsla(207, 71%, 43%, 0.678);
+}
+
+.idml-select-div {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    margin-top: 30px;
+    margin-bottom: 30px;
+}
+
+.idml-buttons-div {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 40px;
+    margin-bottom: 40px;
+}
+
+.idml-article-div {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    justify-items: center;
+    justify-self: center;
+    width: 95%;
+}
+
+.idml-text-div p {
+    max-height: 400px;
+    overflow: scroll;
+    text-overflow: clip;
+    color: white;
+    border: 2px solid rgba(245, 139, 46, 0.796);
+    padding: 10px;
+}
+
+.idml-input {
+    background-color: hsl(211, 66%, 27%);
+    border-radius: 8px;
+    border: transparent;
+    padding: 10px;
+    color: white;
+    margin-top: 25px;
+    height: fit-content;
+    min-height: 30px;
+    width: 90%;
+}
+
+.idml-input:hover {
+    outline: none;
+    box-shadow: 0px 0px 4px 4px rgb(180, 88, 55);
+}
+
+.idml-input:focus {
+    outline: none;
+    box-shadow: 0px 0px 4px 4px coral;
 }

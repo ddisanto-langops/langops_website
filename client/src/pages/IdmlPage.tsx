@@ -19,10 +19,11 @@ interface CrowdinResponse {
 }
 
 export function FileUploadPage() {
-
     const [selectedProject, setSelectedProject] = useState<CrowdinOption | null>(null);
     const [selectedFile, setSelectedFile] = useState<CrowdinOption | null>(null)
     const [stringMap, setStringMap] = useState<StringMapResponse | null>(null)
+    const [isExtracting, setIsExtracting] = useState<boolean>(false);
+    const [isLabeling, setIsLabeling] = useState<boolean>(false);
 
     const getProjects = async () => {
         try {
@@ -39,6 +40,7 @@ export function FileUploadPage() {
 
     const getFiles = async (projectId: number | undefined) => {
         if (!projectId) return []
+
         try {
             const response: CrowdinResponse[] = await getCrowdinFiles(projectId)
             return response.map(item => ({
@@ -55,7 +57,7 @@ export function FileUploadPage() {
 
     const fetchStringMap = async (projectId: number | string, fileId: number | string) => {
         if (!projectId || !fileId) return null
-
+        setIsExtracting(true)
         try {
             const response: StringMapResponse | null = await getStringMap(projectId, fileId)
             setStringMap(response)
@@ -63,6 +65,8 @@ export function FileUploadPage() {
         } catch (error) {
             console.error("Error fetching string map:", error)
             return []
+        } finally {
+            setIsExtracting(false)
         }
     }
     
@@ -87,8 +91,15 @@ export function FileUploadPage() {
 
     const labelStrings = () => {
         if (!stringMap) return null
-        const projectId = Number(selectedProject?.value)
-        labelIdml(projectId, stringMap?.data)
+        try {
+            setIsLabeling(true)
+            const projectId = Number(selectedProject?.value)
+            labelIdml(projectId, stringMap?.data)
+        } catch (error) {
+            console.error("Error fetching string map:", error)
+        } finally {
+            setIsLabeling(false)
+        }
     }
    
 
@@ -96,7 +107,7 @@ export function FileUploadPage() {
     return (
         <>
             <NavBar />
-            <div>
+            <div className='idml-select-div'>
                 <AsyncSelect<CrowdinOption, false>
                     isClearable
                     isSearchable
@@ -110,9 +121,7 @@ export function FileUploadPage() {
                         setSelectedFile(null)
                     }}
                  />
-            </div>
-            <div>
-                {selectedProject ? 
+                 {selectedProject ? 
                     <AsyncSelect<CrowdinOption, false>
                         key={selectedProject.value}
                         isClearable
@@ -126,14 +135,13 @@ export function FileUploadPage() {
                     /> 
                  : null
                  }
-                
             </div>
             <div>
                 {
                     selectedFile && selectedProject ?
-                    <div>
-                        <button className='interactive-button' onClick={() => fetchStringMap(selectedProject.value, selectedFile.value)}>
-                            Extract Articles
+                    <div className='idml-buttons-div'>
+                        <button disabled={stringMap ? true : false} className='interactive-button' onClick={() => fetchStringMap(selectedProject.value, selectedFile.value)}>
+                            { isExtracting ? "Extracting..." : "Extract Articles"}
                         </button>
                         {
                             stringMap ?
@@ -154,26 +162,23 @@ export function FileUploadPage() {
                     stringMap ?
                     stringMap.data.map((item) => {
                         return (
-                            <div>
-                                <span>Preview for story: {item.contextIdentifier}</span>
-                                <span>Strings:
-                                    <div>{item.map.strings}</div>
-                                </span>
-                                <input placeholder='Name this article...' value={item.map.labelText ?? ''} onChange={(e) => handleStringMapChange(item.contextIdentifier, e)}></input>
+                            <div className='idml-article-div' key={item.contextIdentifier}>
+                                <div className='idml-text-div'><p>{item.map.strings}</p></div>
+                                <input className='idml-input' placeholder='Name this article...' value={item.map.labelText ?? ''} onChange={(e) => handleStringMapChange(item.contextIdentifier, e)}></input>
                             </div>
                         )
                     })
                      : null
                 }
             </div>
-            <div>
+            <div className='idml-buttons-div'>
                 {
                     stringMap ?
                     <button className='interactive-button' onClick={() => {
                         labelStrings
                         setStringMap(null)
                         }}>
-                        Label Articles
+                        {isLabeling ? "Labeling..." : "Label Articles"}
                     </button>
                     : null
                 }

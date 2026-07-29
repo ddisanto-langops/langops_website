@@ -18,6 +18,7 @@ export const customStylesSingle: StylesConfig<OptionType, false> = {
         color: 'white',
         border: '1px solid transparent',
         backgroundColor: 'hsla(204, 85%, 56%, 0.747)',
+        width: '300px',
         '&:hover': {
             cursor: 'pointer',
             backgroundColor: 'hsla(202, 83%, 60%, 0.884)',
