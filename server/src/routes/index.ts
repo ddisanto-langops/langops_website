@@ -137,6 +137,20 @@ router.get("/api/products/productcount", async (req, res) => {
 
 
 
+router.get("/api/idml/map/:projectId/:fileId", async (req, res) => {
+    try {
+        const projectId = Number(req.params.projectId)
+        const fileId = Number(req.params.fileId)
+        const response = await client.getStringMap(projectId, fileId)
+        res.json(response)
+        
+    } catch (error) {
+        error instanceof Error ? res.status(500).json({ error: error.message }) :
+            res.status(500).json({ error: "GET /api/idml/map: Unknown error" }) 
+    }
+})
+
+
 router.patch('/api/products/edit/:id', async (req, res) => {
     try {
         const { id } = req.params

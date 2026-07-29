@@ -6,10 +6,9 @@ import { GetProductFilters,
     WordCountResponse,
     DeleteResponse,
     RestoreResponse,
-    ErrorResponse
+    ErrorResponse,
+    StringMapResponse
 } from "@shared/types"
-import { error } from "console"
-import { response } from "express"
 
 export class LangOpsApiClient {
 
@@ -93,6 +92,25 @@ export class LangOpsApiClient {
             method: 'GET',
             headers: this.headers
         })
+        if (!response.ok) {
+            const errorResponse: ErrorResponse = {
+                statusCode: response.status,
+                statusText: response.statusText
+            }
+            return errorResponse
+        }
+        return await response.json()
+    }
+
+
+    public async getStringMap(projectId: number, fileId: number): Promise<StringMapResponse | ErrorResponse> {
+        const url = `${this.basePath}/idml/map/${projectId}/${fileId}`
+        const response = await fetch(url,
+            {
+                method: 'GET',
+                headers: this.headers
+            }
+        )
         if (!response.ok) {
             const errorResponse: ErrorResponse = {
                 statusCode: response.status,

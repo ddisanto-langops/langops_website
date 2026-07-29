@@ -4,7 +4,8 @@ import type {
     LangOpsProduct, 
     PaginatedProductResponse, 
     ProductCountResponse, 
-    ProductMetaFilters 
+    ProductMetaFilters, 
+    StringMapResponse
 } from "@shared/types"
 
 
@@ -81,6 +82,15 @@ export async function getProductCount(filters: ProductMetaFilters): Promise<Prod
         const productJson: ProductCountResponse = await response.json()
         return productJson
     }
+}
+
+export async function getStringMap(projectId: number | string, fileId: number | string): Promise<StringMapResponse> {
+    const response = await fetch(`/api/idml/map/${projectId}/${fileId}`)
+
+    if (!response.ok) throw new Error("Failed to get string map")
+    
+    const stringMap: StringMapResponse = await response.json()
+    return stringMap
 }
 
 

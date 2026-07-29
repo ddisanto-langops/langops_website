@@ -137,6 +137,20 @@ export interface ProductCountResponse {
     
 }
 
+
+export interface StringMapResponse {
+    data: [
+        {
+            contextIdentifier: string,
+            map: {
+                stringIds: number[],
+                strings: string[],
+                labelId: number | null
+            }
+        }    
+    ]
+}
+
 export interface RestoreResponse {
     id: string
     restored_at: string
