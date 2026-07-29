@@ -95,8 +95,11 @@ export async function getStringMap(projectId: number | string, fileId: number | 
 
 
 export async function labelIdml(projectId: number | string, stringMap: StringMapItem[]) {
+    const headers = new Headers()
+    headers.append("Content-Type", "application/json")
     const response = await fetch(`/api/idml/label/${projectId}`, {
         method: 'POST',
+        headers: headers,
         body: JSON.stringify(stringMap)
     })
 

@@ -18,7 +18,7 @@ app.use(cors({
     : 'https://pcglangops.com',
   methods: ['GET', 'PATCH', 'DELETE', 'POST']
 }))
-app.use(express.json())
+app.use(express.json({ limit: '50mb'}))
 app.use(router)
 
 const clientDist =

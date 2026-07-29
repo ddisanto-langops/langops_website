@@ -133,12 +133,12 @@ export function FileUploadPage() {
                     selectedFile && selectedProject ?
                     <div>
                         <button className='interactive-button' onClick={() => fetchStringMap(selectedProject.value, selectedFile.value)}>
-                            Fetch String Map
+                            Extract Articles
                         </button>
                         {
                             stringMap ?
                             <button className='interactive-button' onClick={() => setStringMap(null)}>
-                                Clear String Map
+                                Clear
                             </button>
                             : null
                         }
@@ -169,7 +169,10 @@ export function FileUploadPage() {
             <div>
                 {
                     stringMap ?
-                    <button onClick={labelStrings}>
+                    <button className='interactive-button' onClick={() => {
+                        labelStrings
+                        setStringMap(null)
+                        }}>
                         Label Articles
                     </button>
                     : null
