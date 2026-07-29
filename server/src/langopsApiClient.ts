@@ -7,7 +7,8 @@ import { GetProductFilters,
     DeleteResponse,
     RestoreResponse,
     ErrorResponse,
-    StringMapResponse
+    StringMapResponse,
+    StringMapItem
 } from "@shared/types"
 
 export class LangOpsApiClient {
@@ -121,7 +122,25 @@ export class LangOpsApiClient {
         return await response.json()
     }
 
+
+    public async labelIdml(crowdinProjectId: number, stringMapitems: StringMapItem[]) {
+        const url = `${this.basePath}/idml/label/${crowdinProjectId}`
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: this.headers,
+            body: JSON.stringify(stringMapitems)
+        })
+        if (!response.ok) {
+            const errorResponse: ErrorResponse = {
+                statusCode: response.status,
+                statusText: response.statusText
+            }
+            return errorResponse
+        }
+        return await response.json()
+    }
     
+
     public async editProduct(id: string, record: LangOpsProduct): Promise<LangOpsProduct | ErrorResponse> {
         const url = `${this.basePath}/products/user-edit/${id}`
         const response = await fetch(url, {

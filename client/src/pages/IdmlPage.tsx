@@ -1,7 +1,7 @@
 import { NavBar } from '../components/NavBar';
 import { customStylesSingle } from '../components/styles/dropdownSingle';
-import { getCrowdinProjects, getCrowdinFiles, getStringMap } from '../../services/api';
-import { useState } from 'react';
+import { getCrowdinProjects, getCrowdinFiles, getStringMap, labelIdml } from '../../services/api';
+import React, { useState } from 'react';
 import AsyncSelect from 'react-select/async';
 import { StringMapResponse } from '@shared/types';
 
@@ -65,6 +65,31 @@ export function FileUploadPage() {
             return []
         }
     }
+    
+    const handleStringMapChange = (contextIdentifier: string, e: React.ChangeEvent<HTMLInputElement>) => {
+        if (stringMap) {
+            const title = e.target.value
+            setStringMap((prev) => {
+                if (!prev) return null
+                return {
+                    ...prev,
+                    data: prev.data.map((item) => {
+                        if (item.contextIdentifier !== contextIdentifier) {
+                            return item
+                        }
+                        return {...item, map: {...item.map, labelText: title}}
+                    })
+                }
+            })
+        }
+    }
+
+
+    const labelStrings = () => {
+        if (!stringMap) return null
+        const projectId = Number(selectedProject?.value)
+        labelIdml(projectId, stringMap?.data)
+    }
    
 
 
@@ -76,6 +101,7 @@ export function FileUploadPage() {
                     isClearable
                     isSearchable
                     defaultOptions
+                    placeholder="Select a project..."
                     styles={customStylesSingle}
                     value={selectedProject}
                     loadOptions={getProjects}
@@ -92,6 +118,7 @@ export function FileUploadPage() {
                         isClearable
                         isSearchable
                         defaultOptions
+                        placeholder="Select a file..."
                         styles={customStylesSingle}
                         value={selectedFile}
                         loadOptions={(input) => getFiles(selectedProject.value)}
@@ -104,9 +131,20 @@ export function FileUploadPage() {
             <div>
                 {
                     selectedFile && selectedProject ?
-                    <button className='interactive-button' onClick={() => fetchStringMap(selectedProject.value, selectedFile.value)}>
-                        Fetch String Map
-                    </button> :
+                    <div>
+                        <button className='interactive-button' onClick={() => fetchStringMap(selectedProject.value, selectedFile.value)}>
+                            Fetch String Map
+                        </button>
+                        {
+                            stringMap ?
+                            <button className='interactive-button' onClick={() => setStringMap(null)}>
+                                Clear String Map
+                            </button>
+                            : null
+                        }
+                        
+                    </div>
+                    :
                     null
                 }
                 
@@ -121,11 +159,20 @@ export function FileUploadPage() {
                                 <span>Strings:
                                     <div>{item.map.strings}</div>
                                 </span>
-                                <input placeholder='Name this article...'></input>
-                                <button>Label Article</button>
+                                <input placeholder='Name this article...' value={item.map.labelText ?? ''} onChange={(e) => handleStringMapChange(item.contextIdentifier, e)}></input>
                             </div>
                         )
-                    }) : null
+                    })
+                     : null
+                }
+            </div>
+            <div>
+                {
+                    stringMap ?
+                    <button onClick={labelStrings}>
+                        Label Articles
+                    </button>
+                    : null
                 }
             </div>
         </>

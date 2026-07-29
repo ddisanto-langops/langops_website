@@ -1,6 +1,11 @@
 import { Router, Request } from "express"
 import { LangOpsApiClient } from "../langopsApiClient.js";
-import type { GetProductFilters, LangOpsProduct, ProductMetaFilters } from "@shared/types"
+import { 
+    GetProductFilters, 
+    LangOpsProduct, 
+    ProductMetaFilters, 
+    StringMapItem
+} from "@shared/types"
 import { Client, Credentials, CrowdinValidationError, CrowdinError } from "@crowdin/crowdin-api-client"
 
 const router = Router()
@@ -137,6 +142,21 @@ router.get("/api/products/productcount", async (req, res) => {
 
 
 
+router.post('/api/idml/label/:projectId', async (req, res) => {
+    try {
+        const projectId = Number(req.params.projectId)
+        const stringMap = req.body as StringMapItem[]
+        const response  = await client.labelIdml(projectId, stringMap)
+        res.json(response)
+
+    } catch (error) {
+        error instanceof Error ? res.status(500).json({ error: error.message }) :
+            res.status(500).json({ error: "POST /api/idml/label: Unknown error" }) 
+    }
+})
+
+
+
 router.get("/api/idml/map/:projectId/:fileId", async (req, res) => {
     try {
         const projectId = Number(req.params.projectId)
@@ -149,6 +169,9 @@ router.get("/api/idml/map/:projectId/:fileId", async (req, res) => {
             res.status(500).json({ error: "GET /api/idml/map: Unknown error" }) 
     }
 })
+
+
+
 
 
 router.patch('/api/products/edit/:id', async (req, res) => {

@@ -138,18 +138,20 @@ export interface ProductCountResponse {
 }
 
 
-export interface StringMapResponse {
-    data: [
-        {
-            contextIdentifier: string,
-            map: {
-                stringIds: number[],
-                strings: string[],
-                labelId: number | null
-            }
-        }    
-    ]
+export interface StringMapItem {
+    contextIdentifier: string,
+    map: {
+        stringIds: number[],
+        strings: string[],
+        labelText: string | null
+    }
 }
+
+
+export interface StringMapResponse {
+  data: StringMapItem[];
+}
+
 
 export interface RestoreResponse {
     id: string

@@ -1,10 +1,10 @@
-import { ResponseList, ProjectsGroupsModel } from '@crowdin/crowdin-api-client';
 import type { 
     GetProductFilters, 
     LangOpsProduct, 
     PaginatedProductResponse, 
     ProductCountResponse, 
     ProductMetaFilters, 
+    StringMapItem, 
     StringMapResponse
 } from "@shared/types"
 
@@ -91,6 +91,18 @@ export async function getStringMap(projectId: number | string, fileId: number | 
     
     const stringMap: StringMapResponse = await response.json()
     return stringMap
+}
+
+
+export async function labelIdml(projectId: number | string, stringMap: StringMapItem[]) {
+    const response = await fetch(`/api/idml/label/${projectId}`, {
+        method: 'POST',
+        body: JSON.stringify(stringMap)
+    })
+
+    if (!response.ok) throw new Error("Failed to label IDML") 
+
+    return response
 }
 
 
