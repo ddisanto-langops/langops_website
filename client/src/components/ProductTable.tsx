@@ -1,8 +1,7 @@
 import { LangOpsProduct, GetProductFilters } from "@shared/types"
 import { supportedLanguageEnum, statusEnum } from "@shared/enums"
 import { NavBar } from "./NavBar"
-import { ProductModal } from "./ProductModal"
-import { EditModal } from "./EditModal"
+import { AdaptiveModal } from "./AdaptiveModal"
 import { ClickFilter } from "./clickFilter"
 import { useQuery } from "@tanstack/react-query"
 import React, { useState, useMemo } from "react"
@@ -169,23 +168,13 @@ export function ProductTable() {
     setModalIsOpen(false)
   }
 
-  const GuardedProductModal = () => {
-    if (!selectedRow) return null
-    
-    if (selectedRow.productStatus === "published") return ( <EditModal record={selectedRow} isOpen={modalIsOpen} onClose={handleModalClose} />)
-    
-      return (
-      <ProductModal record={selectedRow} isOpen={modalIsOpen} onClose={handleModalClose} />
-    )
-  }
-
   if (isLoading) return <p className="generic-notice">Loading...</p>
   if (isError) return <p className="error-message">Error loading products.</p>
   
   return (
   <>
   <NavBar />
-  <GuardedProductModal />
+  <AdaptiveModal row={selectedRow} isOpen={modalIsOpen} handleModalClose={handleModalClose} />
   <ClickFilter selectedGroups={selectedGroups} onSelectionChange={handleGroupChange}/>
   <div className="date-filter-row">
     <div className="date-picker-div"><label>From: <input id="date-picker" type="date" className="date-picker" value={fromDate} onChange={e => setFromDate(e.target.value)} /></label></div>
