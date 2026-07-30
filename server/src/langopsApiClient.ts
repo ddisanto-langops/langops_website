@@ -6,9 +6,9 @@ import { GetProductFilters,
     WordCountResponse,
     DeleteResponse,
     RestoreResponse,
-    ErrorResponse,
     StringMapResponse,
-    StringMapItem
+    StringMapItem,
+    LangOpsApiError
 } from "@shared/types"
 
 export class LangOpsApiClient {
@@ -53,7 +53,7 @@ export class LangOpsApiClient {
     return params
 }
 
-    public async getProducts(filters: GetProductFilters): Promise<PaginatedProductResponse | ErrorResponse> {
+    public async getProducts(filters: GetProductFilters): Promise<PaginatedProductResponse> {
                 
         const response = await fetch(`${this.basePath}/products/?${this.buildParams(filters)}`,
             {
@@ -62,49 +62,53 @@ export class LangOpsApiClient {
             }
         )
         if (!response.ok) {
-            const errorResponse: ErrorResponse = {
-                statusCode: response.status,
-                statusText: response.statusText
-            }
+            const error = await response.json().catch(() => ({}))
+            throw new LangOpsApiError(
+                error.errorCode ?? response.status,
+                error.message ?? response.statusText
+            )
         }
+
         return response.json()
     }
 
-    public async getProductCount(filters: ProductMetaFilters): Promise<ProductCountResponse | ErrorResponse> {
+    public async getProductCount(filters: ProductMetaFilters): Promise<ProductCountResponse> {
         const url = `${this.basePath}/products/productcount?${this.buildParams(filters)}`
         const response = await fetch(url, {
             method: 'GET',
             headers: this.headers
         })
         if (!response.ok) {
-            const errorResponse: ErrorResponse = {
-                statusCode: response.status,
-                statusText: response.statusText
-            }
-            return errorResponse
+            const error = await response.json().catch(() => ({}))
+            throw new LangOpsApiError(
+                error.errorCode ?? response.status,
+                error.message ?? response.statusText
+            )
         }
+
         return await response.json()
     }
 
 
-    public async getWordCount(filters: ProductMetaFilters): Promise<WordCountResponse | ErrorResponse> {
+    public async getWordCount(filters: ProductMetaFilters): Promise<WordCountResponse> {
         const url = `${this.basePath}/products/wordcount?${this.buildParams(filters)}`
         const response = await fetch(url, {
             method: 'GET',
             headers: this.headers
         })
         if (!response.ok) {
-            const errorResponse: ErrorResponse = {
-                statusCode: response.status,
-                statusText: response.statusText
-            }
-            return errorResponse
+            const error = await response.json().catch(() => ({}))
+            throw new LangOpsApiError(
+                error.errorCode ?? response.status,
+                error.message ?? response.statusText
+            )
         }
+
         return await response.json()
     }
 
 
-    public async getStringMap(projectId: number, fileId: number): Promise<StringMapResponse | ErrorResponse> {
+    public async getStringMap(projectId: number, fileId: number): Promise<StringMapResponse | LangOpsApiError> {
         const url = `${this.basePath}/idml/map/${projectId}/${fileId}`
         const response = await fetch(url,
             {
@@ -112,13 +116,14 @@ export class LangOpsApiClient {
                 headers: this.headers
             }
         )
-        if (!response.ok) {
-            const errorResponse: ErrorResponse = {
-                statusCode: response.status,
-                statusText: response.statusText
-            }
-            return errorResponse
+       if (!response.ok) {
+            const error = await response.json().catch(() => ({}))
+            throw new LangOpsApiError(
+                error.errorCode ?? response.status,
+                error.message ?? response.statusText
+            )
         }
+
         return await response.json()
     }
 
@@ -131,17 +136,18 @@ export class LangOpsApiClient {
             body: JSON.stringify(stringMapitems)
         })
         if (!response.ok) {
-            const errorResponse: ErrorResponse = {
-                statusCode: response.status,
-                statusText: response.statusText
-            }
-            return errorResponse
+            const error = await response.json().catch(() => ({}))
+            throw new LangOpsApiError(
+                error.errorCode ?? response.status,
+                error.message ?? response.statusText
+            )
         }
+
         return await response.json()
     }
     
 
-    public async editProduct(id: string, record: LangOpsProduct): Promise<LangOpsProduct | ErrorResponse> {
+    public async editProduct(id: string, record: LangOpsProduct): Promise<LangOpsProduct | LangOpsApiError> {
         const url = `${this.basePath}/products/user-edit/${id}`
         const response = await fetch(url, {
             method: 'PATCH',
@@ -149,60 +155,64 @@ export class LangOpsApiClient {
             body: JSON.stringify(record)
         })
         if (!response.ok) {
-            const errorResponse: ErrorResponse = {
-                statusCode: response.status,
-                statusText: response.statusText
-            }
-            return errorResponse
+            const error = await response.json().catch(() => ({}))
+            throw new LangOpsApiError(
+                error.errorCode ?? response.status,
+                error.message ?? response.statusText
+            )
         }
+
         return await response.json()
     }
 
 
-    public async restoreProduct(id: string): Promise<RestoreResponse | ErrorResponse> {
+    public async restoreProduct(id: string): Promise<RestoreResponse | LangOpsApiError> {
         const response = await fetch(`${this.basePath}/products/restore/${id}`, {
             method: 'PATCH',
             headers: this.headers
         })
         if (!response.ok) {
-            const errorResponse: ErrorResponse = {
-                statusCode: response.status,
-                statusText: response.statusText
-            }
-            return errorResponse
+            const error = await response.json().catch(() => ({}))
+            throw new LangOpsApiError(
+                error.errorCode ?? response.status,
+                error.message ?? response.statusText
+            )
         }
+
         return await response.json()
     }
 
 
-    public async softDeleteProduct(id: string): Promise<DeleteResponse | ErrorResponse> {
+    public async softDeleteProduct(id: string): Promise<DeleteResponse | LangOpsApiError> {
         const response = await fetch(`${this.basePath}/products/delete/${id}`, {
             method: 'DELETE',
             headers: this.headers
         })
         if (!response.ok) {
-            const errorResponse: ErrorResponse = {
-                statusCode: response.status,
-                statusText: response.statusText
-            }
-            return errorResponse
+            const error = await response.json().catch(() => ({}))
+            throw new LangOpsApiError(
+                error.errorCode ?? response.status,
+                error.message ?? response.statusText
+            )
         }
+
         return await response.json()
     }
 
 
-    public async permanentlyDeleteProduct(id: string): Promise<DeleteResponse | ErrorResponse> {
+    public async permanentlyDeleteProduct(id: string): Promise<DeleteResponse | LangOpsApiError> {
         const response = await fetch(`${this.basePath}/products/permanent-delete/${id}`, {
             method: 'DELETE',
             headers: this.headers
         })
         if (!response.ok) {
-            const errorResponse: ErrorResponse = {
-                statusCode: response.status,
-                statusText: response.statusText
-            }
-            return errorResponse
+            const error = await response.json().catch(() => ({}))
+            throw new LangOpsApiError(
+                error.errorCode ?? response.status,
+                error.message ?? response.statusText
+            )
         }
+        
         return await response.json()
     }
 }

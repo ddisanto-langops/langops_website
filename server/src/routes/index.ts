@@ -4,7 +4,8 @@ import {
     GetProductFilters, 
     LangOpsProduct, 
     ProductMetaFilters, 
-    StringMapItem
+    StringMapItem,
+    LangOpsApiError
 } from "@shared/types"
 import { Client, Credentials, CrowdinValidationError, CrowdinError } from "@crowdin/crowdin-api-client"
 
@@ -101,16 +102,14 @@ router.get("/api/crowdin/files/:projectId", async (req, res) => {
 
 router.get("/api/products", async (req, res) => {
     try {
-
         const filters = buildGetProductFilters(req)
-
-        const products = await client.getProducts(filters)
-        res.json(products)
-
+        const response = await client.getProducts(filters)
+        res.json(response)
     } catch (error) {
-        error instanceof Error ? res.status(500).json({ error: error.message }) :
-            res.status(500).json({ error: "GET /api/products: Unknown error" })
-    }         
+        if (error instanceof LangOpsApiError) {
+            res.json(error)
+        }
+    }
 })
 
 

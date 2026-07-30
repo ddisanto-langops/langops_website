@@ -6,7 +6,7 @@ export function HomePage() {
         <>
             <NavBar />
             <div className='homepage-title-div'>
-                <p className='generic-notice'>
+                <div className='generic-notice'>
                     <h2>Welcome to the PCG LangOps website!</h2>
                     <strong>Language Managers & Admin Assistants</strong> 
                     <p>You can:</p>
@@ -27,7 +27,7 @@ export function HomePage() {
                     </ul>
                     <p>Note: Data on this site is refreshed via real-time webhooks.
                         <br/>In some cases, this may take a few moments to show up on the website.</p>
-                </p>
+                </div>
             </div>
             <div className='homepage-links-div'>
                 <Link style={{textDecoration: 'none'}} to={"/dashboard"} className='homepage-link'><span>📊</span> Translation Stats</Link>

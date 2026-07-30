@@ -163,7 +163,13 @@ export interface DeleteResponse {
     deleted_at: string
 }
 
-export interface ErrorResponse {
-    statusCode: number
-    statusText: string
+
+export class LangOpsApiError extends Error {
+    public errorCode: number
+    
+    constructor(errorCode: number, message: string) {
+        super(message)
+        this.name = "LangOpsApiError"
+        this.errorCode = errorCode
+    }
 }

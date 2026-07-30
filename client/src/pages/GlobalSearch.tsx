@@ -1,10 +1,10 @@
 import { NavBar } from "../components/NavBar";
 import { LangOpsProduct, GetProductFilters } from "@shared/types";
-import { ProductModal } from "../components/ProductModal";
-import { EditModal } from "../components/EditModal";
+import { AdaptiveModal } from "../components/AdaptiveModal";
 import { getProducts } from "../../services/api";
 import { useQuery } from "@tanstack/react-query";
 import { useState, KeyboardEvent } from "react";
+import { GlobalSearchTable } from "../components/GlobalSearchTable";
 
 
 
@@ -16,27 +16,26 @@ export function GlobalSearchPage() {
         limit: 10,
         search: undefined
     })
+    const [searchActive, setSearchActive] = useState(false)
 
     const { data, isLoading, isError } = useQuery({
         queryKey: ['search-products', filters],
         queryFn: () => getProducts(filters!),
-        enabled: !!filters.search
+        enabled: !!filters
     })
 
-    const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
-        if (event.key === "Enter") {
-            handleSearch()
-        }
-    }
+    
 
 
     const handleSearch = () => {
         setFilters({...filters, search: search})
+        setSearchActive(true)
     }
 
     const handleClear = () => {
         setFilters({...filters, search: undefined})
         setSearch("")
+        setSearchActive(false)
     }
 
 
@@ -49,15 +48,11 @@ export function GlobalSearchPage() {
         setModalIsOpen(false)
     }
 
-    const GuardedProductModal = () => {
-        if (!selectedRow) return null
-        
-        if (selectedRow.productStatus === "published") return ( <EditModal record={selectedRow} isOpen={modalIsOpen} onClose={handleModalClose} />)
-        
-          return (
-          <ProductModal record={selectedRow} isOpen={modalIsOpen} onClose={handleModalClose} />
-        )
-      }
+    const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
+        if (event.key === "Enter") {
+            handleSearch()
+        }
+    }
 
     if (isLoading) return (
         <>
@@ -74,11 +69,9 @@ export function GlobalSearchPage() {
     )
 
     return (
-        <div>
-            <GuardedProductModal />
-            <div>
-                <NavBar />
-            </div>
+        <>
+            <NavBar />
+            <AdaptiveModal row={selectedRow} isOpen={modalIsOpen} handleModalClose={handleModalClose} />
             <div className="search-input">
                 <input 
                     className="search-box"
@@ -103,27 +96,12 @@ export function GlobalSearchPage() {
                     Clear
                  </button>
             </div>
-            <div className="search-table">
-                {filters.search ?
-                    <table>
-                        <thead>
-                            <th>Title</th>
-                            <th>Status</th>
-                        </thead>
-                        <tbody>
-                            {data?.data.map((row) => (
-                                <tr onClick={() => handleRowClick(row)}>
-                                    <td >{row.trelloData.title}</td>
-                                    <td>{row.productStatus}</td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table> : 
-                    <p className="generic-notice" style={{maxWidth: '400px'}}>Search for products which don't appear in the table due to age or being deleted. Enter a title or localized title to continue.</p>
+            {
+                searchActive && data ? 
+                <GlobalSearchTable data={data.data} handleRowClick={handleRowClick} /> : 
+                <p className="generic-notice" style={{maxWidth: '400px'}}>Search for products which don't appear in the table due to age or being deleted. Enter a title or localized title to continue.</p>
             }
-                
-            </div>
-        </div>
-        
+            
+        </>
     )
 }
