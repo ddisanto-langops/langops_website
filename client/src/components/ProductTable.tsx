@@ -24,7 +24,6 @@ import { formatDate } from "../../services/formatDate";
 import { getProducts } from "../../services/api";
 import { customStylesMulti } from "./styles/dropdownMulti"
 
-
 const includesMediaType = (row: Row<LangOpsProduct>, columnId: string, filterValue: string) => {
   if (!filterValue || (Array.isArray(filterValue) && filterValue.length === 0)) return true
   const cellValue = row.getValue(columnId)
@@ -69,14 +68,13 @@ const columns = [
     cell: info => formatDate(info.getValue())
   }),
   columnHelper.accessor('mediaGroups', {
-  id: 'mediaType',
-  enableHiding: true,
-  filterFn: includesMediaType,
+    id: 'mediaType',
+    enableHiding: true,
+    filterFn: includesMediaType,
   })
 ]
 
 export function ProductTable() {
-  
   const [filters, setFilters] = useState<GetProductFilters>({
     targetLanguages: undefined,
     dateFrom: undefined,
@@ -103,12 +101,13 @@ export function ProductTable() {
     queryFn: () => getProducts(filters)
   })
 
-  const products = response?.data ?? []
+  // Safely check if response is a valid response object with a data array
+  const products = (response && 'data' in response && Array.isArray(response.data)) ? response.data : []
 
   const filteredData = useMemo(() => {
     if (!fromDate && !toDate) return products
     return products.filter(product => {
-      const published = product.trelloData.datePublished
+      const published = product.trelloData?.datePublished
       if (!published) return false
       const pubDate = published.slice(0, 10)
       if (fromDate && pubDate < fromDate) return false
@@ -130,7 +129,6 @@ export function ProductTable() {
     getFilteredRowModel: getFilteredRowModel(),
   })
 
-
   const handleTableLimit = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const value = e.target.value
     setFilters({...filters, limit: Number(value)})
@@ -138,19 +136,12 @@ export function ProductTable() {
   }
 
   const handleLanguageSelect = (choice: MultiValue<{value: string, label: string}>) => {
-    const languages = []
-    for (const item of choice.values()) {
-      languages.push(item.value)
-    }
+    const languages = choice.map(item => item.value)
     setFilters({...filters, targetLanguages: languages})
   }
 
-
   const handleStatusSelect = (choice: MultiValue<{value: string, label: string}>) => {
-    const statuses = []
-    for (const item of choice.values()) {
-      statuses.push(item.value)
-    }
+    const statuses = choice.map(item => item.value)
     setFilters({...filters, status: statuses})
   }
 
@@ -169,124 +160,133 @@ export function ProductTable() {
   }
 
   if (isLoading) return <p className="generic-notice">Loading...</p>
-  if (isError) return <p className="error-message">Error loading products.</p>
+  if (isError) {
+    return <p className="error-message">Error loading products.</p>
+  }
   
+  const hasRows = table.getRowModel().rows.length > 0
+
   return (
-  <>
-  <NavBar />
-  <AdaptiveModal row={selectedRow} isOpen={modalIsOpen} handleModalClose={handleModalClose} />
-  <ClickFilter selectedGroups={selectedGroups} onSelectionChange={handleGroupChange}/>
-  <div className="date-filter-row">
-    <div className="date-picker-div"><label>From: <input id="date-picker" type="date" className="date-picker" value={fromDate} onChange={e => setFromDate(e.target.value)} /></label></div>
-    <div className="date-picker-div"><label>To: <input id="date-picker" type="date" className="date-picker" value={toDate} onChange={e => setToDate(e.target.value)} /></label></div>
-  </div>
-  <div className="pagination-div">
-    <label>Products to display: 
-      <select className="pagination-select" value={filters.limit} onChange={handleTableLimit}>
-        <option value={10}>10</option>
-        <option value={20}>20</option>
-        <option value={30}>30</option>
-        <option value={50}>50</option>
-        <option value={100}>100</option>
-        <option value={100}>200</option>
-        <option value={100}>300</option>
-        <option value={100}>400</option>
-        <option value={100}>500</option>
-      </select>
-    </label>
-    <p className="generic-notice">Note: If products do not show up here, they may be out of range. Use the <Link style={{margin: '0px', fontSize: 'medium'}} to={"/search"} className='navbar-link'>search</Link> page instead.</p>
-  </div>
-  <table id="product-table">
-    <thead id="product-table-head">
-        {table.getHeaderGroups().map(headerGroup => (
+    <>
+      <NavBar />
+      <AdaptiveModal row={selectedRow} isOpen={modalIsOpen} handleModalClose={handleModalClose} />
+      <ClickFilter selectedGroups={selectedGroups} onSelectionChange={handleGroupChange}/>
+      <div className="date-filter-row">
+        <div className="date-picker-div">
+          <label htmlFor="date-picker-from">From: </label>
+          <input id="date-picker-from" type="date" className="date-picker" value={fromDate} onChange={e => setFromDate(e.target.value)} />
+        </div>
+        <div className="date-picker-div">
+          <label htmlFor="date-picker-to">To: </label>
+          <input id="date-picker-to" type="date" className="date-picker" value={toDate} onChange={e => setToDate(e.target.value)} />
+        </div>
+      </div>
+      <div className="pagination-div">
+        <label>Products to display: 
+          <select className="pagination-select" value={filters.limit} onChange={handleTableLimit}>
+            <option value={10}>10</option>
+            <option value={20}>20</option>
+            <option value={30}>30</option>
+            <option value={50}>50</option>
+            <option value={100}>100</option>
+            <option value={200}>200</option>
+            <option value={300}>300</option>
+            <option value={400}>400</option>
+            <option value={500}>500</option>
+          </select>
+        </label>
+        <p className="generic-notice">Note: If products do not show up here, they may be out of range. Use the <Link style={{margin: '0px', fontSize: 'medium'}} to={"/search"} className='navbar-link'>search</Link> page instead.</p>
+      </div>
+      <table id="product-table">
+        <thead id="product-table-head">
+          {table.getHeaderGroups().map(headerGroup => (
             <tr key={headerGroup.id}>
               {headerGroup.headers.map(header => {
                 if (header.column.id === 'mediaType') {
                   return null
-                }  else if (header.column.id === "Language") {
+                } else if (header.column.id === "Language") {
                   return (
-                    <th>{header.id}
+                    <th key={header.id}>{header.id}
                       <div>
-                      <label>
-                        <Select
-                          isMulti
-                          isClearable
-                          isSearchable
-                          styles={customStylesMulti}
-                          value={(filters.targetLanguages || []).map((code) => ({
-                            value: code,
-                            label: ISO6391.getName(code) || code
-                          }))}
-                          options={supportedLanguageEnum.map((lang) => ({ value: ISO6391.getCode(lang), label: lang}))}
-                          onChange={handleLanguageSelect}                          
+                        <label>
+                          <Select
+                            isMulti
+                            isClearable
+                            isSearchable
+                            styles={customStylesMulti}
+                            value={(filters.targetLanguages || []).map((code) => ({
+                              value: code,
+                              label: ISO6391.getName(code) || code
+                            }))}
+                            options={supportedLanguageEnum.map((lang) => ({ value: ISO6391.getCode(lang), label: lang}))}
+                            onChange={handleLanguageSelect}                          
                           />
-                      </label>
+                        </label>
                       </div>
                     </th>
                   )
-
                 } else if (header.column.id === "Status") {
                   return (
-                  <th>{header.id}
-                    <div>
-                      <label>
-                        <Select
-                          isMulti
-                          isClearable
-                          isSearchable
-                          styles={customStylesMulti}
-                          value={(filters.status || []).map((code) => (
-                            {value: code.toLowerCase(), label: code}
-                          ))}
-                          options={statusEnum.map((code) => (
-                            {value: code.toLowerCase(), label: code}
-                          ))}
-                          onChange={handleStatusSelect}
-                        />
-                      </label>
-                    </div>
-                  </th>
-                )
+                    <th key={header.id}>{header.id}
+                      <div>
+                        <label>
+                          <Select
+                            isMulti
+                            isClearable
+                            isSearchable
+                            styles={customStylesMulti}
+                            value={(filters.status || []).map((code) => (
+                              {value: code.toLowerCase(), label: code}
+                            ))}
+                            options={statusEnum.map((code) => (
+                              {value: code.toLowerCase(), label: code}
+                            ))}
+                            onChange={handleStatusSelect}
+                          />
+                        </label>
+                      </div>
+                    </th>
+                  )
                 } else {
                   return (
-                  <th key={header.id}>
-                  <div
-                    className="table-sort-div"
-                    title="Click to sort"
-                    onClick={header.column.getToggleSortingHandler()}
-                    style={{ cursor: 'pointer' }}
-                  >
-                    {flexRender(header.column.columnDef.header, header.getContext())}
-                    {header.column.getIsSorted() === 'asc' ? ' ↑'
-                    : header.column.getIsSorted() === 'desc' ? ' ↓' : ''}
-                  </div>
-                  <input
-                    className="table-filter"
-                    placeholder="Filter..."
-                    value={header.column.getFilterValue() as string}
-                    onChange={e => header.column.setFilterValue(e.target.value)}
-                  />
-                  </th>
-            )
+                    <th key={header.id}>
+                      <div
+                        className="table-sort-div"
+                        title="Click to sort"
+                        onClick={header.column.getToggleSortingHandler()}
+                        style={{ cursor: 'pointer' }}
+                      >
+                        {flexRender(header.column.columnDef.header, header.getContext())}
+                        {header.column.getIsSorted() === 'asc' ? ' ↑'
+                        : header.column.getIsSorted() === 'desc' ? ' ↓' : ''}
+                      </div>
+                      <input
+                        className="table-filter"
+                        placeholder="Filter..."
+                        value={(header.column.getFilterValue() as string) ?? ''}
+                        onChange={e => header.column.setFilterValue(e.target.value)}
+                      />
+                    </th>
+                  )
                 }
-                
-          
-
-                 })}
+              })}
             </tr>
-        ))}
-    </thead>
-    <tbody id="product-table-body">
-      {table.getRowModel().rows.map(row => (
-        <tr className="table-row" style={{ cursor: 'pointer' }} key={row.id} onClick={() => handleRowClick(row.original)}>
-          {row.getVisibleCells().map(cell => (
-            <td className="table-data" key={cell.id}>
-              {flexRender(cell.column.columnDef.cell, cell.getContext())}
-            </td>
           ))}
-        </tr>
-      ))}
-    </tbody>
-  </table>
-  </>
-)}
+        </thead>
+        <tbody id="product-table-body">
+          {
+            table.getRowModel().rows.map(row => (
+              <tr className="table-row" style={{ cursor: 'pointer' }} key={row.id} onClick={() => handleRowClick(row.original)}>
+                {row.getVisibleCells().map(cell => (
+                  <td className="table-data" key={cell.id}>
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  </td>
+                ))}
+              </tr>
+            ))
+          }
+        </tbody>
+      </table>
+    </>
+  )
+}
