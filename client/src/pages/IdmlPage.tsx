@@ -99,6 +99,7 @@ export function FileUploadPage() {
             console.error("Error fetching string map:", error)
         } finally {
             setIsLabeling(false)
+            setStringMap(null)
         }
     }
    
@@ -119,6 +120,7 @@ export function FileUploadPage() {
                     onChange={(option) =>{
                         setSelectedProject(option)
                         setSelectedFile(null)
+                        setStringMap(null)
                     }}
                  />
                  {selectedProject ? 
@@ -159,7 +161,7 @@ export function FileUploadPage() {
             </div>
             <div>
                 {
-                    stringMap ?
+                    stringMap && selectedProject ?
                     stringMap.data.map((item) => {
                         return (
                             <div className='idml-article-div' key={item.contextIdentifier}>
@@ -173,11 +175,8 @@ export function FileUploadPage() {
             </div>
             <div className='idml-buttons-div'>
                 {
-                    stringMap ?
-                    <button className='interactive-button' onClick={() => {
-                        labelStrings
-                        setStringMap(null)
-                        }}>
+                    stringMap && selectedProject ?
+                    <button className='interactive-button' onClick={labelStrings}>
                         {isLabeling ? "Labeling..." : "Label Articles"}
                     </button>
                     : null

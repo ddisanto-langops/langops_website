@@ -65,7 +65,8 @@ const columns = [
   }),
   columnHelper.accessor('trelloData.dueDate', {
     header: 'Due',
-    cell: info => formatDate(info.getValue())
+    cell: info => formatDate(info.getValue()),
+    filterFn: caseInsensitiveFilter
   }),
   columnHelper.accessor('mediaGroups', {
     id: 'mediaType',
