@@ -89,17 +89,22 @@ export function FileUploadPage() {
     }
 
 
-    const labelStrings = () => {
+    const labelStrings = async () => {
         if (!stringMap) return null
         try {
             setIsLabeling(true)
             const projectId = Number(selectedProject?.value)
-            labelIdml(projectId, stringMap?.data)
+            await labelIdml(projectId, stringMap?.data)
+            alert("Labeling Successful!")
         } catch (error) {
+            alert(`Labeling Failed: ${error}`)
             console.error("Error fetching string map:", error)
         } finally {
             setIsLabeling(false)
             setStringMap(null)
+            setSelectedFile(null)
+            setSelectedProject(null)
+            
         }
     }
    
