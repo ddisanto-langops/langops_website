@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query"
-import type { GetProductFilters } from "@shared/types"
+import type { GetProductFilters } from "@langops-website/shared"
 import { getProductCount } from "../../services/api"
 
 interface ProductCountProps {

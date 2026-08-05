@@ -1,4 +1,4 @@
-import type { LangOpsProduct } from "@shared/types"
+import type { LangOpsProduct } from "@langops-website/shared"
 import { formatDate } from "../../services/formatDate"
 import { useState, useEffect } from "react"
 

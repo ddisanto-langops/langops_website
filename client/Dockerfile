@@ -1,17 +1,14 @@
 FROM node:26-bookworm-slim AS builder
-
 WORKDIR /app
+COPY package*.json ./
+COPY shared/package*.json ./shared/
+COPY server/package*.json ./server/
 COPY client/package*.json ./client/
+RUN npm ci
+COPY . .
 
-WORKDIR /app/client
-RUN ["npm", "install"]
-
-WORKDIR /app
-COPY client ./client
-COPY shared ./shared
-
-WORKDIR /app/client
-RUN ["npm", "run", "build"]
+RUN npm run build --workspace=shared
+RUN npm run build --workspace=client
 
 # ------------- Prod -------------
 FROM nginx:1.31.3-alpine AS runner

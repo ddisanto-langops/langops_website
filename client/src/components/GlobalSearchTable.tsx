@@ -1,4 +1,4 @@
-import { LangOpsProduct } from "@shared/types";
+import { LangOpsProduct } from "@langops-website/shared";
 
 interface GlobalSearchTableProps {
     data: LangOpsProduct[] | undefined

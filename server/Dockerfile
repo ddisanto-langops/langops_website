@@ -1,59 +1,44 @@
-# --- Base Stage (Shared dependencies) ---
+# --- Base Stage ---
 FROM node:26-alpine AS base
-
 WORKDIR /app
 
-# --- Development Stage (For hot-reloading) ---
+FROM base AS deps
+COPY package*.json ./
+COPY shared/package*.json ./shared/
+COPY client/package*.json ./client/
+COPY server/package*.json ./server/
+
+RUN npm ci
+
+# --- Development Stage ---
 FROM base AS development
 ENV NODE_ENV=development
-COPY shared/package*.json ./shared/
-COPY server/package*.json ./server/
-
-WORKDIR /app/shared
-RUN ["npm", "install"]
-
-WORKDIR /app/server
-RUN ["npm", "install"]
-
+COPY --from=deps /app/node_modules ./node_modules
+COPY . .
 WORKDIR /app
-COPY server ./server
-COPY shared ./shared
+CMD ["npm", "run", "dev", "--workspace=server"]
 
-WORKDIR /app/server
-CMD ["npm", "run", "dev"]
-
-# --- Build Stage (Compile TS to JS) ---
+# --- Build Stage ---
 FROM base AS build
+COPY --from=deps /app/node_modules ./node_modules
+COPY . .
 
-COPY server/package*.json ./server/
-COPY shared/package*.json ./shared/
+RUN npm run build --workspace=shared
+RUN npm run build --workspace=server
 
-WORKDIR /app/shared
-RUN npm i
 
-WORKDIR /app/server
-RUN npm i
-
-WORKDIR /app
-COPY server ./server
-COPY shared ./shared
-
-WORKDIR /app/server
-RUN npm run build
-
-# --- Production Stage (Tiny, fast runtime) ---
 FROM node:26-alpine AS production
-
-WORKDIR /app/server
+WORKDIR /app
 ENV NODE_ENV=production
-COPY server/package*.json ./
-RUN npm i --omit=dev
 
-WORKDIR /app/shared
-COPY shared/package*.json ./
-RUN npm i --omit=dev
+COPY package*.json ./
+COPY shared/package*.json ./shared/
+COPY server/package*.json ./server/
+RUN npm ci --omit=dev
+
+COPY --from=build /app/shared/dist ./shared/dist
+COPY --from=build /app/server/dist ./server/dist
 
 WORKDIR /app/server
-COPY --from=build /app/server/dist ./dist
-EXPOSE 3000
-CMD ["node", "dist/server/src/server.js"]
+EXPOSE 3200
+CMD ["node", "dist/server.js"]

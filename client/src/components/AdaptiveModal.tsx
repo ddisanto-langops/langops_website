@@ -1,4 +1,4 @@
-import { LangOpsProduct } from "@shared/types"
+import { LangOpsProduct } from "@langops-website/shared"
 import { EditModal } from "./EditModal"
 import { ProductModal } from "./ProductModal"
 

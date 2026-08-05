@@ -1,6 +1,10 @@
-import { productCodeEnum, supportedLanguageEnum, groupDisplayNames } from "@shared/enums"
+import {
+  productCodeEnum, 
+  supportedLanguageEnum, 
+  groupDisplayNames, 
+  ProductMetaFilters
+} from "@langops-website/shared"
 import { customStylesMulti } from "./styles/dropdownMulti"
-import type { ProductMetaFilters } from "@shared/types"
 import ISO6391 from "iso-639-1"
 import React, { useState } from "react"
 import Select, { MultiValue } from "react-select"

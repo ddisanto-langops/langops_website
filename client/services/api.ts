@@ -6,7 +6,7 @@ import type {
     ProductMetaFilters, 
     StringMapItem, 
     StringMapResponse
-} from "@shared/types"
+} from "@langops-website/shared"
 
 
 function buildQuery(filters: object): string {

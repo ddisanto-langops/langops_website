@@ -1,5 +1,9 @@
-import { LangOpsProduct, GetProductFilters } from "@shared/types"
-import { supportedLanguageEnum, statusEnum } from "@shared/enums"
+import {
+  LangOpsProduct, 
+  GetProductFilters,
+  supportedLanguageEnum,
+  statusEnum
+} from "@langops-website/shared"
 import { NavBar } from "./NavBar"
 import { AdaptiveModal } from "./AdaptiveModal"
 import { ClickFilter } from "./clickFilter"

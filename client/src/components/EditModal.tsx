@@ -1,5 +1,9 @@
-import { LangOpsProduct } from "@shared/types"
-import { supportedLanguageEnum, groupDisplayNames, productCodeEnum } from "@shared/enums"
+import {
+    LangOpsProduct,
+    supportedLanguageEnum,
+    groupDisplayNames,
+    productCodeEnum
+} from "@langops-website/shared"
 import { editProduct, deleteProduct } from "../../services/api"
 import { EditableLink} from "./EditableLink"
 import React, { useState, useEffect } from "react"

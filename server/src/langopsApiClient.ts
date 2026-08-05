@@ -9,7 +9,7 @@ import { GetProductFilters,
     StringMapResponse,
     StringMapItem,
     LangOpsApiError
-} from "#shared/types"
+} from "@langops-website/shared"
 
 export class LangOpsApiClient {
 
