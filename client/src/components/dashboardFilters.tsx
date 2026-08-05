@@ -87,6 +87,7 @@ export function DashboardFilter({filters, onFilterChange}: DashboardFilterProps)
           type="date"
           id="from"
           name="filter-start"
+          defaultValue={filters.dateFrom}
           value={filters.dateFrom ? filters.dateFrom.split('T')[0] : undefined}
           onChange={e => onFilterChange({
             ...filters,
@@ -102,6 +103,7 @@ export function DashboardFilter({filters, onFilterChange}: DashboardFilterProps)
           type="date"
           id="to"
           name="filter-end"
+          defaultValue={filters.dateTo}
           value={filters.dateTo ? filters.dateTo.split('T')[0] : undefined}
           onChange={e => onFilterChange({
             ...filters,

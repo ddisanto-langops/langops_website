@@ -7,12 +7,18 @@ import { ProductMetaFilters } from '@shared/types'
 
 export function Dashboard() {
 
+  const today = new Date().toISOString().split("T")[0]
+  const yearPattern = /^[0-9]{4}/
+  const yearMatch = today.match(yearPattern)
+  
+  
+
   const [ filters, setFilters ] = useState<ProductMetaFilters>({
     targetLanguages: undefined,
     productCodes: undefined,
     mediaGroups: undefined,
-    dateFrom: undefined,
-    dateTo: undefined
+    dateFrom: yearMatch ? `${yearMatch[0]}-01-01` : undefined,
+    dateTo: today
   })
 
   return (
