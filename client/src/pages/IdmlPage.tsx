@@ -32,6 +32,8 @@ export function FileUploadPage() {
                 value: item.data.id,
                 label: item.data.name
             }))
+            .sort((a, b) => a.label.localeCompare(b.label))
+
         } catch (error) {
             console.error("Error loading Crowdin projects:", error)
             return []
@@ -47,7 +49,7 @@ export function FileUploadPage() {
                 value: item.data.id,
                 label: item.data.name
             }))
-            
+            .sort((a, b) => a.label.localeCompare(b.label))
             
         } catch (error) {
             console.error("Error loading Crowdin projects:", error)
