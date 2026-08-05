@@ -3,6 +3,11 @@ services:
     depends_on:
       - server
     container_name: langops-website-client
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-files: "3"
     env_file:
       - /etc/langops-website/secrets.env
     build:
@@ -15,6 +20,11 @@ services:
 
   server:
     container_name: langops-website-server
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-files: "3"
     env_file:
       - /etc/langops-website/secrets.env
     build:

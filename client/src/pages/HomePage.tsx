@@ -25,8 +25,8 @@ export function HomePage() {
                         <li>Crowdin integrations</li>
                         <li>Any other automations</li>
                     </ul>
-                    <p>Note: Data on this site is refreshed via real-time webhooks.
-                        <br/>In some cases, this may take a few moments to show up on the website.</p>
+                    <p>Note: Data on this site is refreshed in near-real time.
+                        <br/>In some cases, changes may take a few moments to show up on the website.</p>
                 </div>
             </div>
             <div className='homepage-links-div'>
