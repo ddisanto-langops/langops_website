@@ -9,7 +9,7 @@
     "skipLibCheck": true,
     "esModuleInterop": true,
     "paths": {
-      "@shared/types": ["../shared/types.ts"]
+      "#shared/types": ["../shared/types.ts"]
     },
   },
   "include": [

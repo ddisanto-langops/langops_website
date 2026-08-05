@@ -6,7 +6,7 @@ import {
     ProductMetaFilters, 
     StringMapItem,
     LangOpsApiError
-} from "@shared/types"
+} from "#shared/types"
 import { Client, Credentials, CrowdinValidationError, CrowdinError } from "@crowdin/crowdin-api-client"
 
 const router = Router()
