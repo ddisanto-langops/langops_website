@@ -10,8 +10,6 @@ export function Dashboard() {
   const today = new Date().toISOString().split("T")[0]
   const yearPattern = /^[0-9]{4}/
   const yearMatch = today.match(yearPattern)
-  
-  
 
   const [ filters, setFilters ] = useState<ProductMetaFilters>({
     targetLanguages: undefined,
