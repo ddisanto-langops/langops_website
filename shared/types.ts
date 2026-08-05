@@ -1,173 +1,175 @@
-export interface BaseProduct {
+import * as z from "zod"
+
+// Sub-domain: Trello
+const TrelloDataSchema = z.object({
+  id: z.string(),
+  url: z.string(),
+  title: z.string(),
+  localizedTitle: z.string(),
+  productCode: z.string().nullable(),
+  targetLanguage: z.string().nullable(),
+  dueDate: z.iso.datetime().nullable(),
+  datePublished: z.iso.datetime().nullable(),
+  dateLastActivity: z.iso.datetime().nullable(),
+  dateArchived: z.iso.datetime().nullable(),
+  mediaGroups: z.array(z.string()),
+  editorUrl: z.string().nullable(),
+  articleUrl: z.string().nullable(),
+  wordCount: z.number().int().nullable(),
+});
+
+// Sub-domain: YouTube
+const YouTubeDataSchema = z.object({
+  id: z.string(),
+  localizedTitle: z.string().nullable(),
+  url: z.string(),
+  durationSeconds: z.number().int().nullable(),
+});
+
+// Sub-domain: Crowdin
+const CrowdinDataSchema = z.object({
+  id: z.string(),
+  translationProgress: z.number().nullable(),
+  approvalProgress: z.number().nullable(),
+  url: z.string(),
+});
+
+
+
+// Extract the TypeScript types from the schemas
+
+export type TrelloDataSchema = z.infer<typeof TrelloDataSchema>
+export type YouTubeDataSchema = z.infer<typeof YouTubeDataSchema>
+export type CrowdinDataSchema = z.infer<typeof CrowdinDataSchema>
+
+export interface LangOpsProduct {
     id: string
-    title: string
-    productCode: string
-    targetLanguage: string
-    datePublished: string | null
+    dateCreated: Date
+    dateDeleted: Date
     mediaGroups: string[]
-    labels?: [{ id: string; name: string; }]
-    published: boolean
-    exclude: boolean
-    wordCount: number | null
-    duration: number | null
-    trelloUrl: string
-}
-
-
-export interface ActiveProduct {
-    /*
-     * Defined as a card on the LangOps Trello Board
-     * whose title contains a valid product code, 
-     * target language, and is not archived, 
-     * though it may be published.
-    */
-    id: string
-    title: string
-    productCode: string
-    targetLanguage: string
     productStatus: string
-    mediaGroups: string[]
-    dateLastActivity: string
-    dueDate: string | null
-    datePublished: string | null
-    trelloUrl: string,
-    editorUrl: string | null
-    crowdinUrl: string | null
-    articleUrl: string | null
-    youTubeUrl: string | null
-    translationProgress: number | null
-    approvalProgress: number | null
-    wordCount: number | null
-    duration: number | null
+    trelloData: TrelloDataSchema
+    youtubeData: YouTubeDataSchema
+    crowdinData: CrowdinDataSchema
 }
 
-export interface ArchivedProduct {
-    /*
-    * Defined as a closed (archived) card on the LangOps Trello board
-    * which has also been published. If not published, it is not
-    * considered archived.
-    */
-    id: string
-    title: string
-    localizedTitle: string | null
-    productCode: string
-    targetLanguage: string
-    mediaGroups: string[]
-    datePublished: string | null
-    dateArchived: string
-    trelloUrl: string
-    editorUrl: string | null
-    articleUrl: string | null
-    youTubeUrl: string | null
-    wordCount: number | null
-    durationSeconds: number | null
-}
 
-export interface ApiFilters {
-    lang?: string | undefined
-    code?: string | undefined
-    group?: string[] | undefined
-    from?: string | undefined
-    to?: string | undefined
-    title?: string | undefined
-    source?: string | undefined
-    page?: number | undefined
+export interface GetProductFilters {
+    targetLanguages?: string[] | undefined
+    dateFrom?: string | undefined
+    dateTo?: string | undefined
+    productCodes?: string[] | undefined
+    mediaGroups?: string[] | undefined
+    search?: string | undefined
     limit?: number | undefined
-    pageSize?: number | undefined
-    sortBy?: string | undefined
-    sortDir?: string | undefined
+    offset?: number | undefined
+    status?: string[] | undefined
 }
 
-export interface RawTrelloCard {
-  id: string
-  name: string
-  labels?: [
-    {
-        id: string
-        name: string
-    }
-  ]
-  due?: string | null
-  dateLastActivity: string
-  url: string
-  isTemplate: string
-  dateClosed?: string
-  actions: [
-    {
-        data: {
-            checkItem?: {
-                id: string
-                name: string
-                state: string
-            }
+
+export interface ProductMetaFilters {
+    targetLanguages?: string[] | undefined
+    dateFrom?: string | undefined
+    dateTo?: string | undefined
+    productCodes?: string[] | undefined
+    mediaGroups?: string[] | undefined
+
+}
+
+
+export interface EditProductRequest {
+  date_created?: string | undefined
+  date_deleted?: string | undefined
+  media_groups?: string[] | undefined
+  product_status?: string | undefined
+  trello_id?: string | undefined
+  trello_url?: string | undefined
+  trello_title?: string | undefined
+  trello_localized_title?: string | undefined
+  trello_product_code?: string | undefined
+  trello_target_language?: string | undefined
+  trello_due_date?: string | undefined
+  trello_date_published?: string | undefined
+  trello_date_last_activity?: string | undefined
+  trello_date_archived?: string | undefined
+  trello_editor_url?: string | undefined
+  trello_article_url?: string | undefined
+  trello_word_count?: number | undefined
+  youtube_id?: string | undefined
+  youtube_localized_title?: string | undefined
+  youtube_url?: string | undefined
+  youtube_duration_seconds?: number | undefined
+  crowdin_file_id?: number | undefined
+  crowdin_project_id?: number | undefined
+  crowdin_translation_progress?: number | undefined
+  crowdin_approval_progress?: number | undefined
+  crowdin_url?: string | undefined
+}
+
+
+
+/**
+ * ----------------------------------------------
+ * RESPONSES
+ * ---------------------------------------------- 
+*/
+
+export interface PaginatedProductResponse {
+    total: number
+    offset: number
+    limit: number
+    data: LangOpsProduct[]
+}
+
+export interface WordCountResponse {
+    totalWords: number
+}
+
+
+export interface ProductCountResponse {
+    totalProducts: number
+    data: [
+        {
+            productCode: string
+            count: number
         }
-        type: string
-        date: string
+    ]
+    
+}
+
+
+export interface StringMapItem {
+    contextIdentifier: string,
+    map: {
+        stringIds: number[],
+        strings: string[],
+        labelText: string | null
     }
-  ]
-  attachments?: [
-    {
-        name: string
-        url: string
-    }
-  ]
-  customFieldItems?: [
-    {
-        idCustomField: string
-        value: {
-            checked?: string
-            text?: string
-        }
-    }
-  ]
-  idLabels: string[]
 }
 
-export interface XliffEntry {
-    originalName: string   // the filename as it came out of the ZIP
-    displayName: string    // what the user has typed in the rename box
-    content: Blob          // the raw file bytes, ready to POST
-    summary?: string       // first few source segments, shown as a tooltip
+
+export interface StringMapResponse {
+  data: StringMapItem[];
 }
 
-export interface IdmlStorageRecord {
-    id: number
-    fileName: string
-    crowdinProjectId: string | null
-    crowdinProjectName: string | null
-    targetLanguage: string | null
-    crowdinFileIds: number[]
-    status: 'pending' | 'complete'
-    createdAt: string
-    updatedAt: string
-}
 
-export type CrowdinProject = {
-    id: number
-    name: string
-    targetLanguages: { id: string; name: string }[]
-}
-
-export interface AllProduct {
-    source: 'active' | 'archived' | 'deleted'
+export interface RestoreResponse {
     id: string
-    title: string
-    productCode: string
-    targetLanguage: string
-    mediaGroups: string[]
-    wordCount: number | null
-    datePublished: string | null
-    trelloUrl: string
-    editorUrl: string | null
-    articleUrl: string | null
-    // active-only
-    productStatus: string | null
-    dueDate: string | null
-    dateLastActivity: string | null
-    translationProgress: number | null
-    approvalProgress: number | null
-    crowdinUrl: string | null
-    // archived-only
-    localizedTitle: string | null
-    dateArchived: string | null
+    restored_at: string
+}
+
+export interface DeleteResponse {
+    id: string
+    deleted_at: string
+}
+
+
+export class LangOpsApiError extends Error {
+    public errorCode: number
+    
+    constructor(errorCode: number, message: string) {
+        super(message)
+        this.name = "LangOpsApiError"
+        this.errorCode = errorCode
+    }
 }

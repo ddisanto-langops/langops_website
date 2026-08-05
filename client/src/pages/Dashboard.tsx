@@ -1,19 +1,18 @@
-import type { ApiFilters } from '../../../shared/types'
-
 import { NavBar } from '../components/NavBar'
 import { useState } from 'react'
 import { TotalWords } from '../components/totalWords'
 import { DashboardFilter } from '../components/dashboardFilters'
 import { ProductCount } from '../components/productCount'
+import { ProductMetaFilters } from '@shared/types'
 
 export function Dashboard() {
 
-  const [ filters, setFilters ] = useState<ApiFilters>({
-    lang: undefined,
-    code: undefined,
-    group: undefined,
-    from: undefined,
-    to: undefined,
+  const [ filters, setFilters ] = useState<ProductMetaFilters>({
+    targetLanguages: undefined,
+    productCodes: undefined,
+    mediaGroups: undefined,
+    dateFrom: undefined,
+    dateTo: undefined
   })
 
   return (

@@ -1,12 +1,19 @@
 {
-  "extends": "../tsconfig.base.json",
   "compilerOptions": {
+    "target": "es2024",
     "module": "NodeNext",
     "moduleResolution": "NodeNext",
-    "allowJs": true,
-    "checkJs": false,
+    "outDir": "./dist",
+    "rootDir": "../",
+    "strict": true,
+    "skipLibCheck": true,
     "esModuleInterop": true,
-    "noEmit": true
+    "paths": {
+      "@shared/types": ["../shared/types.ts"]
+    },
   },
-  "include": ["./**/*.ts", "./**/*.js", "../shared/**/*.ts"]
+  "include": [
+    "src/**/*"
+  ],
+  "exclude": ["node_modules", "dist"]
 }

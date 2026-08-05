@@ -43,6 +43,7 @@ h2 { overflow-wrap: break-word; }
 #website-title {
     color: white;
     text-align: center;
+    font-family: serif;
 }
 
 #navbar-div {
@@ -78,7 +79,7 @@ h2 { overflow-wrap: break-word; }
 #deletions-page-title {
     color: white;
     justify-self: center;
-    padding: 20px;
+    font-family: serif;
 }
 
 /* =====================
@@ -131,10 +132,11 @@ h2 { overflow-wrap: break-word; }
 }
 .homepage-links-div {
     display: flex;
-    flex-direction: column;
-    align-items: center;
-    margin: 0 auto;
-    width: fit-content;
+    flex-wrap: wrap;
+    gap: 30px;
+    justify-content: center;
+    align-content: center;
+    
 }
 
 .homepage-links-div > .homepage-link {
@@ -152,7 +154,6 @@ h2 { overflow-wrap: break-word; }
     color: white;
     justify-content: center;
     gap: 15px;
-    padding: 20px;
     border-radius: 12px;
     margin-bottom: 20px;
 }
@@ -194,16 +195,14 @@ h2 { overflow-wrap: break-word; }
     color: #ffffff;
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 8px;
-    padding: 10px 15px;
+    align-self: center;
     font-size: 0.95rem;
     outline: none;
     transition: all 0.3s ease;
     cursor: pointer;
     appearance: none;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org' width='12' height='12' fill='white' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: calc(100% - 12px) center;
-    padding-right: 35px;
+    padding: 10px;
+   
 }
 
 .dashboard-dropdown:hover,
@@ -214,6 +213,43 @@ h2 { overflow-wrap: break-word; }
 
 .dashboard-dropdown:focus {
     box-shadow: 0 0 0 3px rgba(255, 127, 80, 0.2);
+}
+
+#dashboard-media-groups {
+    justify-content: center;
+    align-self: center;
+    display: flex;
+    flex-direction: row;
+    flex-basis: 40%;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-items: center;
+    
+}
+
+.dashboard-mediaGroup-checkbox {
+    opacity: 0;
+    width: 0;
+    height: 0;
+    position: absolute;
+}
+
+.dashboard-mediaGroup-label {
+    text-justify: center;
+    display: flex;
+    background-color: #007bff;
+    cursor: pointer;
+    border-radius: 6px;
+    padding: 5px;
+}
+
+.dashboard-mediaGroup-label-selected {
+    text-justify: center;
+    display: flex;
+    background-color: coral;
+    cursor: pointer;
+    border-radius: 6px;
+    padding: 5px;
 }
 
 /* =====================
@@ -232,7 +268,7 @@ h2 { overflow-wrap: break-word; }
     z-index: 5;
 }
 
-.click-filter-button {
+.interactive-button {
     cursor: pointer;
     background: hsla(202, 99%, 36%, 0.993);
     color: white;
@@ -245,12 +281,12 @@ h2 { overflow-wrap: break-word; }
     margin: 5px;
 }
 
-.click-filter-button:hover {
+.interactive-button:hover {
 
     background: hsla(202, 91%, 47%, 0.973);
 }
 
-.click-filter-button-selected {
+.interactive-button-selected {
     background: hsla(155, 94%, 42%, 0.897);
     color: white;
     border: none;
@@ -264,16 +300,24 @@ h2 { overflow-wrap: break-word; }
     margin: 5px;
 }
 
+.interactive-button:disabled {
+    background-color: #a9b3bd;
+    cursor: not-allowed;
+}
+
 /* =====================
    TABLES
    ===================== */
 
-#product-table-body, #completions-table-body {
+.table-header {
+    display: flex;
+}
+
+#product-table-body {
     text-align: center;
 }
 
-#product-table,
-#completions-table {
+#product-table {
     table-layout: auto;
     width: 95%;
     margin: 0 auto;
@@ -285,21 +329,27 @@ h2 { overflow-wrap: break-word; }
     color: coral;
 }
 
+.pagination-div {
+    display: grid;
+    justify-self: center;
+    justify-items: center;
+    color: white;
+    padding: 10px;
+}
+
+.pagination-div select {
+    margin-left: 10px;
+    background-color: hsla(204, 85%, 56%, 0.747);
+    color: white;
+    border-radius: 6px;
+    font-size: medium;
+    cursor: pointer;
+}
+
 #product-table-head th {
     position: sticky;
     color: white;
     top: 75px;
-    background-color: hsl(211, 37%, 21%);
-    z-index: 2;
-    padding: 10px;
-    text-align: center;
-    font-size: 1.5rem;
-}
-
-#completions-table-head th {
-    position: sticky;
-    color: white;
-    top: 0px;
     background-color: hsl(211, 37%, 21%);
     z-index: 2;
     padding: 10px;
@@ -335,8 +385,7 @@ td {
 
 .table-row { color: white; margin-right: 10px; }
 
-#product-table tbody tr,
-#completions-table tbody tr {
+#product-table tbody tr {
     background-color: hsla(207, 71%, 43%, 0.678);
     padding: 15px;
     box-shadow: 0 0 8px hsla(207, 71%, 43%, 0.678);
@@ -344,18 +393,15 @@ td {
     border-radius: 8px;
 }
 
-#product-table tbody tr:hover,
-#completions-table tbody tr:hover {
+#product-table tbody tr:hover {
     background-color: hsla(28, 94%, 69%, 0.884);
     box-shadow: 0 0 12px hsla(28, 94%, 69%, 0.699);
     cursor: pointer;
 }
 
-#product-table tbody tr td:first-child,
-#completions-table tbody tr td:first-child { border-radius: 8px 0 0 8px; }
+#product-table tbody tr td:first-child { border-radius: 8px 0 0 8px; }
 
-#product-table tbody tr td:last-child,
-#completions-table tbody tr td:last-child { border-radius: 0 8px 8px 0; }
+#product-table tbody tr td:last-child { border-radius: 0 8px 8px 0; }
 
 
 /* =====================
@@ -403,39 +449,6 @@ td {
     color: hsl(0, 0%, 80%);
     cursor: not-allowed;
     box-shadow: none;
-}
-
-/* =====================
-   TABLE DETAIL PANEL
-   ===================== */
-.table-detail-container {
-    width: 25%;
-    position: sticky;
-    top: 20px;
-    background-color: hsl(211, 37%, 21%);
-    border: 2px solid black;
-    border-radius: 8px;
-    box-shadow: 2px 2px black;
-    padding: 20px;
-    color: white;
-}
-
-.detail-link { 
-    color: coral; 
-}
-
-.resync-button {
-    background: linear-gradient(135deg, hsl(204, 97%, 39%), hsl(202, 94%, 69%));
-    border-radius: 6px;
-    font-size: 1rem;
-    color: white;
-    border: solid 1px black ;
-    cursor: pointer;
-    padding: 5px;
-}
-
-.resync-button:hover {
-    border: 1px solid coral;
 }
 
 /* =====================
@@ -666,6 +679,7 @@ td {
 
 .date-picker-div {
     background-color: hsla(204, 85%, 56%, 0.747);
+    align-self: center;
     border: 1px solid transparent;
     border-radius: 8px;
     display: flex;
@@ -694,226 +708,6 @@ td {
     gap: 40px;
     justify-content: center;
     margin: 10px;
-}
-
-/* =====================
-   IDML UPLOAD PAGE
-   ===================== */
-
-.idml-page {
-    justify-self: center;
-    padding: 1rem;
-    max-width: 95%;
-    color: white;
-    justify-items: center;
-}
-
-.idml-page h3,
-.idml-page h4 {
-    color: white;
-
-}
-
-.idml-selectors {
-    display: flex;
-    gap: 16px;
-    margin-bottom: 25px;
-    margin-top: 25px;
-    flex-wrap: wrap;
-}
-
-.idml-selector-label {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    font-size: 0.9rem;
-    color: white;
-}
-
-.idml-file-label {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    width: fit-content;
-    font-size: 0.9rem;
-    color: white;
-    margin-bottom: 16px;
-    margin: 40px;
-}
-
-.idml-status-info  { color: hsl(28, 94%, 69%); }
-.idml-status-success { color: hsl(155, 81%, 43%); }
-.idml-status-error { color: coral; }
-
-.idml-xliff-section {
-    display: flex;
-    flex-direction: column;
-    margin-bottom: 16px;
-    justify-items: center;
-    text-align: center;
-}
-
-.idml-hint {
-    font-size: 0.875rem;
-    color: #aaa;
-}
-
-.idml-xliff-row {
-    display: grid;
-    grid-template-columns: 1fr 4fr 1fr 1fr;
-    gap: 10px;
-    margin-bottom: 4px;
-    align-items: center;
-    justify-items: center;
-}
-
-.idml-xliff-original {
-    color: #aaa;
-    font-size: 0.875rem;
-    min-width: 220px;
-}
-
-.idml-xliff-input {
-    width: 260px;
-    background-color: hsl(211, 38%, 15%);
-    color: white;
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    border-radius: 4px;
-    padding: 4px 8px;
-    font-size: 0.9rem;
-}
-
-.idml-xliff-input:focus {
-    outline: none;
-    box-shadow: 0 0 0 3px rgba(255, 127, 80, 0.2);
-    border-color: coral;
-}
-
-.idml-upload-btn {
-    margin: 25px;
-    cursor: pointer;
-    background: hsla(202, 99%, 36%, 0.993);
-    color: white;
-    border: none;
-    padding: 8px 18px;
-    border-radius: 8px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    justify-self: center;
-}
-
-.idml-upload-btn:hover:not(:disabled) {
-    background: hsla(202, 91%, 47%, 0.973);
-}
-
-.idml-upload-btn:disabled {
-    background: hsl(0, 0%, 50%);
-    cursor: not-allowed;
-    box-shadow: none;
-}
-
-.idml-storage-title {
-    margin-top: 32px;
-}
-
-.idml-empty {
-    color: #aaa;
-}
-
-.idml-table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 0.875rem;
-    color: white;
-}
-
-.idml-table thead tr {
-    text-align: left;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-.idml-table th {
-    padding: 6px 8px;
-    font-size: 0.875rem;
-    position: static;
-    background: transparent;
-    color: white;
-}
-
-.idml-table td {
-    padding: 10px;
-    height: auto;
-    font-size: 0.875rem;
-    border: none;
-    overflow: visible;
-}
-
-.idml-table tbody tr {
-    border-bottom: 1px solid hsla(207, 71%, 43%, 0.4);
-    background: transparent;
-    box-shadow: none;
-}
-
-.idml-table tbody tr:hover {
-    background-color: hsla(207, 71%, 43%, 0.25);
-    box-shadow: none;
-    cursor: default;
-}
-
-.idml-table tbody tr td:first-child,
-.idml-table tbody tr td:last-child {
-    border-radius: 0;
-}
-
-.idml-status-pending       { color: hsl(28, 94%, 69%); }
-.idml-status-complete      { color: hsl(155, 81%, 43%); }
-.idml-status-reconstructing { color: #aaa; }
-
-.idml-row-error {
-    color: coral;
-    font-size: 0.75rem;
-    margin-top: 2px;
-}
-
-.idml-actions-cell {
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-    align-items: center;
-}
-
-.idml-btn-reconstruct {
-    cursor: pointer;
-    background: hsla(202, 99%, 36%, 0.993);
-    color: white;
-    border: 1px solid transparent;
-    padding: 4px 10px;
-    border-radius: 6px;
-    font-size: 0.8rem;
-    font-weight: 600;
-}
-
-.idml-btn-reconstruct:hover:not(:disabled) {
-    background-color: hsla(202, 91%, 47%, 0.973);
-}
-
-.idml-btn-reconstruct:disabled {
-    background: hsl(0, 0%, 50%);
-    cursor: not-allowed;
-}
-
-.idml-btn-download {
-    cursor: pointer;
-    background: hsla(152, 95%, 34%, 0.89);
-    color: white;
-    border: 1px solid transparent;
-    padding: 4px 10px;
-    border-radius: 6px;
-    font-size: 0.8rem;
-    font-weight: 600;
-    text-decoration: none;
-    display: inline-block;
 }
 
 .idml-btn-download:hover {
@@ -1057,91 +851,112 @@ td {
 }
 
 /* =====================
-   DELETIONS TABLE
+   SEARCH TABLE
    ===================== */
 
-#deletions-search {
+.search-input {
     display: flex;
     justify-content: center;
-    margin: 50px;
+    margin-top: 40px;
+    margin-bottom: 40px;
+    gap: 10px;
 }
 
-#deletions-search > input {
-    font-size: 1rem;
+.search-input input {
     border-radius: 6px;
-    border: none;
-    padding: 5px;
+    font-size: large;
+    width: 40%;
+    height: 40px;
 }
 
-#deletions-search > input:focus {
+.search-input > input:focus {
     box-shadow: 0px 0px 5px 5px hsla(155, 81%, 43%, 0.3);
 }
 
-#deletions-table-div {
-    display: flex;
-    justify-content: center;
+.search-table table {
     color: white;
-}
-
-#deletions-table-div table {
-    border-collapse: collapse;
-    width: 95%;
-}
-
-#deletions-table-div thead tr {
-    display: grid;
-    grid-template-columns: 3fr 1fr 1fr 0.8fr;
-    width: 100%;
+    margin-top: 40px;
     justify-self: center;
+    table-layout: fixed;
+    width: 95%;
+    margin: 10px;
+    border-collapse: separate;
+    border-spacing: 0px 10px;
 }
 
-#deletions-table-div tbody tr {
-    display: grid;
-    grid-template-columns: 3fr 1fr 1fr 0.8fr;
+.search-table tbody tr td {
     background-color: hsla(207, 71%, 43%, 0.678);
-    box-shadow: 0 0 8px hsla(207, 71%, 43%, 0.678);
-    border: none;
-    margin: 10px;
-    border-radius: 8px;
     text-align: center;
 }
 
-#restore-button {
+.search-table tbody tr:hover td {
+    background-color: hsla(28, 94%, 69%, 0.884);
+    box-shadow: 8px 0 8px -4px hsla(28, 94%, 69%, 0.699);
     cursor: pointer;
-    background: linear-gradient(135deg, hsl(204, 97%, 39%), hsl(202, 94%, 69%));
-    color: white;
-    border: 1px solid transparent;
-    padding: 4px 10px;
-    border-radius: 6px;
-    font-size: 0.8rem;
-    font-weight: 600;
-    box-shadow: 0 2px 8px hsla(199, 100%, 66%, 0.3);
-    transition: box-shadow 0.2s, border-color 0.2s;
 }
 
-#restore-button:hover {
-    box-shadow: 0 4px 12px hsla(199, 100%, 66%, 0.5);
+.search-table tbody tr td:first-child { 
+    border-radius: 8px 0 0 8px;
+    width: 50%;
+    box-shadow: -8px 0 8px -4px hsla(207, 71%, 43%, 0.678);
+}
+.search-table tbody tr td:last-child { 
+    border-radius: 0 8px 8px 0;
+    width: 50%;
+    box-shadow: 8px 0 8px -4px hsla(207, 71%, 43%, 0.678);
 }
 
-#deletions-table > tbody > tr > td { 
+.idml-select-div {
     display: flex;
-    gap: 10px;
     justify-content: center;
+    gap: 30px;
+    margin-top: 30px;
+    margin-bottom: 30px;
 }
 
-#deletions-table > tbody > tr > td > #permanent-delete {
-    cursor: pointer;
-    background: linear-gradient(135deg, hsl(0, 70%, 32%), hsl(0, 65%, 50%));
+.idml-buttons-div {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 40px;
+    margin-bottom: 40px;
+}
+
+.idml-article-div {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    justify-items: center;
+    justify-self: center;
+    width: 95%;
+}
+
+.idml-text-div p {
+    max-height: 400px;
+    overflow: scroll;
+    text-overflow: clip;
     color: white;
-    border: 1px solid transparent;
-    padding: 4px 10px;
-    border-radius: 6px;
-    font-size: 0.8rem;
-    font-weight: 600;
-    box-shadow: 0 2px 8px hsla(0, 65%, 50%, 0.3);
-    transition: box-shadow 0.2s, border-color 0.2s;
+    border: 2px solid rgba(245, 139, 46, 0.796);
+    padding: 10px;
 }
 
-#deletions-table > tbody > tr > td > #permanent-delete:hover {
-    box-shadow: 0 4px 12px hsl(0, 65%, 50%);
+.idml-input {
+    background-color: hsl(211, 66%, 27%);
+    border-radius: 8px;
+    border: transparent;
+    padding: 10px;
+    color: white;
+    margin-top: 25px;
+    height: fit-content;
+    min-height: 30px;
+    width: 90%;
+}
+
+.idml-input:hover {
+    outline: none;
+    box-shadow: 0px 0px 4px 4px rgb(180, 88, 55);
+}
+
+.idml-input:focus {
+    outline: none;
+    box-shadow: 0px 0px 4px 4px coral;
 }

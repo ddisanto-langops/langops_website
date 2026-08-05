@@ -1,236 +1,155 @@
-import type { ApiFilters, ArchivedProduct, AllProduct, IdmlStorageRecord, CrowdinProject, ActiveProduct } from "../../shared/types"
+import type { 
+    GetProductFilters, 
+    LangOpsProduct, 
+    PaginatedProductResponse, 
+    ProductCountResponse, 
+    ProductMetaFilters, 
+    StringMapItem, 
+    StringMapResponse
+} from "@shared/types"
 
-export async function fetchProducts(): Promise<ActiveProduct[]> {
-    const response = await fetch("/api/products")
-    if (!response.ok) throw new Error('Failed to fetch products')
-    return response.json()
-}
 
-export async function fetchCompletions() {
-    const response = await fetch("/api/completions")
-    if (!response.ok) throw new Error('Failed to fetch products')
-    return response.json()
-}
-
-export async function fetchFilteredCompletions(filters: ApiFilters) {
+function buildQuery(filters: object): string {
     const params = new URLSearchParams()
-
     for (const [key, value] of Object.entries(filters)) {
-        if (value === undefined || value === null || value === '') continue
-        if (Array.isArray(value)) {
-            value.forEach(item => params.append(key, String(item)));
+        if (value === undefined || value === null || value === '') {
+            continue
         } else {
-            params.append(key, String(value))
+            if (Array.isArray(value)) {
+                value.forEach(item => params.append(key, String(item)))
+            } else {
+                params.append(key, String(value))
+            }
         }
     }
-
-    const query = params.toString()
-    const url = query ? `/api/completions/wordcount?${query}` : '/api/completions/wordcount'
-
-    const response = await fetch(url)
-    if (!response.ok) throw new Error("Failed to fetch completions data.")
-    return response.json()
+    return params.toString().replace(/\+/g, '%20')
 }
 
-export async function queryAllCompletions(filters: ApiFilters) {
-    const params = new URLSearchParams()
 
-   for (const [key, value] of Object.entries(filters)) {
-        if (value === undefined || value === null || value === '') continue
-        if (Array.isArray(value)) {
-            value.forEach(item => params.append(key, String(item)));
-        } else {
-            params.append(key, String(value))
-        }
-    }
-
-    const query = params.toString()
-    const url = `/api/completions/filter${query ? `?${query}` : ''}`
-
-    const response = await fetch(url)
-    if (!response.ok) throw new Error("Failed to fetch completions data.")
-    return await response.json()
-}
-
-export async function queryAllProducts(filters: ApiFilters): Promise<{ data: AllProduct[], totalCount: number, page: number, pageSize: number }> {
-    const params = new URLSearchParams()
-
-    for (const [key, value] of Object.entries(filters)) {
-        if (value === undefined || value === null || value === '') continue
-        if (Array.isArray(value)) {
-            value.forEach(item => params.append(key, String(item)));
-        } else {
-            params.append(key, String(value))
-        }
-    }
-
-    const query = params.toString()
-    const url = `/api/all-products/filter${query ? `?${query}` : ''}`
-
-    const response = await fetch(url)
-    if (!response.ok) throw new Error('Failed to fetch all products data.')
-    return response.json()
-}
-
-export async function fetchCompletionsByProduct(filters: ApiFilters): Promise<{product_code: string, occurence_count: number}[]> {
-    const params = new URLSearchParams()
-
-   for (const [key, value] of Object.entries(filters)) {
-        if (value === undefined || value === null || value === '') continue
-        if (Array.isArray(value)) {
-            value.forEach(item => params.append(key, String(item)));
-        } else {
-            params.append(key, String(value))
-        }
-    }
+export async function getCrowdinProjects()  {
+    const response = await fetch('/api/crowdin/projects')
+    if (!response.ok) throw new Error('Failed to get Crowdin projects')
     
-    const query = params.toString()
-    const url = `/api/completions/byproduct${query ? `?${query}` : ''}`
-
-    const response = await fetch(url)
-    if (!response.ok) throw new Error("Failed to fetch completions data.")
-    return await response.json()
+    return response.json()
 }
 
-export async function updateCompletion(record: ArchivedProduct) {
-    const response = await fetch(`/api/completions/${record.id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+export async function getCrowdinFiles(projectId: number | null)  {
+    const response = await fetch(`/api/crowdin/files/${projectId}`)
+    if (!response.ok) throw new Error('Failed to get Crowdin projects')
+    
+    return response.json()
+}
+
+
+export async function getProducts(filters: GetProductFilters): Promise<PaginatedProductResponse> {
+    const query = buildQuery(filters)
+    if (query) {
+        const response = await fetch(`/api/products?${query}`)
+        if (!response.ok) throw new Error('Failed to get products')
+        return response.json()
+    } else {
+        const response = await fetch('/api/products')
+        if (!response.ok) throw new Error('Failed to get products')
+        return response.json()
+    }
+}
+
+
+export async function getWordCount(filters: ProductMetaFilters) {
+    const query = buildQuery(filters)
+    if (query) {
+        const response = await fetch(`/api/products/wordcount?${query}`)
+        if (!response.ok) throw new Error('Failed to get word count')
+        return response.json()
+    } else {
+        const response = await fetch('/api/products/wordcount')
+        if (!response.ok) throw new Error('Failed to get word count')
+        return response.json()
+    }
+}
+
+
+export async function getProductCount(filters: ProductMetaFilters): Promise<ProductCountResponse> {
+    const query = buildQuery(filters)
+    if (query) {
+        const response = await fetch(`/api/products/productcount?${query}`)
+        if (!response.ok) throw new Error('Failed to get product count')
+        const productJson: ProductCountResponse = await response.json()
+        return productJson
+    } else {
+        const response = await fetch('/api/products/productcount')
+        if (!response.ok) throw new Error('Failed to get product count')
+        const productJson: ProductCountResponse = await response.json()
+        return productJson
+    }
+}
+
+export async function getStringMap(projectId: number | string, fileId: number | string): Promise<StringMapResponse> {
+    const response = await fetch(`/api/idml/map/${projectId}/${fileId}`)
+
+    if (!response.ok) throw new Error("Failed to get string map")
+    
+    const stringMap: StringMapResponse = await response.json()
+    return stringMap
+}
+
+
+export async function labelIdml(projectId: number | string, stringMap: StringMapItem[]) {
+    const headers = new Headers()
+    headers.append("Content-Type", "application/json")
+    const response = await fetch(`/api/idml/label/${projectId}`, {
+        method: 'POST',
+        headers: headers,
+        body: JSON.stringify(stringMap)
+    })
+
+    if (!response.ok) throw new Error("Failed to label IDML") 
+
+    return response
+}
+
+
+export async function editProduct(id: string, record: LangOpsProduct) {
+    const headers = new Headers()
+    headers.append("Content-Type", "application/json")
+    const response = await fetch(`/api/products/edit/${id}`, {
+        headers: headers,
+        method: 'PATCH',
         body: JSON.stringify(record)
     })
-    console.log(JSON.stringify(response))
-    if (!response.ok) throw new Error('Failed to update completion')
-    return response.json()
+    if (!response.ok) throw new Error('Failed to edit product')
+    return response
 }
 
+
+export async function restoreProduct(id: string) {
+    const response = await fetch(`/api/products/restore/${id}`, {
+        method: 'PATCH'
+    })
+    if (!response.ok) throw new Error('Failed to restore product')
+    return response
+}
 
 /**
  * Soft delete: moves a completions record to deletions database.
  * Corresponds to delete button on the Completion Modal.
  */
-export async function deleteCompletion(id: string) {
+export async function deleteProduct(id: string) {
     if (confirm("Are you sure you want to delete this record?")) {
-        const response = await fetch(`/api/completions/delete/${id}`, {
+        const response = await fetch(`/api/products/delete/${id}`, {
         method: 'DELETE',
         })
         if (!response.ok) throw new Error('Failed to delete completion')
-        return response.json()
+        return response
     }
 }
 
-export async function permanentlyDeleteCompletion(id: string) {
+export async function permanentlyDeleteProduct(id: string) {
     if(confirm("Permanently delete this record? This action cannot be undone.")) {
-        const response = await fetch(`/api/deletions/delete/${id}`, {
+        const response = await fetch(`/api/products/permanent-delete/${id}`, {
             method: 'DELETE'
         })
         if (!response.ok) throw new Error('Failed to delete record')
-        return response.json()
-    }
-}
-
-export async function restoreCompletion(id: string) {
-    const response = await fetch(`/api/completions/restore/${id}`, {
-        method: 'PUT'
-    })
-    if (!response.ok) throw new Error('Failed to restore completion')
-    return response.json()
-}
-
-export async function resync(id: string, mode: "active" | "archived") {
-    const response = await fetch(`/api/resync/${mode}/${id}`, {
-        method: 'PUT'
-    })
-    if (!response.ok) throw new Error('Failed to restore completion')
-    return response.json()
-}
-
-/** Send an IDML, receive xliff_out.zip (keep this for /reconstruct later) */
-export async function parseIdml(idmlFile: File, sourceLang = 'fr'): Promise<Blob> {
-    const form = new FormData();
-    form.append('idml', idmlFile);
-    form.append('source_lang', sourceLang);
-
-    const res = await fetch(`/api/idml/parse`, { method: 'POST', body: form });
-    if (!res.ok) {
-        const { error } = await res.json();
-        throw new Error(error);
-    }
-    return res.blob(); // store this ZIP — it contains style_map.json needed for reconstruct
-}
-
-export async function uploadXliffToCrowdin(
-    fileName: string,
-    content: Blob,
-    projectId: string
-): Promise<{ crowdinFileId: number }> {
-    const form = new FormData();
-    form.append('xliff', content, fileName);
-    form.append('fileName', fileName);
-    form.append('projectId', projectId);
-
-    const res = await fetch('/api/crowdin/upload', { method: 'POST', body: form });
-    if (!res.ok) {
-        const { error } = await res.json();
-        throw new Error(error);
-    }
-    return res.json();
-}
-
-export async function fetchCrowdinProjects(): Promise<CrowdinProject[]> {
-    const res = await fetch('/api/crowdin/projects')
-    if (!res.ok) throw new Error('Failed to fetch Crowdin projects')
-    return res.json()
-}
-
-export async function listIdmlStorage(): Promise<IdmlStorageRecord[]> {
-    const res = await fetch('/api/idml/storage')
-    if (!res.ok) throw new Error('Failed to fetch IDML storage records')
-    return res.json()
-}
-
-export async function saveIdmlStorage(
-    idmlFile: File,
-    xliffZip: Blob,
-    projectId: string,
-    projectName: string,
-    targetLanguage: string,
-    crowdinFileIds: number[]
-): Promise<{ id: number }> {
-    const form = new FormData()
-    form.append('idml', idmlFile, idmlFile.name)
-    form.append('xliffZip', xliffZip, 'xliff_out.zip')
-    form.append('fileName', idmlFile.name)
-    form.append('projectId', projectId)
-    form.append('projectName', projectName)
-    form.append('targetLanguage', targetLanguage)
-    form.append('crowdinFileIds', JSON.stringify(crowdinFileIds))
-
-    const res = await fetch('/api/idml/storage', { method: 'POST', body: form })
-    if (!res.ok) {
-        const { error } = await res.json()
-        throw new Error(error)
-    }
-    return res.json()
-}
-
-export async function deleteIdmlStorage(id: number): Promise<void> {
-    const res = await fetch(`/api/idml/storage/${id}`, { method: 'DELETE' })
-    if (!res.ok) {
-        const { error } = await res.json()
-        throw new Error(error)
-    }
-}
-
-export async function fetchDeletions(): Promise<ArchivedProduct[]> {
-    const res = await fetch('/api/deletions')
-    if (!res.ok) throw new Error('Failed to fetch deletions')
-    return res.json()
-}
-
-export async function triggerReconstruct(id: number): Promise<void> {
-    const res = await fetch(`/api/idml/storage/${id}/reconstruct`, { method: 'POST' })
-    if (!res.ok) {
-        const { error } = await res.json()
-        throw new Error(error)
+        return response
     }
 }

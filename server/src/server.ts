@@ -1,13 +1,9 @@
-import express, { type ErrorRequestHandler } from 'express';
+import express, { type ErrorRequestHandler, type Request, type Response, type NextFunction } from 'express';
 import router from './routes/index.js'
-import helmet from 'helmet'
+import helmet from "helmet"
 import cors from 'cors'
 import path from 'path'
 import { fileURLToPath } from 'url'
-import { syncProducts } from './services/sync.js';
-
-// sync every time the server restarts
-syncProducts()
 
 const app = express();
 const PORT = process.env.PORT || 3200;
@@ -20,9 +16,9 @@ app.use(cors({
   origin: isDev
     ? 'http://localhost:5173'
     : 'https://pcglangops.com',
-  methods: ['GET', 'PUT', 'DELETE', 'POST']
+  methods: ['GET', 'PATCH', 'DELETE', 'POST']
 }))
-app.use(express.json())
+app.use(express.json({ limit: '50mb'}))
 app.use(router)
 
 const clientDist =
@@ -36,9 +32,9 @@ app.get('/{*path}', (req, res) => {
   res.sendFile(path.join(clientDist, 'index.html'))
 })
 
-const errorHandler: ErrorRequestHandler = (err, req, res, next) => {
+const errorHandler: ErrorRequestHandler = (err, req: Request, res: Response, next: NextFunction) => {
   const message = err instanceof Error ? err.message : 'Internal server error';
-  res.status(500).json({ message });
+  res.status(err.statusCode).json({ message });
 };
 
 app.use(errorHandler)

@@ -1,31 +1,20 @@
-import type { ActiveProduct, ArchivedProduct } from "../../../shared/types"
+import type { LangOpsProduct } from "@shared/types"
 import { formatDate } from "../../services/formatDate"
 import { useState, useEffect } from "react"
-import { resync } from "../../services/api"
-import { useMutation, useQueryClient } from '@tanstack/react-query'
 
 interface ProductModalProps {
-    record: ActiveProduct,
+    record: LangOpsProduct,
     isOpen: boolean,
     onClose: () => void
 }
 
 export function ProductModal({record, isOpen, onClose}: ProductModalProps) {
-    
-    const queryClient = useQueryClient()
     const [formData, setFormData] = useState(record)
 
     useEffect(() => {
         setFormData(record)
     }, [record])
 
-    const resyncMutation = useMutation({
-        mutationFn: (id: string) => resync(id, "active"),
-        onSuccess: (result: ActiveProduct[]) => {
-            queryClient.invalidateQueries({queryKey: ['products']})
-            if (result[0]) setFormData(result[0])
-        }
-    })
 
     if (!isOpen) return null
     return (
@@ -36,13 +25,13 @@ export function ProductModal({record, isOpen, onClose}: ProductModalProps) {
             >
                 <h2 className="modal-title">View Record</h2>
                 <p className="generic-notice">Product data is automatically refreshed every 5 minutes. If you need to edit a product, please do so in Trello, then click "Re-Sync Data" to immediately refresh this display.</p>
-                {formData.trelloUrl ? 
+                {formData.trelloData.url ? 
                 <p
                     style={{justifySelf: 'center'}}
                 >
                     <a
                         style={{color: 'coral'}} 
-                        href={formData.trelloUrl} 
+                        href={formData.trelloData.url} 
                         target="_blank"
                         rel="noopener"
                     >
@@ -51,13 +40,13 @@ export function ProductModal({record, isOpen, onClose}: ProductModalProps) {
                 </p>
                 : null
                 }
-                {formData.crowdinUrl ? 
+                {formData.crowdinData?.url ? 
                 <p
                     style={{justifySelf: 'center'}}
                 >
                     <a
                         style={{color: 'coral'}} 
-                        href={formData.crowdinUrl} 
+                        href={formData.crowdinData.url} 
                         target="_blank"
                         rel="noopener"
                     >
@@ -66,23 +55,14 @@ export function ProductModal({record, isOpen, onClose}: ProductModalProps) {
                 </p>
                 : null
                 }
-                <div className="modal-resync-div">
-                    <button
-                        type="button"
-                        className="resync-button"
-                        onClick={() => resyncMutation.mutate(String(formData.id))}
-                    >
-                        {resyncMutation.isPending ? "Loading..." : "Re-Sync Data"}
-                    </button>
-                </div>
                 <div className="modal-body">
                     <div className="product-modal-info-block">
                         <label className="product-modal-label">Title:</label>
-                        <p className="product-modal-info">{formData.title ?? '❓'}</p>
+                        <p className="product-modal-info">{formData.trelloData.title ?? '❓'}</p>
                     </div>
                     <div className="product-modal-info-block">
                         <label className="product-modal-label">Target Language:</label>
-                        <p className="product-modal-info">{formData.targetLanguage}</p>
+                        <p className="product-modal-info">{formData.trelloData.targetLanguage}</p>
                     </div>
                     <div className="product-modal-info-block">
                         <label className="product-modal-label">Status:</label>
@@ -94,31 +74,31 @@ export function ProductModal({record, isOpen, onClose}: ProductModalProps) {
                     </div>
                     <div className="product-modal-info-block">
                         <label className="product-modal-label">Due:</label>
-                        <p className="product-modal-info">{formatDate(formData.dueDate) ?? '❓'}</p>
+                        <p className="product-modal-info">{formatDate(formData.trelloData.dueDate) ?? '❓'}</p>
                     </div>
                     <div className="product-modal-info-block">
                         <label className="product-modal-label">Last Activity:</label>
-                        <p className="product-modal-info">{formatDate(formData.dateLastActivity)}</p>
+                        <p className="product-modal-info">{formatDate(formData.trelloData.dateLastActivity)}</p>
                     </div>
                     <div className="product-modal-info-block">
                         <label className="product-modal-label">Translation Progress:</label>
                         <p className="product-modal-info">
-                            {formData.translationProgress ? `${formData.approvalProgress}%` : '⛔'}
+                            {formData.crowdinData?.translationProgress ? `${formData.crowdinData.translationProgress}%` : '⛔'}
                         </p>
                     </div>
                     <div className="product-modal-info-block">
                         <label className="product-modal-label">Approval Progress:</label>
                         <p className="product-modal-info">
-                            {formData.approvalProgress ? `${formData.approvalProgress}%` : '⛔'}
+                            {formData.crowdinData?.approvalProgress ? `${formData.crowdinData.approvalProgress}%` : '⛔'}
                         </p>
                     </div>
                     <div className="product-modal-info-block">
                         <label className="product-modal-label">Date Published:</label>
-                        <p className="product-modal-info">{formatDate(formData.datePublished) ?? '❓'}</p>
+                        <p className="product-modal-info">{formatDate(formData.trelloData.datePublished) ?? '❓'}</p>
                     </div>
                     <div className="product-modal-info-block">
                         <label className="product-modal-label">Wordcount:</label>
-                        <p className="product-modal-info">{formData.wordCount}</p>
+                        <p className="product-modal-info">{formData.trelloData.wordCount}</p>
                     </div>
                 </div>
                 <div className="modal-actions">

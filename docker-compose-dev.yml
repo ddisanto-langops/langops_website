@@ -1,0 +1,35 @@
+services:
+  client:
+    depends_on:
+      - server
+    container_name: langops-website-client
+    env_file:
+      - /etc/langops-website/secrets.env
+    build:
+      context: .
+      dockerfile: client/Dockerfile
+      target: builder
+    ports:
+      - "5173:5173"
+
+    volumes:
+      - .:/app            # Mounts local folder so changes sync instantly
+      - /app/client/node_modules # Directs Docker to safeguard the container's built node_modules
+      - /app/shared/node_modules
+    command: npm run dev
+  server:
+    container_name: langops-website-server
+    env_file:
+      - /etc/langops-website/secrets.env
+    build:
+      context: .
+      dockerfile: server/Dockerfile
+      target: development
+    ports:
+      - "3200:3200"
+
+    volumes:
+      - .:/app            # Mounts local folder so changes sync instantly
+      - /app/server/node_modules # Directs Docker to safeguard the container's built node_modules
+      - /app/shared/node_modules
+    command: npm run dev
