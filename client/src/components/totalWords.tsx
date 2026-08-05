@@ -2,8 +2,6 @@ import type { ProductMetaFilters } from "@shared/types"
 import { useQuery } from "@tanstack/react-query"
 import { getWordCount } from "../../services/api"
 
-
-
 interface TotalWordsProps {
   filters: ProductMetaFilters
 }
@@ -16,5 +14,7 @@ export function TotalWords({filters}: TotalWordsProps) {
   })
 
   if (isLoading) return <p>Loading...</p>
-  return <p id="total-words">{(data.totalWords).toString().toLocaleString() ?? 0} words</p>
+
+  const formattedNumber = new Intl.NumberFormat('en-US').format(data.totalWords)
+  return <p id="total-words">{formattedNumber} words</p>
 }
