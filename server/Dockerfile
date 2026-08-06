@@ -8,7 +8,7 @@ COPY shared/package*.json ./shared/
 COPY client/package*.json ./client/
 COPY server/package*.json ./server/
 
-RUN npm ci
+RUN npm ci --include=dev
 
 # --- Development Stage ---
 FROM base AS development

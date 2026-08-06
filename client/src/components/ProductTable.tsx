@@ -95,8 +95,6 @@ export function ProductTable() {
   const [sorting, setSorting] = useState<SortingState>([])
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
   const [selectedGroups, setSelectedGroups] = useState<string[]>([])
-  const [fromDate, setFromDate] = useState('')
-  const [toDate, setToDate] = useState('')
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({ mediaType: false })
   const [selectedRow, setSelectedRow] = useState<LangOpsProduct | undefined>(undefined)
   const [modalIsOpen, setModalIsOpen] = useState(false)
@@ -110,16 +108,16 @@ export function ProductTable() {
   const products = (response && 'data' in response && Array.isArray(response.data)) ? response.data : []
 
   const filteredData = useMemo(() => {
-    if (!fromDate && !toDate) return products
+    if (!filters.dateFrom && !filters.dateTo) return products
     return products.filter(product => {
       const published = product.trelloData?.datePublished
       if (!published) return false
       const pubDate = published.slice(0, 10)
-      if (fromDate && pubDate < fromDate) return false
-      if (toDate && pubDate > toDate) return false
+      if (filters.dateFrom && pubDate < filters.dateFrom) return false
+      if (filters.dateTo && pubDate > filters.dateTo) return false
       return true
     })
-  }, [products, fromDate, toDate])
+  }, [products, filters.dateFrom, filters.dateTo])
 
   // eslint-disable-next-line react-hooks/incompatible-library
   const table = useReactTable({
@@ -173,17 +171,16 @@ export function ProductTable() {
 
   return (
     <>
-      <NavBar />
       <AdaptiveModal row={selectedRow} isOpen={modalIsOpen} handleModalClose={handleModalClose} />
       <ClickFilter selectedGroups={selectedGroups} onSelectionChange={handleGroupChange}/>
       <div className="date-filter-row">
         <div className="date-picker-div">
           <label htmlFor="date-picker-from">From: </label>
-          <input id="date-picker-from" type="date" className="date-picker" value={fromDate} onChange={e => setFromDate(e.target.value)} />
+          <input id="date-picker-from" type="date" className="date-picker" value={filters.dateFrom} onChange={e => setFilters({...filters, dateFrom: e.target.value})} />
         </div>
         <div className="date-picker-div">
           <label htmlFor="date-picker-to">To: </label>
-          <input id="date-picker-to" type="date" className="date-picker" value={toDate} onChange={e => setToDate(e.target.value)} />
+          <input id="date-picker-to" type="date" className="date-picker" value={filters.dateTo} onChange={e => setFilters({...filters, dateTo: e.target.value})} />
         </div>
       </div>
       <div className="pagination-div">
