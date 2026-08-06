@@ -9,14 +9,14 @@
   },
   "dependencies": {
     "@crowdin/crowdin-api-client": "^1.56.1",
+    "@langops-website/shared": "*",
     "@tanstack/react-query": "^5.101.4",
     "@tanstack/react-table": "^8.21.3",
     "iso-639-1": "^3.1.6",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "react-router-dom": "^7.18.1",
-    "react-select": "^5.10.2",
-    "@langops-website/shared":"*"
+    "react-router-dom": "^7.11.0",
+    "react-select": "^5.10.2"
   },
   "devDependencies": {
     "@types/react": "^19.0.0",

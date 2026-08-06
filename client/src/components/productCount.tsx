@@ -13,7 +13,7 @@ export function ProductCount({filters}: ProductCountProps) {
 		queryFn: () => getProductCount(filters)
   	})
 
-  if (isLoading) return <p>Loading...</p>
+  if (isLoading) return <p className="generic-notice">Loading products...</p>
   if (isError) return <p>Error: {error.message}</p>;
 
   if (!data) return (<p>NO DATA</p>);

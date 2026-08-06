@@ -24,7 +24,6 @@ export function Dashboard() {
       <div className='navbar-container'>
         <NavBar />
       </div>
-      <h2 id="dashboard-page-title">Dashboard</h2>
       <div id='dashboard-container'>
         <div id='dashboard-filter-container'>
           <DashboardFilter filters={filters} onFilterChange={setFilters} />

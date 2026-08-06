@@ -62,7 +62,9 @@ export function DashboardFilter({filters, onFilterChange}: DashboardFilterProps)
         value: code,
         label: ISO6391.getName(code) || code
       }))}
-      options={supportedLanguageEnum.map((lang) => ({ value: ISO6391.getCode(lang), label: lang}))}
+      options={supportedLanguageEnum.map((lang) => ({ value: ISO6391.getCode(lang), label: lang}))
+      .sort((a, b) => a.label.localeCompare(b.label))
+      }
       onChange={handleLanguageSelect}
 
     />
@@ -75,7 +77,9 @@ export function DashboardFilter({filters, onFilterChange}: DashboardFilterProps)
       value={(filters.productCodes || []).map((code) => ({
         value: code.toLowerCase(),
         label: code
-      }))}
+        }))
+        .sort((a, b) => a.label.localeCompare(b.label))
+      }
       options={productCodeEnum.map((code) => ({ value: code.toLowerCase(), label: code}))}
       onChange={handleCodeSelect}
 
@@ -113,7 +117,7 @@ export function DashboardFilter({filters, onFilterChange}: DashboardFilterProps)
       </label>
     </div>
     <div id="dashboard-media-groups">
-      <label className={mediaGroups?.length === 0 || mediaGroups === undefined ? "dashboard-mediaGroup-label-selected" : "dashboard-mediaGroup-label"}>All
+      <label className={mediaGroups?.length === 0 || mediaGroups === undefined ? "interactive-button-selected" : "interactive-button"}>All
         <input
               className="dashboard-mediaGroup-checkbox"
               type="checkbox"
@@ -125,7 +129,7 @@ export function DashboardFilter({filters, onFilterChange}: DashboardFilterProps)
         </label>
       {Object.entries(groupDisplayNames).map(([key, value]) => (
         
-        <label className={mediaGroups?.includes(key) ? "dashboard-mediaGroup-label-selected" : "dashboard-mediaGroup-label"}>{value}
+        <label className={mediaGroups?.includes(key) ? "interactive-button-selected" : "interactive-button"}>{value}
         <input
             className="dashboard-mediaGroup-checkbox"
             multiple={true}

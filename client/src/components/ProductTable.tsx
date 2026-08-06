@@ -223,7 +223,9 @@ export function ProductTable() {
                               value: code,
                               label: ISO6391.getName(code) || code
                             }))}
-                            options={supportedLanguageEnum.map((lang) => ({ value: ISO6391.getCode(lang), label: lang}))}
+                            options={supportedLanguageEnum.map((lang) => ({ value: ISO6391.getCode(lang), label: lang}))
+                              .sort((a, b) => a.label.localeCompare(b.label))
+                            }
                             onChange={handleLanguageSelect}                          
                           />
                         </label>
@@ -245,7 +247,9 @@ export function ProductTable() {
                             ))}
                             options={statusEnum.map((code) => (
                               {value: code.toLowerCase(), label: code}
-                            ))}
+                              ))
+                              .sort((a, b) => a.label.localeCompare(b.label))
+                            }
                             onChange={handleStatusSelect}
                           />
                         </label>
