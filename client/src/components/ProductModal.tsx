@@ -1,6 +1,7 @@
 import type { LangOpsProduct } from "@langops-website/shared"
 import { formatDate } from "../../services/formatDate"
 import { useState, useEffect } from "react"
+import ISO6391 from "iso-639-1"
 
 interface ProductModalProps {
     record: LangOpsProduct,
@@ -24,7 +25,7 @@ export function ProductModal({record, isOpen, onClose}: ProductModalProps) {
                 className="modal-content"
             >
                 <h2 className="modal-title">View Record</h2>
-                <p className="generic-notice">Product data is automatically refreshed every 5 minutes. If you need to edit a product, please do so in Trello, then click "Re-Sync Data" to immediately refresh this display.</p>
+                <p className="generic-notice">Product data is refreshed in near-real time. If you need to edit a product, please do so in Trello.</p>
                 {formData.trelloData.url ? 
                 <p
                     style={{justifySelf: 'center'}}
@@ -61,8 +62,15 @@ export function ProductModal({record, isOpen, onClose}: ProductModalProps) {
                         <p className="product-modal-info">{formData.trelloData.title ?? '❓'}</p>
                     </div>
                     <div className="product-modal-info-block">
-                        <label className="product-modal-label">Target Language:</label>
-                        <p className="product-modal-info">{formData.trelloData.targetLanguage}</p>
+                        {
+                            formData.trelloData.targetLanguage ?  
+                                <>
+                                    <label className="product-modal-label">Target Language:</label>
+                                    <p className="product-modal-info">{ISO6391.getName(formData.trelloData.targetLanguage)}</p>
+                                </>
+                                : null
+                        }
+                        
                     </div>
                     <div className="product-modal-info-block">
                         <label className="product-modal-label">Status:</label>
