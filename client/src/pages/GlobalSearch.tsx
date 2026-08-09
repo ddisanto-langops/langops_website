@@ -13,7 +13,7 @@ export function GlobalSearchPage() {
     const [modalIsOpen, setModalIsOpen] = useState(false)
     const [search, setSearch] = useState("")
     const [filters, setFilters] = useState<Partial<GetProductFilters>>({
-        limit: 10,
+        limit: 500,
         search: undefined
     })
     const [searchActive, setSearchActive] = useState(false)
