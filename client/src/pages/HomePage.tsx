@@ -1,10 +1,14 @@
-import { Link } from 'react-router-dom'
 import { NavBar } from '../components/NavBar'
+import { Sidebar } from '../components/sidebar'
+import { Footer } from '../components/footer'
+import { useState } from 'react'
 
 export function HomePage() {
+    const [sidebarOpen, setSidebarOpen] = useState(true)
     return (
-        <>
+        <div className='page-wrapper'>
             <NavBar />
+            <Sidebar  isOpen={sidebarOpen}/>
             <div className='homepage-title-div'>
                 <div className='generic-notice'>
                     <h2>Welcome to the PCG LangOps website!</h2>
@@ -29,20 +33,7 @@ export function HomePage() {
                         <br/>In some cases, changes may take a few moments to show up on the website.</p>
                 </div>
             </div>
-            <div className='homepage-links-div'>
-                <Link style={{textDecoration: 'none'}} to={"/dashboard"} className='homepage-link'><span>📊</span> Translation Stats</Link>
-                <Link style={{textDecoration: 'none'}} to={"/products"} className='homepage-link'><span>🔍</span> Active & Completed Products</Link>
-                <Link style={{textDecoration: 'none'}} to={"/manage-idmls"} className='homepage-link'><span>🔖</span> Label IDMLs</Link>
-                <a 
-                    href='https://api.pcglangops.com/redoc'
-                    className='homepage-link'
-                    target='_blank'
-                    rel='noopener noreferrer'
-                    style={{textDecoration: 'none'}}
-                >
-                    <span>📖</span> View API Documentation
-                </a>
-            </div>
-        </>
+            <Footer />
+        </div>
     )
 }

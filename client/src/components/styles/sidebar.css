@@ -1,0 +1,13 @@
+.sidebar-background {
+    background-color: hsl(206, 32%, 36%);
+    position: fixed;
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    width: 25%;
+    transition: width 0.3s ease-in-out;
+    top: 0;
+    left: 0;
+    justify-content: left;
+}
