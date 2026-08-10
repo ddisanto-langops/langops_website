@@ -87,65 +87,72 @@ export function ProductFilter({ filters, defaultFilters, setFilters }: ClickFilt
 
     return (
         <div id="product-filter">
-            <button
-                className={!mediaGroups || mediaGroups.length === 0 ? "interactive-button-selected" : "interactive-button"}
-                onClick={() => toggleMediaGroups("")}
-            >All</button>
-            {GROUPS.map(({ value, label }) => (
+            <div className="media-groups-div">
                 <button
-                    key={value}
-                    className={mediaGroups && mediaGroups.includes(value) ? "interactive-button-selected" : "interactive-button"}
-                    onClick={() => toggleMediaGroups(value)}
-                >
+                    className={!mediaGroups || mediaGroups.length === 0 ? "interactive-button-selected" : "interactive-button"}
+                    onClick={() => toggleMediaGroups("")}
+                >All</button>
+                {GROUPS.map(({ value, label }) => (
+                    <button
+                        key={value}
+                        className={mediaGroups && mediaGroups.includes(value) ? "interactive-button-selected" : "interactive-button"}
+                        onClick={() => toggleMediaGroups(value)}
+                    >
                     {label}
-                </button>
-            ))}
-            <div className="date-picker-div">
+                    </button>
+                ))}
+            </div>
+            <div className="product-filter-dropdown-div">
+                <div className="date-picker-div" id="product-filter-date-picker">
                     <label htmlFor="date-picker-from">From: </label>
                     <input id="date-picker-from" type="date" className="date-picker" value={filters.dateFrom} onChange={e => setDateFrom(e.target.value)} />
-            </div>
-            <div className="date-picker-div">
-                <label htmlFor="date-picker-to">To: </label>
-                <input id="date-picker-to" type="date" className="date-picker" value={filters.dateTo} onChange={e => setDateTo(e.target.value)} />
-            </div>
-            <label>
-                <Select
-                    isMulti
-                    isClearable
-                    isSearchable
-                    placeholder="Filter by language..."
-                    styles={customStylesMulti}
-                    value={(lang || []).map((code) => ({
-                        value: code,
-                        label: ISO6391.getName(code) || code
-                    }))}
-                    options={supportedLanguageEnum.map((lang) => ({ value: ISO6391.getCode(lang), label: lang}))
-                        .sort((a, b) => a.label.localeCompare(b.label))
-                    }
-                    onChange={handleLanguageSelect}                          
-                />
-            </label>
-            <label>
-                <Select
-                    isMulti
-                    isClearable
-                    isSearchable
-                    placeholder="Filter by status..."
-                    styles={customStylesMulti}
-                    value={(status || []).map((code) => (
-                        {value: code.toLowerCase(), label: code}
-                    ))}
-                    options={statusEnum.map((code) => (
-                        {value: code.toLowerCase(), label: code}
-                        ))
-                        .sort((a, b) => a.label.localeCompare(b.label))
-                    }
-                    onChange={handleStatusSelect}
+                </div>
+                <div className="date-picker-div" id="product-filter-date-picker">
+                    <label htmlFor="date-picker-to">To: </label>
+                    <input id="date-picker-to" type="date" className="date-picker" value={filters.dateTo} onChange={e => setDateTo(e.target.value)} />
+                </div>               
+                <label>
+                    <Select
+                        className="product-filter-dropdown"
+                        isMulti
+                        isClearable
+                        isSearchable
+                        placeholder="Filter by language..."
+                        styles={customStylesMulti}
+                        value={(lang || []).map((code) => ({
+                            value: code,
+                            label: ISO6391.getName(code) || code
+                        }))}
+                        options={supportedLanguageEnum.map((lang) => ({ value: ISO6391.getCode(lang), label: lang}))
+                            .sort((a, b) => a.label.localeCompare(b.label))
+                        }
+                        onChange={handleLanguageSelect}                          
                     />
-            </label>
-            <div className="search-input">
+                </label>
+                <label>
+                    <Select
+                        className="product-filter-dropdown"
+                        isMulti
+                        isClearable
+                        isSearchable
+                        placeholder="Filter by status..."
+                        styles={customStylesMulti}
+                        value={(status || []).map((code) => (
+                            {value: code.toLowerCase(), label: code}
+                        ))}
+                        options={statusEnum.map((code) => (
+                            {value: code.toLowerCase(), label: code}
+                            ))
+                            .sort((a, b) => a.label.localeCompare(b.label))
+                        }
+                        onChange={handleStatusSelect}
+                        />
+                </label>
+            </div>
+            <div className="search-input-div">
                 Title/Localized Title:
                 <input
+                    id="product-filter-input"
                     type="text"
                     placeholder="Search title or localized title..."
                     value={search || ""}
@@ -168,7 +175,7 @@ export function ProductFilter({ filters, defaultFilters, setFilters }: ClickFilt
                     </select>
                 </label>
             </div>
-            <div id="product-table-button-div">
+            <div className="product-filter-button-div">
                 <button
                     className="interactive-button"
                     style={{cursor: 'pointer'}}

@@ -31,8 +31,7 @@ export function HomePage() {
             </div>
             <div className='homepage-links-div'>
                 <Link style={{textDecoration: 'none'}} to={"/dashboard"} className='homepage-link'><span>📊</span> Translation Stats</Link>
-                <Link style={{textDecoration: 'none'}} to={"/products"} className='homepage-link'><span>☑️</span> Active & Completed Products</Link>
-                <Link style={{textDecoration: 'none'}} to={"/search"} className='homepage-link'><span>🔍</span> Search All Products</Link>
+                <Link style={{textDecoration: 'none'}} to={"/products"} className='homepage-link'><span>🔍</span> Active & Completed Products</Link>
                 <Link style={{textDecoration: 'none'}} to={"/manage-idmls"} className='homepage-link'><span>🔖</span> Label IDMLs</Link>
                 <a 
                     href='https://api.pcglangops.com/redoc'

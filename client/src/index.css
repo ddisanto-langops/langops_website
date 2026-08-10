@@ -335,9 +335,11 @@ h2 { overflow-wrap: break-word; }
 }
 
 .pagination-div {
-    display: grid;
+    width: 100%;
+    display: flex;
     justify-self: center;
-    justify-items: center;
+    justify-content: center;
+    align-content: center;
     color: white;
     padding: 10px;
 }
@@ -426,6 +428,18 @@ td {
     margin-top: 30px;
 }
 
+.media-groups-div {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+.product-filter-dropdown-div {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    
+}
 
 /* =====================
    TABLE PAGINATION
@@ -484,7 +498,8 @@ td {
     display: flex;
     align-items: center;
     justify-content: center;
-    z-index: 1000;
+    z-index: 10;
+    backdrop-filter: blur(4px);
 }
 
 .modal-resync-div {
@@ -544,13 +559,18 @@ td {
 }
 
 .completion-modal-input {
-    background-color: hsl(211, 38%, 15%);
+    background-color: hsl(211, 66%, 27%);
     color: white;
     padding: 0.5rem;
-    border: 1px solid #ccc;
-    border-radius: 4px;
+    border: none;
+    border-radius: 6px;
     font-size: 1rem;
     width: 100%;
+}
+
+.completion-modal-input:focus {
+    outline: none;
+    box-shadow: 0px 0px 5px 3px hsla(34, 93%, 42%, 0.918);
 }
 
 .completion-modal-mediagroups-div {
@@ -579,8 +599,9 @@ td {
 }
 
 .link-edit-button {
-    background: linear-gradient(135deg, hsla(204, 85%, 56%, 0.747), hsl(202, 94%, 69%));
-    border-radius: 8px;
+    background: hsla(202, 91%, 47%, 0.973);
+    color: white;
+    border-radius: 6px;
     font-size: 1rem;
     border: solid 1px transparent ;
     margin-left: 10px;
@@ -632,13 +653,13 @@ td {
     border-radius: 4px;
     padding: 0.5rem 1rem;
     cursor: pointer;
-    background: linear-gradient(45deg, #a9b3bd, hsl(180, 13%, 95%));
+    background: hsla(40, 20%, 94%, 0.747);
 }
 
 #btn-save {
     padding: 0.5rem 1rem;
     cursor: pointer;
-    background: linear-gradient(45deg, #007bff, hsl(177, 60%, 62%));
+    background: hsla(202, 91%, 47%, 0.973);
     color: white;
     border: 1px solid transparent;
     border-radius: 4px;
@@ -647,7 +668,7 @@ td {
 #btn-delete {
     padding: 0.5rem 1rem;
     cursor: pointer;
-    background: linear-gradient(45deg, #ac1414, hsl(24, 60%, 62%));
+    background: hsl(12, 98%, 49%);
     color: white;
     border: 1px solid transparent;
     border-radius: 4px;
@@ -702,6 +723,7 @@ td {
 
 .date-picker-div {
     background-color: hsla(204, 85%, 56%, 0.747);
+    color: white;
     align-items: center;
     height: fit-content;
     width: auto;
@@ -709,6 +731,7 @@ td {
     border-radius: 8px;
     display: flex;
     padding: 5px;
+
 }
 
 .date-picker-div:hover {
@@ -727,6 +750,10 @@ td {
     font-family: Arial, Helvetica, sans-serif;
 }
 
+#product-filter-date-picker {
+    margin: 15px;
+}
+
 .date-filter-row {
     color: white;
     display: flex;
@@ -735,24 +762,10 @@ td {
     margin: 10px;
 }
 
-.idml-btn-download:hover {
-    background: hsla(152, 90%, 45%, 0.842);
+.product-filter-dropdown {
+    margin: 15px;
 }
 
-.idml-btn-delete {
-    cursor: pointer;
-    background: hsla(0, 80%, 42%, 0.849);
-    color: white;
-    border: 1px solid transparent;
-    padding: 4px 10px;
-    border-radius: 6px;
-    font-size: 0.8rem;
-    font-weight: 600;
-}
-
-.idml-btn-delete:hover {
-    background: hsla(0, 89%, 51%, 0.89);
-}
 
 .global-results-div {
     display: flex;
@@ -763,27 +776,28 @@ td {
 
 
 
-.search-input {
+.search-input-div {
     display: flex;
     justify-content: center;
     align-items: center;
-    width: 650px;
-
+    width: 100%;
     gap: 10px;
     color: white;
-    font-weight: 700;
-    font-size: larger;
 }
 
-.search-input input {
-    border-radius: 6px;
-    font-size: large;
-    width: 40%;
-    height: 40px;
+#product-filter-input {
+    color: white;
+    background-color: hsl(211, 66%, 27%);
+    border: transparent;
+    font-size: medium;
+    border-radius: 8px;
+    width: 400px;
+    padding: 5px;
 }
 
-.search-input > input:focus {
-    box-shadow: 0px 0px 5px 5px hsla(155, 81%, 43%, 0.3);
+#product-filter-input:focus {
+    outline: none;
+    box-shadow: 0px 0px 5px 3px hsla(34, 93%, 42%, 0.918);
 }
 
 .search-table table {
