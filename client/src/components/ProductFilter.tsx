@@ -66,7 +66,6 @@ export function ProductFilter({ filters, defaultFilters, setFilters }: ClickFilt
     const handleTableLimit = (e: React.ChangeEvent<HTMLSelectElement>) => {
         const value = e.target.value
         setLimit(Number(value))
-        e.preventDefault()
     }
     
     const handleLanguageSelect = (choice: MultiValue<{value: string, label: string}>) => {
@@ -161,8 +160,8 @@ export function ProductFilter({ filters, defaultFilters, setFilters }: ClickFilt
                 />
             </div>
             <div className="pagination-div">
-                <label>Products to return: 
-                    <select className="pagination-select" value={limit} onChange={handleTableLimit}>
+                <label>Products to display: 
+                    <select className="pagination-select" value={limit} defaultValue={50} onChange={(e) => setLimit(Number(e.target.value))}>
                         <option value={10}>10</option>
                         <option value={20}>20</option>
                         <option value={30}>30</option>
