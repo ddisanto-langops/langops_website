@@ -70,50 +70,12 @@ h2 { overflow-wrap: break-word; }
 }
 
 /* =====================
-   PAGE TITLES
-   ===================== */
-#dashboard-page-title,
-#products-page-title,
-#completions-page-title,
-#deletions-page-title {
-    color: white;
-    justify-self: center;
-    font-family: serif;
-}
-
-/* =====================
    LAYOUT CONTAINERS
    ===================== */
-#main-container {
-    color: rgb(32, 170, 235);
-}
-
 #dashboard-container {
     display: grid;
     margin-bottom: 30px;
 }
-
-.table-layout-container,
-#completions-table-layout-container {
-    display: flex;
-    align-items: flex-start;
-    gap: 20px;
-    margin: 10px;
-}
-
-.table-container {
-    width: 75%;
-    color: white;
-    display: grid;
-    justify-items: center;
-}
-
-#completions-table-container {
-    width: 95%;
-    margin: 0 auto;
-    justify-self: center;
-}
-
 
 /* =====================
    HOMEPAGE
@@ -124,11 +86,6 @@ h2 { overflow-wrap: break-word; }
     text-align: center;
 }
 
-#homepage-blurb {
-    max-width: 500px;
-    justify-self: center;
-    font-size: 1.2rem;
-}
 .homepage-links-div {
     display: flex;
     flex-wrap: wrap;
@@ -191,32 +148,6 @@ h2 { overflow-wrap: break-word; }
 /* =====================
    DROPDOWNS & INPUTS
    ===================== */
-.dashboard-dropdown,
-.filter-input {
-    background-color: hsla(204, 85%, 56%, 0.747);
-    color: #ffffff;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 8px;
-    align-self: center;
-    font-size: 0.95rem;
-    outline: none;
-    transition: all 0.3s ease;
-    cursor: pointer;
-    appearance: none;
-    padding: 10px;
-   
-}
-
-.dashboard-dropdown:hover,
-.dashboard-dropdown:focus {
-    border-color: coral;
-    background-color: hsla(202, 83%, 60%, 0.884);
-}
-
-.dashboard-dropdown:focus {
-    box-shadow: 0 0 0 3px rgba(255, 127, 80, 0.2);
-}
-
 #dashboard-media-groups {
     justify-content: center;
     align-content: baseline;
@@ -235,24 +166,6 @@ h2 { overflow-wrap: break-word; }
     width: 0;
     height: 0;
     position: absolute;
-}
-
-.dashboard-mediaGroup-label {
-    text-justify: center;
-    display: flex;
-    background-color: #007bff;
-    cursor: pointer;
-    border-radius: 6px;
-    padding: 5px;
-}
-
-.dashboard-mediaGroup-label-selected {
-    text-justify: center;
-    display: flex;
-    background-color: coral;
-    cursor: pointer;
-    border-radius: 6px;
-    padding: 5px;
 }
 
 /* =====================
@@ -313,10 +226,6 @@ h2 { overflow-wrap: break-word; }
 /* =====================
    TABLES
    ===================== */
-
-.table-header {
-    display: flex;
-}
 
 #product-table-body {
     text-align: center;
@@ -422,12 +331,6 @@ td {
     color: white;
 }
 
-#product-table-button-div {
-    justify-self: center;
-    justify-content: center;
-    margin-top: 30px;
-}
-
 .media-groups-div {
     width: 100%;
     display: flex;
@@ -442,53 +345,6 @@ td {
 }
 
 /* =====================
-   TABLE PAGINATION
-   ===================== */
-
-.pagination-controls {
-    background-color: hsl(211, 37%, 21%);
-    height: 90px;
-    color: coral;
-    font-size: 1rem;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 15px;
-    margin-top: 25px;
-    margin-bottom: 5px;
-    padding-bottom: 10px;
-    z-index: 5;
-    position: sticky;
-    top: 75px;
-}
-
-.pagination-button {
-    background: linear-gradient(135deg, hsla(40, 20%, 94%, 0.747), hsl(34, 91%, 43%));
-    color: white;
-    border: none;
-    padding: 8px 16px;
-    border-radius: 8px;
-    font-weight: 600;
-    font-size: 0.75rem;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    
-    transition: transform 0.2s, box-shadow 0.2s;
-}
-
-.pagination-button:hover {
-    background: linear-gradient(135deg, hsla(40, 94%, 65%, 0.747), hsl(34, 98%, 49%));
-    cursor: pointer;
-}
-
-.pagination-button:disabled {
-    background: hsl(0, 0%, 50%);
-    color: hsl(0, 0%, 80%);
-    cursor: not-allowed;
-    box-shadow: none;
-}
-
-/* =====================
    MODAL - SHARED
    ===================== */
 .modal-overlay {
@@ -500,12 +356,6 @@ td {
     justify-content: center;
     z-index: 10;
     backdrop-filter: blur(4px);
-}
-
-.modal-resync-div {
-    display: flex;
-    justify-content: center;
-    padding: 15px;
 }
 
 .modal-content {
@@ -570,7 +420,7 @@ td {
 
 .completion-modal-input:focus {
     outline: none;
-    box-shadow: 0px 0px 5px 3px hsla(34, 93%, 42%, 0.918);
+    box-shadow: 0px 0px 5px 3px hsla(34, 56%, 91%, 0.918);
 }
 
 .completion-modal-mediagroups-div {
@@ -754,27 +604,9 @@ td {
     margin: 15px;
 }
 
-.date-filter-row {
-    color: white;
-    display: flex;
-    gap: 40px;
-    justify-content: center;
-    margin: 10px;
-}
-
 .product-filter-dropdown {
     margin: 15px;
 }
-
-
-.global-results-div {
-    display: flex;
-    flex-direction: row;
-    gap: 200px;
-    justify-content: center;
-}
-
-
 
 .search-input-div {
     display: flex;
@@ -797,40 +629,7 @@ td {
 
 #product-filter-input:focus {
     outline: none;
-    box-shadow: 0px 0px 5px 3px hsla(34, 93%, 42%, 0.918);
-}
-
-.search-table table {
-    color: white;
-    margin-top: 40px;
-    justify-self: center;
-    table-layout: fixed;
-    width: 95%;
-    margin: 10px;
-    border-collapse: separate;
-    border-spacing: 0px 10px;
-}
-
-.search-table tbody tr td {
-    background-color: hsla(207, 71%, 43%, 0.678);
-    text-align: center;
-}
-
-.search-table tbody tr:hover td {
-    background-color: hsla(28, 94%, 69%, 0.884);
-    box-shadow: 8px 0 8px -4px hsla(28, 94%, 69%, 0.699);
-    cursor: pointer;
-}
-
-.search-table tbody tr td:first-child { 
-    border-radius: 8px 0 0 8px;
-    width: 50%;
-    box-shadow: -8px 0 8px -4px hsla(207, 71%, 43%, 0.678);
-}
-.search-table tbody tr td:last-child { 
-    border-radius: 0 8px 8px 0;
-    width: 50%;
-    box-shadow: 8px 0 8px -4px hsla(207, 71%, 43%, 0.678);
+    box-shadow: 0px 0px 5px 3px hsla(34, 56%, 91%, 0.918);
 }
 
 .idml-select-div {
@@ -882,12 +681,7 @@ td {
     width: 90%;
 }
 
-.idml-input:hover {
-    outline: none;
-    box-shadow: 0px 0px 4px 4px rgb(180, 88, 55);
-}
-
 .idml-input:focus {
     outline: none;
-    box-shadow: 0px 0px 4px 4px coral;
+    box-shadow: 0px 0px 5px 3px hsla(34, 56%, 91%, 0.918);
 }
