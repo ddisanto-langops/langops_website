@@ -31,7 +31,7 @@ export const customStylesMulti: StylesConfig<OptionType, true> = {
         background: state.isFocused 
             ? "linear-gradient(35deg, #d68437, rgb(16, 142, 209))" 
             : "none",
-        borderRadius: "6px",
+        borderRadius: "8px",
         boxShadow: state.isFocused
             ? "0 4px 15px rgba(16, 142, 209, 0.4), 0 2px 8px rgba(214, 132, 55, 0.3)"
             : "none",
@@ -58,7 +58,7 @@ export const customStylesMulti: StylesConfig<OptionType, true> = {
     multiValue: (provided) => ({
         ...provided,
         backgroundColor: 'coral',
-        borderRadius: '6px',
+        borderRadius: '8px',
     }),
 
     multiValueLabel: (provided) => ({
@@ -78,7 +78,7 @@ export const customStylesMulti: StylesConfig<OptionType, true> = {
 
     menuList: (provided) => ({
         ...provided,
-        borderRadius: "6px",
+        borderRadius: "8px",
         width: "max-content",
         overflowX: "hidden",
         padding: "7px",
@@ -88,7 +88,7 @@ export const customStylesMulti: StylesConfig<OptionType, true> = {
         },
         "::-webkit-scrollbar-track": {
             backgroundColor: "rgb(13,130,191)",
-            borderRadius: "6px",
+            borderRadius: "8px",
         }
     })
 }

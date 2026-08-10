@@ -256,12 +256,13 @@ h2 { overflow-wrap: break-word; }
 }
 
 /* =====================
-   CLICK FILTER
+   PRODUCT FILTER
    ===================== */
-#click-filter {
+#product-filter {
     background-color: hsl(211, 37%, 21%);
-    height: auto;
     display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
     justify-content: center;
     padding-top: 20px;
     padding-bottom: 10px;
@@ -355,7 +356,7 @@ h2 { overflow-wrap: break-word; }
     color: white;
     top: 75px;
     background-color: hsl(211, 37%, 21%);
-    z-index: 2;
+    z-index: 0;
     padding: 10px;
     text-align: center;
     font-size: 1.5rem;
@@ -406,6 +407,24 @@ td {
 #product-table tbody tr td:first-child { border-radius: 8px 0 0 8px; }
 
 #product-table tbody tr td:last-child { border-radius: 0 8px 8px 0; }
+
+.product-page-filter-div {
+    justify-self: center;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    width: 85%;
+    justify-content: center;
+    align-items: center;
+    gap: 25px;
+    color: white;
+}
+
+#product-table-button-div {
+    justify-self: center;
+    justify-content: center;
+    margin-top: 30px;
+}
 
 
 /* =====================
@@ -742,16 +761,18 @@ td {
     justify-content: center;
 }
 
-/* =====================
-   SEARCH TABLE
-   ===================== */
+
 
 .search-input {
     display: flex;
     justify-content: center;
-    margin-top: 40px;
-    margin-bottom: 40px;
+    align-items: center;
+    width: 650px;
+
     gap: 10px;
+    color: white;
+    font-weight: 700;
+    font-size: larger;
 }
 
 .search-input input {
