@@ -6,6 +6,7 @@ import { AdaptiveModal } from "../components/AdaptiveModal";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { getProducts } from "../../services/api";
+import { Footer } from "../components/footer";
 
 
 export function ProductsPage() {
@@ -52,6 +53,7 @@ export function ProductsPage() {
             <AdaptiveModal row={selectedRow} isOpen={modalIsOpen} handleModalClose={handleModalClose} />
             <ProductFilter filters={filters} defaultFilters={defaultFilters} setFilters={setFilters}/>
             <ProductTable data={products} isLoading={isLoading} isError={isError} handleRowClick={handleRowClick} />
+            <Footer />
         </>
     )
 }

@@ -1,0 +1,37 @@
+h1 {
+    margin: 0;
+}
+
+#website-title {
+    color: white;
+    text-align: center;
+    font-family: serif;
+    width: 100%;
+    flex: 1;
+}
+
+#navbar-div {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    justify-self: center;
+    width: 100%;
+    margin-top: 10px;
+    margin-bottom: 45px;
+    border-bottom: 4px solid #0d2841;
+}
+
+
+
+#shortcuts-button-div {
+    flex: 1;
+    width: 20%;
+}
+
+#menu-button {
+    margin-left: 15px;
+}
+
+.dummy-right {
+    flex: 1;
+}

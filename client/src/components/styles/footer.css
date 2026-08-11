@@ -1,5 +1,13 @@
 #footer-navbar {
+    margin-top: 25px;
+    border-top: 4px solid #0d2841;
+    padding: 45px;
     display: flex;
     justify-content: center;
-    margin: 0;
+    width: 100%;
+    gap: 15px;
+}
+
+.navbar-link {
+    color: coral;
 }

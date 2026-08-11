@@ -2,8 +2,7 @@
    RESET & BASE
    ===================== */
 * { 
-    box-sizing: border-box; 
-
+    box-sizing: border-box;
 }
 
 body {
@@ -11,6 +10,7 @@ body {
     margin: 0;
     font-family: sans-serif;
     overflow-x: hidden;
+    height: 100dvh;
 }
 
 h2 { overflow-wrap: break-word; }
@@ -18,11 +18,11 @@ h2 { overflow-wrap: break-word; }
 
 .page-wrapper {
     display: flex;
-    flex: 1;
     flex-direction: column;
-    align-content: center;
-    flex-wrap: wrap;
-    justify-content: center;
+    height: 100vh;
+    margin: 0;
+    padding: 0;
+    flex-grow: 1;
 }
 
 .generic-notice {
@@ -48,39 +48,6 @@ h2 { overflow-wrap: break-word; }
     justify-self: center;
 }
 
-/* =======================
-   NAVBAR & WEBSITE TITLE
-   ======================= */
-
-#website-title {
-    color: white;
-    text-align: center;
-    font-family: serif;
-    width: 100%;
-}
-
-#navbar-div {
-    display: flex;
-    flex-direction: column;
-    justify-self: center;
-    width: 100%;
-    margin-bottom: 45px;
-    border-bottom: 4px solid #0d2841;
-}
-
-#navbar {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.navbar-link {
-    margin: 10px;
-    margin-left: 20px;
-    color: hsla(28, 91%, 57%, 0.795);
-    font-size: 0.8rem;
-}
-
 /* =====================
    LAYOUT CONTAINERS
    ===================== */
@@ -89,30 +56,7 @@ h2 { overflow-wrap: break-word; }
     margin-bottom: 30px;
 }
 
-/* =====================
-   HOMEPAGE
-   ===================== */
 
-.homepage-title-div {
-    color: white;
-    text-align: center;
-}
-
-.homepage-links-div {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 30px;
-    justify-content: center;
-    align-content: center;
-    
-}
-
-.homepage-links-div > .homepage-link {
-    color: coral;
-    font-size: 2rem;
-    padding: 15px;
-    justify-self: center;
-}
 
 /* =====================
    DASHBOARD

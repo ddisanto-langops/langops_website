@@ -1,13 +1,53 @@
 .sidebar-background {
-    background-color: hsl(206, 32%, 36%);
+    background-color: hsl(205, 47%, 20%);
     position: fixed;
     z-index: 10;
     display: flex;
     flex-direction: column;
     height: 100vh;
     width: 25%;
-    transition: width 0.3s ease-in-out;
+    transition: width 0.8s ease-in-out;
     top: 0;
     left: 0;
     justify-content: left;
+    border-radius: 6px;
+    box-shadow: 0 0 8px coral;
+}
+
+#close-button-div {
+    display: flex;
+    flex-direction: row;
+    justify-content: right;
+    margin: 10px;
+}
+
+#close-button {
+    height: 35px;
+    width: 100px;
+    margin: 10px;
+    text-align: center;
+}
+
+.homepage-links-div {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: left;
+    align-content: center;
+    padding-right: 15px;
+    padding-left: 10px;
+    width: 90%;
+}
+
+.homepage-links-div > .homepage-link {
+    color: coral;
+    font-size: 1.5rem;
+    padding: 5px;
+    border: 1px solid transparent
+}
+
+.homepage-links-div > .homepage-link:hover {
+    
+    border-radius: 8px;
+    box-shadow: 0 0 8px coral;
 }
