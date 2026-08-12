@@ -25,19 +25,21 @@ export function ProductModal({record, isOpen, onClose}: ProductModalProps) {
                 className="modal-content"
             >
                 <h2 className="modal-title">View Record</h2>
-                <p className="generic-notice">Product data is refreshed in near-real time. If you need to edit a product, please do so in Trello.</p>
-                {formData.trelloData.url ? 
-                <p
-                    style={{justifySelf: 'center'}}
-                >
-                    <a
+                <p className="generic-notice">Product data is refreshed in near-real time. This product has status "{formData.productStatus}." If you need to update its status, <a
                         style={{color: 'coral'}} 
-                        href={formData.trelloData.url} 
+                        href={formData.trelloData.url ? formData.trelloData.url : "https://trello.com"} 
                         target="_blank"
                         rel="noopener"
                     >
-                        View in Trello
-                    </a>
+                        please do so in Trello
+                    </a>.</p>
+                {formData.crowdinData?.url ? 
+                <p
+                    className="generic-notice"
+                    style={{justifySelf: 'center'}}
+                >
+                    Crowdin editor:
+                    <a href={formData.crowdinData.url}></a>
                 </p>
                 : null
                 }

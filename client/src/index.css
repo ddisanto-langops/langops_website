@@ -316,7 +316,7 @@ td {
 
 .modal-content {
     overflow-y: auto;
-    background: hsl(211, 37%, 21%);
+    background: #0c1f33;
     padding: 2rem;
     border-radius: 8px;
     width: 100%;
