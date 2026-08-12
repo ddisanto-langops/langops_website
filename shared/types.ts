@@ -31,7 +31,7 @@ const CrowdinDataSchema = z.object({
   id: z.string(),
   translationProgress: z.number().nullable(),
   approvalProgress: z.number().nullable(),
-  url: z.string(),
+  crowdinUrl: z.string(),
 });
 
 

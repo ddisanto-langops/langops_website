@@ -33,23 +33,13 @@ export function ProductModal({record, isOpen, onClose}: ProductModalProps) {
                     >
                         please do so in Trello
                     </a>.</p>
-                {formData.crowdinData?.url ? 
-                <p
-                    className="generic-notice"
-                    style={{justifySelf: 'center'}}
-                >
-                    Crowdin editor:
-                    <a href={formData.crowdinData.url}></a>
-                </p>
-                : null
-                }
-                {formData.crowdinData?.url ? 
+                {formData.crowdinData?.crowdinUrl ? 
                 <p
                     style={{justifySelf: 'center'}}
                 >
                     <a
                         style={{color: 'coral'}} 
-                        href={formData.crowdinData.url} 
+                        href={formData.crowdinData.crowdinUrl} 
                         target="_blank"
                         rel="noopener"
                     >
