@@ -1,4 +1,5 @@
-import type { LangOpsProduct } from "@langops-website/shared"
+import { LangOpsProduct } from "@langops-website/shared"
+import { DeletePermanentlyButton } from "./DeletePermanentlyButton"
 import { formatDate } from "../../services/formatDate"
 import { useState, useEffect } from "react"
 import ISO6391 from "iso-639-1"
@@ -20,12 +21,13 @@ export function ProductModal({record, isOpen, onClose}: ProductModalProps) {
     if (!isOpen) return null
     return (
         <div className="modal-overlay">
-            <form 
-                name="editModal"
+            <div 
                 className="modal-content"
             >
                 <h2 className="modal-title">View Record</h2>
-                <p className="generic-notice">Product data is refreshed in near-real time. This product has status "{formData.productStatus}." If you need to update its status, <a
+                {
+                    formData.productStatus !== "deleted" ?
+                    <p className="generic-notice">Product data is refreshed in near-real time. This product has status "{formData.productStatus}." If you need to update its status, <a
                         style={{color: 'coral'}} 
                         href={formData.trelloData.url ? formData.trelloData.url : "https://trello.com"} 
                         target="_blank"
@@ -33,6 +35,13 @@ export function ProductModal({record, isOpen, onClose}: ProductModalProps) {
                     >
                         please do so in Trello
                     </a>.</p>
+                    :
+                    <>
+                        <p className="generic-notice">This product has been deleted from Trello. If you want to purge it from the database, do so via the button below.</p>
+                        <DeletePermanentlyButton id={formData.trelloData.id} onDelete={onClose} />
+                    </>
+                }
+                
                 {formData.crowdinData?.crowdinUrl ? 
                 <p
                     style={{justifySelf: 'center'}}
@@ -70,6 +79,8 @@ export function ProductModal({record, isOpen, onClose}: ProductModalProps) {
                             {formData.productStatus === 'pending' ? "Pending ⌛" : ""}
                             {formData.productStatus === 'published' ? 'Published ✅': ""}
                             {formData.productStatus === 'unknown' ? '❓' : ""}
+                            {formData.productStatus === 'deleted' ? "Deleted ⛔" : ""}
+                            {formData.productStatus === "archived" ? "Archived 📚" : ""}
                         </p>        
                     </div>
                     <div className="product-modal-info-block">
@@ -109,7 +120,7 @@ export function ProductModal({record, isOpen, onClose}: ProductModalProps) {
                     >Close
                     </button>
                 </div>
-            </form>
+            </div>
         </div>
     )
 }

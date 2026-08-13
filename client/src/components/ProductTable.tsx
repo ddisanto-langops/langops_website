@@ -40,7 +40,12 @@ const columns = [
   columnHelper.accessor('productStatus', {
     id: "Status",
     header: 'Status',
-    filterFn: caseInsensitiveFilter
+    filterFn: caseInsensitiveFilter,
+    cell: info => {
+      const status = String(info.getValue() ?? '')
+      const capitalized = status.charAt(0).toUpperCase() + status.slice(1);
+      return capitalized
+    }
   }),
   columnHelper.accessor('trelloData.dueDate', {
     header: 'Due',

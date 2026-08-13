@@ -1,0 +1,17 @@
+#peramently-delete-button-div {
+    display: flex;
+    justify-content: center;
+    padding: 15px;
+}
+
+#peramently-delete-button {
+    background-color: hsl(0, 54%, 46%);
+    border: none;
+    border-radius: 6px;
+    min-height: 25px;
+}
+
+#peramently-delete-button:hover {
+     background-color: hsl(0, 61%, 52%);
+     cursor: pointer;
+}

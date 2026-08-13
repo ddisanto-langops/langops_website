@@ -145,11 +145,9 @@ export async function deleteProduct(id: string) {
 }
 
 export async function permanentlyDeleteProduct(id: string) {
-    if(confirm("Permanently delete this record? This action cannot be undone.")) {
-        const response = await fetch(`/api/products/permanent-delete/${id}`, {
-            method: 'DELETE'
-        })
-        if (!response.ok) throw new Error('Failed to delete record')
-        return response
-    }
+    const response = await fetch(`/api/products/permanent-delete/${id}`, {
+        method: 'DELETE'
+    })
+    if (!response.ok) throw new Error('Failed to delete record')
+    return response
 }
