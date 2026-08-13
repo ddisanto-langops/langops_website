@@ -3,7 +3,7 @@ import { HomePage } from './pages/HomePage'
 import { Dashboard } from './pages/Dashboard'
 import { ProductsPage } from './pages/ProductsPage'
 import { FileUploadPage } from './pages/IdmlPage'
-import { GlobalSearchPage } from './pages/GlobalSearch'
+import { WebhooksPage } from  "./pages/Webhooks"
 
 export default function App() {
   return (
@@ -12,6 +12,7 @@ export default function App() {
       <Route path="/dashboard" element={<Dashboard />} />
       <Route path="/products" element={<ProductsPage />} />
       <Route path="/manage-idmls" element={<FileUploadPage />} />
+      <Route path="/webhooks" element={<WebhooksPage />} />
     </Routes>
   )
 };

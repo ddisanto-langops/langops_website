@@ -8,6 +8,7 @@ import { GetProductFilters,
     RestoreResponse,
     StringMapResponse,
     StringMapItem,
+    WebhookFailure,
     LangOpsApiError
 } from "@langops-website/shared"
 
@@ -104,6 +105,23 @@ export class LangOpsApiClient {
             )
         }
 
+        return await response.json()
+    }
+
+    
+    public async getFailedWebhooks(): Promise<WebhookFailure[]> {
+        const url = `${this.basePath}/webhooks/failures`
+        const response = await fetch(url, {
+            method: 'GET',
+            headers: this.headers
+        })
+        if (!response.ok) {
+            const error = await response.json().catch(() => ({}))
+            throw new LangOpsApiError(
+                error.errorCode ?? response.status,
+                error.message ?? response.statusText
+            )
+        }
         return await response.json()
     }
 

@@ -1,18 +1,11 @@
 import "./styles/homepage.css"
 import { NavBar } from '../components/NavBar'
-import { Sidebar } from '../components/sidebar'
-import { useState } from 'react'
 
 export function HomePage() {
-    const [sidebarOpen, setSidebarOpen] = useState(false)
-
-    const sidebarToggle = () => {
-        setSidebarOpen(!sidebarOpen)
-    }
+   
     return (
         <div className='page-wrapper'>
             <NavBar />
-            <Sidebar isOpen={sidebarOpen} onClose={sidebarToggle}/>
             <div className='generic-notice' id='homepage-text'>
                 <h2>Welcome to the PCG LangOps website!</h2>
                 <strong>Language Managers & Admin Assistants</strong> 

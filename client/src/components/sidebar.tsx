@@ -22,6 +22,7 @@ export function Sidebar({ isOpen, onClose } : SidebarProps) {
                 <Link style={{textDecoration: 'none', width: "100%"}} to={"/dashboard"} className='homepage-link'><span>📊</span> Translation Stats</Link>
                 <Link style={{textDecoration: 'none'}} to={"/products"} className='homepage-link'><span>🔍</span> Active & Completed Products</Link>
                 <Link style={{textDecoration: 'none', width: "100%"}} to={"/manage-idmls"} className='homepage-link'><span>🔖</span> Label IDMLs</Link>
+                <Link style={{textDecoration: 'none', width: "100%"}} to={"/webhooks"} className="homepage-link"><span>⚠️</span> Failures</Link>
                 <a 
                     href='https://api.pcglangops.com/redoc'
                     className='homepage-link'

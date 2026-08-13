@@ -1,0 +1,41 @@
+#webhook-table-div {
+    margin-top: 40px;
+    display: grid;
+    place-items: center;
+}
+
+#webhook-table {
+    color: white;
+    width: 95%;
+    margin: 0 auto;
+    border-collapse: separate;
+    border-spacing: 0 10px;
+}
+#webhook-table tr {
+    border-radius: 6px;
+    border: none;
+}
+
+#webhook-table tr  {
+    text-align: center;
+}
+
+td button {
+    background-color: rgb(189, 52, 52);
+    border: none;
+    border-radius: 6px;
+    font-size: 1rem;
+}
+
+td button:hover {
+    background-color: rgb(231, 64, 64);
+    cursor: pointer;
+}
+
+tbody tr:nth-child(even) {
+  background-color: #084f91;
+}
+
+table th {
+    font-size: 1.5rem;
+}

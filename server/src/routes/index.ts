@@ -141,6 +141,18 @@ router.get("/api/products/productcount", async (req, res) => {
 
 
 
+router.get("/api/webhooks/failures", async (req, res) => {
+    try {
+        const webhooks = await client.getFailedWebhooks()
+        res.json(webhooks)
+    } catch (error) {
+        error instanceof Error ? res.status(500).json({ error: error.message }) :
+            res.status(500).json({ error: "GET /api/products/productcount: Unknown error" })
+    }
+})
+
+
+
 router.post('/api/idml/label/:projectId', async (req, res) => {
     try {
         const projectId = Number(req.params.projectId)

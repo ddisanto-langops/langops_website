@@ -163,6 +163,21 @@ export interface DeleteResponse {
     deleted_at: string
 }
 
+export interface WebhookFailure {
+    id: string
+    dateCreated: string
+    statusCode: string
+    data: {
+        action: {
+            data: {
+                card: {
+                    name: string
+                }
+            }
+        }
+    }
+}
+
 
 export class LangOpsApiError extends Error {
     public errorCode: number

@@ -5,7 +5,8 @@ import type {
     ProductCountResponse, 
     ProductMetaFilters, 
     StringMapItem, 
-    StringMapResponse
+    StringMapResponse,
+    WebhookFailure
 } from "@langops-website/shared"
 
 
@@ -93,6 +94,14 @@ export async function getStringMap(projectId: number | string, fileId: number | 
     return stringMap
 }
 
+
+export async function getFailedWebhooks(): Promise<WebhookFailure[]> {
+    const response = await fetch(`/api/webhooks/failures`)
+
+    if (!response.ok) throw new Error("Failed to get webhooks")
+    
+    return await response.json()
+}
 
 export async function labelIdml(projectId: number | string, stringMap: StringMapItem[]) {
     const headers = new Headers()
