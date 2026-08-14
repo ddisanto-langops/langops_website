@@ -1,6 +1,6 @@
 import "./styles/permanently-delete-button.css"
 import { permanentlyDeleteProduct } from "../../services/api"
-import { useMutation, useQueryClient } from "@tanstack/react-query"
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 
 interface DeleteButtonProps {
     id: string

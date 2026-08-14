@@ -109,19 +109,13 @@ export class LangOpsApiClient {
     }
 
     
-    public async getFailedWebhooks(): Promise<WebhookFailure[]> {
+    public async getFailedWebhooks(): Promise<Response> {
         const url = `${this.basePath}/webhooks/failures`
         const response = await fetch(url, {
             method: 'GET',
             headers: this.headers
         })
-        if (!response.ok) {
-            const error = await response.json().catch(() => ({}))
-            throw new LangOpsApiError(
-                error.errorCode ?? response.status,
-                error.message ?? response.statusText
-            )
-        }
+        
         return await response.json()
     }
 
@@ -231,6 +225,23 @@ export class LangOpsApiClient {
             )
         }
         
+        return await response.json()
+    }
+
+    
+    public async deleteFailedWebhook(id: string) {
+        const response = await fetch(`${this.basePath}/webhooks/failures/delete/${id}`, {
+            method: 'DELETE',
+            headers: this.headers
+        })
+        if (!response.ok) {
+            const error = await response.json().catch(() => ({}))
+            throw new LangOpsApiError(
+                error.errorCode ?? response.status,
+                error.message ?? response.statusText
+            )
+        }
+
         return await response.json()
     }
 }

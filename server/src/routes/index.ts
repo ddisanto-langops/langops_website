@@ -1,4 +1,4 @@
-import { Router, Request } from "express"
+import { Router, Request, response } from "express"
 import { LangOpsApiClient } from "../langopsApiClient.js";
 import { 
     GetProductFilters, 
@@ -142,13 +142,8 @@ router.get("/api/products/productcount", async (req, res) => {
 
 
 router.get("/api/webhooks/failures", async (req, res) => {
-    try {
-        const webhooks = await client.getFailedWebhooks()
-        res.json(webhooks)
-    } catch (error) {
-        error instanceof Error ? res.status(500).json({ error: error.message }) :
-            res.status(500).json({ error: "GET /api/products/productcount: Unknown error" })
-    }
+    const response = await client.getFailedWebhooks()
+    res.json(response)
 })
 
 
@@ -229,6 +224,18 @@ router.delete('/api/products/permanent-delete/:id', async (req, res) => {
     try {
         const { id } = req.params
         const response = await client.permanentlyDeleteProduct(id)
+        res.json(response)
+    } catch (error) {
+        error instanceof Error ? res.status(500).json({error: error.message}) :
+            res.status(500).json({error: "DEL /api/products/permanent-delete:id: Unknown error"})
+    }
+})
+
+
+router.delete('/api/webhooks/failures/delete/:id', async (req, res) => {
+    try {
+        const { id } = req.params
+        const response = await client.deleteFailedWebhook(id)
         res.json(response)
     } catch (error) {
         error instanceof Error ? res.status(500).json({error: error.message}) :

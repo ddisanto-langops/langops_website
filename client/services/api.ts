@@ -95,13 +95,14 @@ export async function getStringMap(projectId: number | string, fileId: number | 
 }
 
 
-export async function getFailedWebhooks(): Promise<WebhookFailure[]> {
+export async function getFailedWebhooks(): Promise<WebhookFailure[] | []> {
     const response = await fetch(`/api/webhooks/failures`)
 
-    if (!response.ok) throw new Error("Failed to get webhooks")
+    if (!response.ok) return []
     
     return await response.json()
 }
+
 
 export async function labelIdml(projectId: number | string, stringMap: StringMapItem[]) {
     const headers = new Headers()
@@ -158,5 +159,13 @@ export async function permanentlyDeleteProduct(id: string) {
         method: 'DELETE'
     })
     if (!response.ok) throw new Error('Failed to delete record')
+    return response
+}
+
+export async function deleteFailedWebhook(id: string) {
+    const response = await fetch(`/api/webhooks/failures/delete/${id}`, {
+        method: 'DELETE'
+    })
+    if (!response.ok) throw new Error("Failed to delete webhook")
     return response
 }
