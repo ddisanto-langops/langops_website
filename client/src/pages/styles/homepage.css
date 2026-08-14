@@ -1,6 +1,13 @@
 #homepage-text {
-    display: block;
-    width: 40%;
+    display: flex;
+    flex-direction: column;
+    width: auto;
     align-self: center;
+    font-size: 1.5rem;
+}
 
+#homepage-text ul {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
 }
