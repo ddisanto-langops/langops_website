@@ -27,18 +27,21 @@ export function WebhooksTable() {
     return (
         <>
         <p className="generic-notice">Below are products that failed to be automatically created, edited or deleted. 
-            <br/>Some common reasons include:
+            <br/>Some common reasons for this include:
             <ul>
                 <li>Title is missing product code</li>
                 <li>Title is missing target language</li>
                 <li>Title is URL</li>
                 <li>Product not found</li>
-                <li>Unexpected server errors</li>
+                <li>Unexpected server error</li>
             </ul>
             <strong>Some of these may be false alarms,</strong> but they are preserved here for verification. 
             Once you have manually processed or verified the product, click on "delete" to remove the entry from this table.
         </p>
-        {
+        {   error ? <p className="error-message">Error fetching webhooks</p> :
+        
+            loading ? <p className="generic-notice">Loading...</p> :
+        
             webhooks.length > 0 ?
                 <div id="webhook-table-div">
                     <table id="webhook-table">
