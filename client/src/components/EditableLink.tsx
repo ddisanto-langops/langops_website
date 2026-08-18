@@ -55,7 +55,7 @@ export function EditableLink({accessor, currentLink, onChange }: EditableLinkPro
                   {currentLink}
                 </a>
               ) : (
-                <span>No link added</span>
+                <span style={{color: "white"}}>No link added</span>
               )}
             </div>
             <div className="button-wrapper">

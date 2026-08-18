@@ -15,8 +15,6 @@ export function AdaptiveModal({ row, isOpen, handleModalClose }:AdaptiveModalPro
     
     if (row.productStatus === "published") return ( <EditModal record={row} isOpen={isOpen} onClose={handleModalClose} />)
     
-        return (
-        <ProductModal record={row} isOpen={isOpen} onClose={handleModalClose} />
-    )
+        return (<ProductModal record={row} isOpen={isOpen} onClose={handleModalClose} />)
 
 }

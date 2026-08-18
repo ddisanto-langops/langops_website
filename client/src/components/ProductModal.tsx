@@ -1,3 +1,4 @@
+import "./styles/product-modal.css"
 import { LangOpsProduct } from "@langops-website/shared"
 import { DeletePermanentlyButton } from "./DeletePermanentlyButton"
 import { formatDate } from "../../services/formatDate"
@@ -17,17 +18,33 @@ export function ProductModal({record, isOpen, onClose}: ProductModalProps) {
         setFormData(record)
     }, [record])
 
+    
+    const getStatusLabel = (status: string) => {
+        switch (status) {
+            case 'pending':
+                return "Pending ⌛";
+            case 'published':
+                return "Published ✅";
+            case 'unknown':
+                return "❓";
+            case 'deleted':
+                return "Deleted ⛔";
+            case 'archived':
+                return "Archived 📚";
+            default:
+                return "";
+        }
+    }
+
 
     if (!isOpen) return null
     return (
         <div className="modal-overlay">
-            <div 
-                className="modal-content"
-            >
+            <div className="modal-content">
                 <h2 className="modal-title">View Record</h2>
                 {
                     formData.productStatus !== "deleted" ?
-                    <p className="generic-notice">Product data is refreshed in near-real time. This product has status "{formData.productStatus}." If you need to update its status, <a
+                    <p className="generic-notice">Product data is refreshed in near-real time. This product has status "{formData.productStatus}" and cannot be edited here. If you need to make edits, <a
                         style={{color: 'coral'}} 
                         href={formData.trelloData.url ? formData.trelloData.url : "https://trello.com"} 
                         target="_blank"
@@ -43,73 +60,50 @@ export function ProductModal({record, isOpen, onClose}: ProductModalProps) {
                 }
                 
                 {formData.crowdinData?.crowdinUrl ? 
-                <p
-                    style={{justifySelf: 'center'}}
-                >
+                <p className="generic-notice">This product is being localized<span> </span>
                     <a
                         style={{color: 'coral'}} 
                         href={formData.crowdinData.crowdinUrl} 
                         target="_blank"
                         rel="noopener"
                     >
-                        Edit in Crowdin
+                        in Crowdin
                     </a>
                 </p>
                 : null
                 }
                 <div className="modal-body">
-                    <div className="product-modal-info-block">
-                        <label className="product-modal-label">Title:</label>
-                        <p className="product-modal-info">{formData.trelloData.title ?? '❓'}</p>
+                    <div className="modal-field">
+                        <label className="modal-label">Title:</label>
+                        <input className="modal-input" disabled={true} value={formData.trelloData.title ?? '❓'}/>
                     </div>
-                    <div className="product-modal-info-block">
-                        {
-                            formData.trelloData.targetLanguage ?  
-                                <>
-                                    <label className="product-modal-label">Target Language:</label>
-                                    <p className="product-modal-info">{ISO6391.getName(formData.trelloData.targetLanguage)}</p>
-                                </>
-                                : null
-                        }
-                        
+                    <div className="modal-field">
+                        <label className="modal-label">Target Language:</label>
+                        <input className="modal-input" disabled={true} value={formData.trelloData.targetLanguage ? ISO6391.getName(formData.trelloData.targetLanguage) : ''}/>
                     </div>
-                    <div className="product-modal-info-block">
-                        <label className="product-modal-label">Status:</label>
-                        <p className="product-modal-info">
-                            {formData.productStatus === 'pending' ? "Pending ⌛" : ""}
-                            {formData.productStatus === 'published' ? 'Published ✅': ""}
-                            {formData.productStatus === 'unknown' ? '❓' : ""}
-                            {formData.productStatus === 'deleted' ? "Deleted ⛔" : ""}
-                            {formData.productStatus === "archived" ? "Archived 📚" : ""}
-                        </p>        
+                    <div className="modal-field">
+                        <label className="modal-label">Status:</label>
+                        <input className="modal-input" disabled={true} value={getStatusLabel(formData.productStatus)}/> 
                     </div>
-                    <div className="product-modal-info-block">
-                        <label className="product-modal-label">Due:</label>
-                        <p className="product-modal-info">{formatDate(formData.trelloData.dueDate) ?? '❓'}</p>
+                    <div className="modal-field">
+                        <label className="modal-label">Due:</label>
+                        <input className="modal-input" disabled={true} value={formatDate(formData.trelloData.dueDate) ?? '❓'}/>
                     </div>
-                    <div className="product-modal-info-block">
-                        <label className="product-modal-label">Last Activity:</label>
-                        <p className="product-modal-info">{formatDate(formData.trelloData.dateLastActivity)}</p>
+                    <div className="modal-field">
+                        <label className="modal-label">Last Activity:</label>
+                        <input className="modal-input" disabled={true} value={formatDate(formData.trelloData.dateLastActivity)}/>
                     </div>
-                    <div className="product-modal-info-block">
-                        <label className="product-modal-label">Translation Progress:</label>
-                        <p className="product-modal-info">
-                            {formData.crowdinData?.translationProgress ? `${formData.crowdinData.translationProgress}%` : '⛔'}
-                        </p>
+                    <div className="modal-field">
+                        <label className="modal-label">Wordcount:</label>
+                        <input className="modal-input" disabled={true} value={String(formData.trelloData.wordCount)} />
                     </div>
-                    <div className="product-modal-info-block">
-                        <label className="product-modal-label">Approval Progress:</label>
-                        <p className="product-modal-info">
-                            {formData.crowdinData?.approvalProgress ? `${formData.crowdinData.approvalProgress}%` : '⛔'}
-                        </p>
+                    <div className="modal-field">
+                        <label className="modal-label">Translation Progress:</label>
+                        {formData.crowdinData?.translationProgress ? `${formData.crowdinData.translationProgress}%` : '❓'}
                     </div>
-                    <div className="product-modal-info-block">
-                        <label className="product-modal-label">Date Published:</label>
-                        <p className="product-modal-info">{formatDate(formData.trelloData.datePublished) ?? '❓'}</p>
-                    </div>
-                    <div className="product-modal-info-block">
-                        <label className="product-modal-label">Wordcount:</label>
-                        <p className="product-modal-info">{formData.trelloData.wordCount}</p>
+                    <div className="modal-field">
+                        <label className="modal-label">Approval Progress:</label>
+                        {formData.crowdinData?.approvalProgress ? `${formData.crowdinData.approvalProgress}%` : '❓'}
                     </div>
                 </div>
                 <div className="modal-actions">

@@ -1,5 +1,5 @@
 export function formatDate(isoString: string | null, timezone = 'America/Chicago') {
-    if (!isoString) return null
+    if (!isoString) return ''
     return new Intl.DateTimeFormat('en-US', {
         year: 'numeric',
         month: 'short',

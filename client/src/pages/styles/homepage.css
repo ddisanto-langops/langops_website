@@ -3,7 +3,8 @@
     flex-direction: column;
     width: auto;
     align-self: center;
-    font-size: 1.5rem;
+    font-size: 1.3rem;
+    margin-bottom: 50px;
 }
 
 #homepage-text ul {

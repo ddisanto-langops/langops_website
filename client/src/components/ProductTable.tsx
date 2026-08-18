@@ -1,3 +1,4 @@
+import "./styles/product-table.css"
 import { LangOpsProduct } from "@langops-website/shared"
 import { useState } from "react"
 import {
@@ -68,7 +69,28 @@ export function ProductTable({ data, isLoading, isError, handleRowClick }: Produ
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
   
 
-  
+  const styleStatus = (cellValue: string | unknown) => {
+    if (typeof cellValue !== 'string') return {color: "white"}
+    switch (cellValue) {
+      case "pending":
+        return {color: "orange"}
+
+      case "published":
+        return {color: "rgb(32,223,96)"}
+      
+      case "archived":
+        return {color: "rgb(217, 230, 102)"}
+      
+      case "deleted":
+        return {color: "#d31111"}
+      
+      case "unknown":
+        return {color: "#6eebfc"}
+      
+      default:
+        return {color: "white"}
+    }
+  }
 
   
 
@@ -144,7 +166,7 @@ export function ProductTable({ data, isLoading, isError, handleRowClick }: Produ
             table.getRowModel().rows.map(row => (
               <tr className="table-row" style={{ cursor: 'pointer' }} key={row.id} onClick={() => handleRowClick(row.original)}>
                 {row.getVisibleCells().map(cell => (
-                  <td className="table-data" key={cell.id}>
+                  <td className="table-data" key={cell.id} style={styleStatus(cell.getValue())}>
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </td>
                 ))}

@@ -110,32 +110,34 @@ const handleDropdownChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
                 </p>
                 : null
                 }
-                <div className="completion-modal-body">
-                    <div className="completion-modal-field">
-                        <label className="completion-modal-label">Editor URL:</label>
+                <div className="modal-body">
+                    <div className="modal-field">
+                        <label className="modal-label">Editor URL:</label>
                         <EditableLink accessor="editorUrl" currentLink={formData.trelloData.editorUrl ?? ""} onChange={handleLinkEdit} />
-                        <label className="completion-modal-label">Article URL:</label>
+                        <label className="modal-label">Article URL:</label>
                         <EditableLink accessor="articleUrl" currentLink={formData.trelloData.articleUrl ?? ""} onChange={handleLinkEdit} />
-                        <label className="completion-modal-label">Title:</label>
+                        <label className="modal-label">YouTube URL:</label>
+                        <EditableLink accessor="editorUrl" currentLink={formData.youtubeData?.url ?? ""} onChange={handleLinkEdit} />
+                        <label className="modal-label">Title:</label>
                         <input
                             name="title" 
-                            className="completion-modal-input" 
+                            className="modal-input" 
                             value={formData.trelloData.title}
                             onChange={handleInputChange}
                         >
                         </input>
-                        <label className="completion-modal-label">Localized Title:</label>
+                        <label className="modal-label">Localized Title:</label>
                         <input
                             name="localizedTitle" 
-                            className="completion-modal-input" 
+                            className="modal-input" 
                             value={formData.trelloData.localizedTitle ?? ''}
                             onChange={handleInputChange}
                         >
                         </input>
-                        <label className="completion-modal-label">Product Code:</label>
+                        <label className="modal-label">Product Code:</label>
                         <select
                             name="productCode" 
-                            className="completion-modal-input" 
+                            className="modal-input" 
                             value={formData.trelloData.productCode ?? undefined}
                             onChange={handleDropdownChange}
                         >
@@ -143,10 +145,10 @@ const handleDropdownChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
                                 <option key={code}>{code}</option>
                             ))}
                         </select>
-                        <label className="completion-modal-label">Target Language:</label>
+                        <label className="modal-label">Target Language:</label>
                         <select
                             name="targetLanguage" 
-                            className="completion-modal-input" 
+                            className="modal-input" 
                             value={formData.trelloData.targetLanguage ?? undefined}
                             onChange={handleDropdownChange}
                         >
@@ -154,26 +156,26 @@ const handleDropdownChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
                                 <option key={language} value={ISO6391.getCode(language)}>{language}</option>
                             ))}
                         </select>
-                        <label className="completion-modal-label">Date Published:</label>
+                        <label className="modal-label">Date Published:</label>
                         <input
                             name="datePublished"
-                            className="completion-modal-input" 
+                            className="modal-input" 
                             value={formData.trelloData.datePublished ?? ''}
                             onChange={handleInputChange}
                         >
                         </input>
-                        <label className="completion-modal-label">Date Archived:</label>
+                        <label className="modal-label">Date Archived:</label>
                         <input
                             name="dateArchived"
-                            className="completion-modal-input" 
+                            className="modal-input" 
                             value={formData.trelloData.dateArchived ?? ''}
                             onChange={handleInputChange}
                         >
                         </input>
-                        <label className="completion-modal-label">Wordcount:</label>
+                        <label className="modal-label">Wordcount:</label>
                         <input
                             name="wordCount"
-                            className="completion-modal-input" 
+                            className="modal-input" 
                             value={formData.trelloData.wordCount ?? ''}
                             onChange={handleInputChange}
                         >
