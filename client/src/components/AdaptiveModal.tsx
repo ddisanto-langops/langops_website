@@ -13,7 +13,7 @@ export function AdaptiveModal({ row, isOpen, handleModalClose }:AdaptiveModalPro
     
     if (!row) return null
     
-    if (row.productStatus === "published") return ( <EditModal record={row} isOpen={isOpen} onClose={handleModalClose} />)
+    if (row.productStatus === "published" || row.productStatus === "archived") return ( <EditModal record={row} isOpen={isOpen} onClose={handleModalClose} />)
     
         return (<ProductModal record={row} isOpen={isOpen} onClose={handleModalClose} />)
 
