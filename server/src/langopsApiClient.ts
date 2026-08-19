@@ -8,7 +8,6 @@ import { GetProductFilters,
     RestoreResponse,
     StringMapResponse,
     StringMapItem,
-    WebhookFailure,
     LangOpsApiError
 } from "@langops-website/shared"
 
@@ -121,7 +120,11 @@ export class LangOpsApiClient {
 
 
     public async getStringMap(projectId: number, fileId: number): Promise<StringMapResponse | LangOpsApiError> {
-        const url = `${this.basePath}/idml/map/${projectId}/${fileId}`
+        const query = this.buildParams({
+            projectId: projectId,
+            fileId: fileId
+        })
+        const url = `${this.basePath}/idml/map?${query}`
         const response = await fetch(url,
             {
                 method: 'GET',

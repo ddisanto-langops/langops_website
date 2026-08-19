@@ -86,7 +86,11 @@ export async function getProductCount(filters: ProductMetaFilters): Promise<Prod
 }
 
 export async function getStringMap(projectId: number | string, fileId: number | string): Promise<StringMapResponse> {
-    const response = await fetch(`/api/idml/map/${projectId}/${fileId}`)
+    const query = buildQuery({
+        projectId: projectId,
+        fileId: fileId
+    })
+    const response = await fetch(`/api/idml/map?${query}`)
 
     if (!response.ok) throw new Error("Failed to get string map")
     

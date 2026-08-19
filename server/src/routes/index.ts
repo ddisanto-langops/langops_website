@@ -163,10 +163,10 @@ router.post('/api/idml/label/:projectId', async (req, res) => {
 
 
 
-router.get("/api/idml/map/:projectId/:fileId", async (req, res) => {
+router.get("/api/idml/map", async (req, res) => {
     try {
-        const projectId = Number(req.params.projectId)
-        const fileId = Number(req.params.fileId)
+        const projectId = Number(req.query.projectId)
+        const fileId = Number(req.query.fileId)
         const response = await client.getStringMap(projectId, fileId)
         res.json(response)
         
