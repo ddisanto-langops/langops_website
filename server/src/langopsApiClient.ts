@@ -55,7 +55,7 @@ export class LangOpsApiClient {
 
     public async getProducts(filters: GetProductFilters): Promise<PaginatedProductResponse> {
                 
-        const response = await fetch(`${this.basePath}/products/?${this.buildParams(filters)}`,
+        const response = await fetch(`${this.basePath}/products?${this.buildParams(filters)}`,
             {
                 method: 'GET',
                 headers: this.headers
