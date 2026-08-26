@@ -84,11 +84,19 @@ export const customStylesMulti: StylesConfig<OptionType, true> = {
         padding: "7px",
 
         "::-webkit-scrollbar": {
-            width: "10px"
+            width: "10px",
+            height: "12px"
         },
         "::-webkit-scrollbar-track": {
             backgroundColor: "rgb(13,130,191)",
             borderRadius: "8px",
+        },
+
+        "::-webkit-scrollbar-thumb": {
+            backgroundColor: "rgb(212, 214, 214)",
+            width: "10px",
+            height: "6px",
+            borderRadius:"6px"
         }
     })
 }

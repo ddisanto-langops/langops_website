@@ -75,7 +75,7 @@ export function FileUploadPage() {
     
     const handleStringMapChange = (contextIdentifier: string, e: React.ChangeEvent<HTMLInputElement>) => {
         if (stringMap) {
-            const title = e.target.value
+            const title = e.target.value.replace(/[^a-zA-Z0-9 ]/g, '');
             setStringMap((prev) => {
                 if (!prev) return null
                 return {
@@ -140,7 +140,7 @@ export function FileUploadPage() {
                         placeholder="Select a file..."
                         styles={customStylesSingle}
                         value={selectedFile}
-                        loadOptions={(input) => getFiles(selectedProject.value)}
+                        loadOptions={() => getFiles(selectedProject.value)}
                         onChange={(option) => setSelectedFile(option)}
                     /> 
                  : null
@@ -174,7 +174,15 @@ export function FileUploadPage() {
                         return (
                             <div className='idml-article-div' key={item.contextIdentifier}>
                                 <div className='idml-text-div'><p>{item.map.strings}</p></div>
-                                <input className='idml-input' placeholder='Name this article...' value={item.map.labelText ?? ''} onChange={(e) => handleStringMapChange(item.contextIdentifier, e)}></input>
+                                <input 
+                                    className='idml-input' 
+                                    pattern="[a-zA-Z0-9]+" 
+                                    placeholder='Name this article...' 
+                                    title="Only letters and numbers allowed. No spaces or special characters."
+                                    value={item.map.labelText ?? ''} 
+                                    onChange={(e) => handleStringMapChange(item.contextIdentifier, e)}
+                                    >
+                                    </input>
                             </div>
                         )
                     })
