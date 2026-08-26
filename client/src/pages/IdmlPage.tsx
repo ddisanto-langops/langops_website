@@ -149,7 +149,6 @@ export function FileUploadPage() {
             <div>
                 {
                     selectedFile && selectedProject ?
-                    <>
                     <div className='idml-buttons-div'>
                         <button disabled={stringMap ? true : false} className='interactive-button' onClick={() => fetchStringMap(selectedProject.value, selectedFile.value)}>
                             { isExtracting ? "Extracting..." : "Extract Articles"}
@@ -163,8 +162,6 @@ export function FileUploadPage() {
                         }
                         
                     </div>
-                    <p className='generic-notice'>Provide label text for each article. Apostrophes and punctuation are not allowed.</p>
-                    </>
                     :
                     null
                     
@@ -172,6 +169,11 @@ export function FileUploadPage() {
             </div>
             
             <div>
+                {
+                    stringMap && selectedProject ?
+                        <p className='generic-notice'>Provide label text for each article. Apostrophes and punctuation are not allowed.</p>
+                    : null
+                }
                 {
                     stringMap && selectedProject ?
                     stringMap.data.map((item) => {
