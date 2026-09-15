@@ -4,7 +4,6 @@ import { getCrowdinProjects, getCrowdinFiles, getStringMap, labelIdml } from '..
 import React, { useState } from 'react';
 import AsyncSelect from 'react-select/async';
 import { StringMapResponse } from '@shared/types';
-import { Footer } from '../components/footer';
 
 
 interface CrowdinOption {

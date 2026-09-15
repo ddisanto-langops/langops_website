@@ -22,12 +22,11 @@ export function WebhooksTable() {
     return (
         <>
         <div className="generic-notice"><span style={{color:"coral"}}>Below are products that failed to be automatically created, edited or deleted. You will need to process them on Trello.</span> 
-            <br/>Some common reasons for this include:
+            <br/>The most common reasons for this include:
             <ul>
-                <li>Typo when creating card manually (e.g. missing product code/language)</li>
-                <li>Title is URL</li>
-                <li>Product not found</li>
-                <li>Unexpected server error</li>
+                <li>Incorrect card title (missing product code, etc.)</li>
+                <li>Trying to edit a non-existent card</li>
+                <li>Unhandled server error</li>
             </ul>
             <strong>Note: some of these may be false positives,</strong> but they are preserved for verification until deleted.
         </div>
