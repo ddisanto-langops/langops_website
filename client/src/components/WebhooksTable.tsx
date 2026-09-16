@@ -21,14 +21,14 @@ export function WebhooksTable() {
     
     return (
         <>
-        <div className="generic-notice"><span style={{color:"coral"}}>Below are products that failed to be automatically created, edited or deleted. You will need to process them on Trello.</span> 
-            <br/>The most common reasons for this include:
+        <div className="generic-notice"><span style={{color:"coral"}}>Below are products that failed to be automatically created, edited or deleted. Please process each item on Trello, verify it appears on this website, and then delete the record below.</span> 
+        <p style={{justifySelf: 'left'}}>Common reasons for cards to appear here:</p>
             <ul>
-                <li>Incorrect card title (missing product code, etc.)</li>
-                <li>Trying to edit a non-existent card</li>
+                <li>Invalid title (missing product code, etc.)</li>
+                <li>Attempting to edit a non-existent card</li>
                 <li>Unhandled server error</li>
             </ul>
-            <strong>Note: some of these may be false positives,</strong> but they are preserved for verification until deleted.
+        <p style={{justifySelf: 'left'}}><strong>Note: manual card creation tends to generate false positives due to placeholder titles applied by Trello.</strong></p>
         </div>
         {   isError ? <p className="error-message">Error fetching webhooks</p> :
         
