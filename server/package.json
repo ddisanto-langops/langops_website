@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "dev": "tsx watch src/server.ts",
+    "dev": "nodemon -L --exec tsx src/server.ts",
     "check": "tsc --noEmit",
     "build": "tsc"
   },
