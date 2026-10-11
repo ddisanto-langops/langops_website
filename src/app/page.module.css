@@ -1,0 +1,20 @@
+.homepageTitle {
+  color: coral;
+  text-align: center;
+  margin-top: 10px;
+}
+
+.homepageBlurb {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  font-size: 1.2rem;
+  background-color: rgb(22, 45, 70);
+  justify-content: center;
+  justify-self: center;
+  padding: 40px;
+  color: white;
+  text-align: left;
+  max-width: 50%;
+  border-radius: 10px;
+}

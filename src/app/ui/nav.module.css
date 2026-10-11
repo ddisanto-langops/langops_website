@@ -1,0 +1,51 @@
+.websiteTitle {
+    color: white;
+    text-align: center;
+    padding: 10px;
+    margin-top: 20px;
+    margin-bottom: 30px;
+    font-family: serif;
+    border-bottom: 2px solid #0a202b;
+}
+
+.menuButton {
+    position: fixed;
+    margin-left: 10px;
+    background-image: linear-gradient(to right, rgb(13, 76, 148), #1a81b1);
+    color: white;
+    border-radius: 8px;
+    padding: 10px;
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.menuButton:hover {
+    background-image: linear-gradient(to right, rgb(17, 95, 185), #20a0db);
+}
+
+.sidebar {
+    margin-left: 10px;
+    margin-top: 45px;
+    padding: 5px;
+    position: fixed;
+    z-index: 1;
+    background-image: linear-gradient(to right, rgb(13, 76, 148), #1a81b1);
+    border-radius: 10px;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    max-width: 25%;
+}
+
+.sidebar a {
+    padding: 25px;
+    cursor: pointer;
+    border: 1px solid transparent;
+}
+
+.sidebar a:hover {
+    border: 1px solid coral;
+    border-radius: 10px;
+    background-image: linear-gradient(to right, rgb(17, 95, 185), #20a0db);
+}

@@ -1,44 +1,36 @@
-# LangOps Website
-## Intro
-### Goal
-The LangOps website aims to make localization management as visible and simple as possible. Products should be easy to inspect, follow and search. In addition, the website makes possible automations which involve custom logic and are not possible elsewhere.  
-  
-**This website is aimed at:**  
-1) Language managers, who need to keep up with specific products as well as general trends in their language(s);  
-2) Admin assistants, who need to find localized products and titles rapidly along with links and other relevant metadata;
-3) Solution architects, who plan integrations and manage business logic;
-4) Directors and higher-level translation department supervisors who need to understand long-term trends
+This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
-The website is built with future expansion in mind, e.g. Crowdin and Blackbird integrations, and leverages an API (see below).
+## Getting Started
 
-## Tech Stack
-From top (client) to bottom (infrastructure), the website uses the following technologies:  
-  
-**The Website:**
-- Typescript React/HTML/CSS: client-facing application
-- Tanstack Table and Tanstack Query: data visualization for the products table
-- Express.js (Typescript): server for backend of the website application
-- Docker: packages the entire website, providing predictable environment and behavior on any server
+First, run the development server:
 
-**The LangOps Ecosystem**
-- LangOps Gateway: Receives webhooks from any configured provider, performs security checks, then decides what LangOps API calls to make. [See the repo](https://github.com/ddisanto-langops/langops-gateway)
-- LangOps API: Controls all interactions with the LangOps database (get/edit/delete products, etc.). [See the repo](https://github.com/ddisanto-langops/langops-api)
-- LangOps Database: PostgreSQL database which stores all product data, as well as data on automation failures. Uses on-premises mirroring to safeguard data.
+```bash
+npm run dev
+# or
+yarn dev
+# or
+pnpm dev
+# or
+bun dev
+```
 
-**Web Hosting**
-- Cloudflare: All access and web hosting is provided by Cloudflare Zero-Trust
-- LangOps Server: A Proxmox VE cluster, currently consisting of 2 nodes. 
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
+You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
-## Navigating the Site  
-These are the pages you'll encounter:
-- Dashboard: total words of published and archived products. Filterable by language, product code, media group, and date.
-- Products: all Trello cards which match the selection critereia (see below). Filterable by language, product code, media group, date and title/localized title.
-- Label IDMLs: Extract "stories" from any IDML file uploaded to Crowdin, and name them for assignment to translators. (In the organization's current workflows, each story file corresponds to an article which can be translated).
-- Failures: See products which failed automated tracking, and manually edit or add them to the database.
-- API Documentation: Consult the FastAPI documentation for the LangOps API.
+This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
-## Environment Variables
-The website requires you to provide credentials for external services it accesses. The necessary services are:
-- LangOps API `CF-Access-Client-Id` and `CF-Access-Secret` (for translation products)
-- Crowdin (for labeling of IDMLs)
+## Learn More
+
+To learn more about Next.js, take a look at the following resources:
+
+- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
+- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+
+You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+
+## Deploy on Vercel
+
+The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+
+Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
