@@ -1,27 +1,20 @@
 import styles from '@/app/stats/stats.module.css'
+import { apiRequest } from '@/app/lib/langops-api'
 
 interface Wordcount {
     totalWords: string
 }
 
 export async function Wordcount() {
-    const basepath = process.env.BASEPATH
-    const res = await fetch(
-        `${basepath}/products/wordcount`,
-        {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                'CF-Access-Client-Id': `${process.env.CF_ACCESS_CLIENT_ID}`,
-                'CF-Access-Client-Secret': `${process.env.CF_ACCESS_CLIENT_SECRET}`
-            }
-        }
-    )
-
-    const words: Wordcount = await res.json()
+    const options: RequestInit = {
+        method: 'GET'
+    }
+    const words: Wordcount = await apiRequest("products/wordcount", options)
+        
+    
     return (
         <div className={styles.wordcount}>
-            <span style={{color: 'white'}}>Total Words Published:</span><span> </span>
+            <span style={{color: 'white'}}>Words Published:</span><span> </span>
             {words.totalWords.toLocaleString()}
         </div>
 

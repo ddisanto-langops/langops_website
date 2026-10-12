@@ -1,0 +1,144 @@
+.filterDiv {
+    justify-self: center;
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+    height: 40px;
+}
+
+.filterButton {
+    background-image: linear-gradient(to right, rgb(13, 76, 148), #1a81b1);
+    color: white;
+    border-radius: 6px;
+    padding: 5px;
+    border: 1px solid white;
+}
+
+.filterButton:hover {
+    color: coral;
+    border: 1px solid coral;
+    cursor: pointer;
+}
+
+
+/* Outermost container */
+.comboBoxContainer {
+    display: flex;
+    flex-direction: column;
+    height: fit-content;
+    gap: 6px;
+    font-family: system-ui, sans-serif;
+}
+
+/* Unified wrapper layout for Input + Button */
+.inputWrapper {
+    display: flex;
+    align-items: center;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    background-color: #1a81b1;
+    overflow: hidden;
+    max-width: 400px;
+}
+
+.inputWrapper:focus-within {
+  border-color: coral;
+  box-shadow: 0 0 0 2px rgba(0, 102, 204, 0.2);
+}
+
+/* Inner Input element */
+.input {
+    background-image: linear-gradient(to right, rgb(13, 76, 148), #1a81b1);
+    flex: 1;
+    border: none;
+    padding: 10px 14px;
+    font-size: 14px;
+    outline: none;
+}
+
+/* Chevron Trigger Button wrapper */
+.fieldButton {
+    background-color: rgba(47, 162, 238, 0.745);
+    border: none;
+    padding: 0 12px;
+    cursor: pointer;
+    display: flex;
+    height: 25px;
+    width: auto;
+    margin: 2px;
+    border: 1px solid white;
+    border-radius: 6px;
+    align-items: center;
+}
+
+.chevron {
+    width: 16px;
+    height: 16px;
+    color: white;
+}
+
+/* Selected values read-out box (For multi-select mode) */
+.valuesSummary {
+    font-size: 14px;
+    color: coral;
+    margin-top: 4px;
+}
+
+/* Floating overlay sheet layout */
+.popover {
+    z-index: 2;
+    background: rgba(47, 162, 238, 0.745);
+    backdrop-filter: blur(3px);
+    border: 1px solid coral;
+    border-radius: 8px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+    min-width: var(--trigger-width); /* Matches trigger width automatically */
+}
+
+/* Scrollable Container Wrapper */
+.listBox {
+    list-style: none;
+    padding: 6px 0;
+    margin: 0;
+    max-height: 250px;
+    overflow-y: auto;
+}
+
+/* Core styling for individual items */
+.item {
+    border: 1px solid transparent;
+    padding: 10px 14px;
+    font-size: 14px;
+    cursor: default;
+    outline: none;
+    color: white;
+    transition: background-color 0.1s ease;
+}
+
+.item:hover {
+    border: 1px solid coral;
+    background-color: coral;
+    color: white;
+    cursor: pointer
+}
+
+/* Dynamic State Classes mapped by React Aria Render Props */
+.itemFocused {
+  background-color: #f0f4f9;
+  color: #111;
+}
+
+.itemSelected {
+  background-color: coral;
+  color: #0056b3;
+  font-weight: 500;
+}
+
+.itemDisabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.input::placeholder {
+    color: white;
+}
