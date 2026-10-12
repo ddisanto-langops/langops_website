@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { MenuButton } from "./components/menu-button";
 import { Sidebar } from "./components/sidebar";
+import Link from "next/link";
 import styles from "@/app/ui/nav.module.css"
 
 export function NavBar() {
@@ -14,7 +15,7 @@ export function NavBar() {
 
     return (
         <div>
-            <h1 className={styles.websiteTitle}>PCG LangOps</h1>
+            <h1 className={styles.websiteTitle}><Link href={"/"}>PCG LangOps</Link></h1>
             <MenuButton menuOpen={menuOpen} handleButtonClick={handleMenuButtonClick} />
             {menuOpen ? <Sidebar /> : null}
         </div>

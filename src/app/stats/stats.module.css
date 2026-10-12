@@ -1,0 +1,9 @@
+.wordcount {
+    background-image: linear-gradient(to right, rgb(13, 76, 148), #1a81b1);
+    color: coral;
+    font-size: 2rem;
+    justify-self: center;
+    border-radius: 10px;
+    padding: 5px;
+    margin-top: 50px;
+}

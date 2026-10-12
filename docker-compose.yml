@@ -1,0 +1,27 @@
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: langops-website-dev
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/app           # Bind mount: Syncs local project files into the container
+      - /app/node_modules # Anonymous volume: Prevents host node_modules from overwriting container node_modules
+      - /app/.next       # Anonymous volume: Prevents caching conflicts between host and container
+    environment:
+      - NODE_ENV=development
+      - WATCHPACK_POLLING=true # CRITICAL FOR HOT-RELOADING IN DOCKER
+    
+    env_file:
+      - /etc/langops-website/secrets.env
+    
+    networks:
+      - shared-network
+
+
+networks:
+  shared-network:
+    external: true
+    name: dev-bridge-network

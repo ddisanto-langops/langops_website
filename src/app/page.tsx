@@ -14,7 +14,7 @@ export default function Home() {
           makes possible custom automations not possible elsewhere.</p>
           <p>You can:</p>
         <ul>
-            <li>📊 View and filter <Link style={{color:"coral"}} href={"/dashboard"}>translations statistics</Link></li>
+            <li>📊 View and filter <Link style={{color:"coral"}} href={"/stats"}>translations statistics</Link></li>
             <li>🔍 <Link style={{color:"coral"}} href={"/products"}>Search for and edit products</Link> relevant to your language</li>
             <li>🔖 <Link style={{color:"coral"}} href={"/manage-idmls"}>Label individual articles</Link> from inDesign documents uploaded to Crowdin</li>
             <li>⚠️ <Link style={{color:"coral"}} href={"/failures"}>Process</Link> failed products manually</li>
