@@ -4,7 +4,7 @@ import {
   type PopoverProps as AriaPopoverProps
 } from 'react-aria-components/Popover';
 import clsx from 'clsx';
-import styles from '../nav.module.css'
+import './Popover.css';
 
 export interface PopoverProps extends Omit<AriaPopoverProps, 'children'> {
   children: React.ReactNode;

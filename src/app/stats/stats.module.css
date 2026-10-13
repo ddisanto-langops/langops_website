@@ -8,8 +8,8 @@
 }
 
 .productCount {
-    background-image: linear-gradient(to right, rgb(13, 76, 148), #1a81b1);
-    border: 2px solid coral;
+    background-color: rgba(15, 64, 133, 0.89);
+
     border-radius: 10px;
     width: fit-content;
     padding: 10px;

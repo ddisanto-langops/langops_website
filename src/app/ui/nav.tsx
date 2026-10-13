@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { MenuButton } from "./components/menu-button";
-import { Sidebar } from "./components/sidebar";
+import { MenuButton } from "./components/Dropdown/MenuButton";
+import { Sidebar } from "./components/Dropdown/Sidebar";
 import Link from "next/link";
 import styles from "@/app/ui/nav.module.css"
 

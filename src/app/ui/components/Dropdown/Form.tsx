@@ -1,10 +1,10 @@
-import styles from '../nav.module.css'
 import {Form as RACForm, type FormProps} from 'react-aria-components/Form';
 import {type LabelProps, Label as RACLabel} from 'react-aria-components/Label';
 import {type FieldErrorProps, FieldError as RACFieldError} from 'react-aria-components/FieldError';
 import {type ButtonProps, Button} from 'react-aria-components/Button';
 import {type TextProps} from 'react-aria-components/Text';
-import {Text} from './content';
+import './Form.css';
+import {Text} from './Content';
 
 export function Form(props: FormProps) {
   return <RACForm {...props} />;

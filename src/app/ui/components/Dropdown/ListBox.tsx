@@ -11,8 +11,9 @@ import {
 } from 'react-aria-components/ListBox';
 import {composeRenderProps} from 'react-aria-components/composeRenderProps';
 import {Check} from 'lucide-react';
-import {Text} from './content';
-import {ProgressCircle} from './progress-circle';
+import {Text} from './Content';
+import {ProgressCircle} from './ProgressCircle';
+import './ListBox.css';
 
 export function ListBox<T>({children, ...props}: ListBoxProps<T>) {
   return <AriaListBox {...props}>{children}</AriaListBox>;
@@ -42,20 +43,15 @@ export function ListBoxLoadMoreItem(props: ListBoxLoadMoreItemProps) {
   );
 }
 
-export function DropdownListBox<T>({ className, ...props }: ListBoxProps<T>) {
-  return (
-    <AriaListBox 
-      {...props} 
-      className={composeRenderProps(className, (prev) => `dropdown-listbox ${prev}`)} 
-    />
-  );
+export function DropdownListBox<T>(props: ListBoxProps<T>) {
+  return <AriaListBox {...props} className="dropdown-listbox" />;
 }
 
 export function DropdownItem(props: ListBoxItemProps) {
   let textValue =
     props.textValue || (typeof props.children === 'string' ? props.children : undefined);
   return (
-    <ListBoxItem {...props} textValue={textValue} className={props.className}>
+    <ListBoxItem {...props} textValue={textValue} className="dropdown-item">
       {composeRenderProps(props.children, (children, {isSelected}) => (
         <>
           {isSelected && <Check />}
