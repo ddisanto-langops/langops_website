@@ -20,7 +20,7 @@ export default async function StatsPage({ searchParams }: StatsPageProps) {
                 <DisplayWordCount params={searchParams} />
             </Suspense>
             <Suspense>
-                <Products params={searchParams} />
+                <Products params={searchParams}/>
             </Suspense>
         </div>
     )

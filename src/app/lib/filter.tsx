@@ -79,7 +79,7 @@ export function Filter() {
     const languages = values.map((key) => key.toString());
     setDraftQuery((prev) => ({
       ...prev,
-      targetLanguages: languages,
+      targetLanguages: languages
     }));
   };
 
@@ -87,9 +87,17 @@ export function Filter() {
     const codes = values.map((key) => key.toString());
     setDraftQuery((prev) => ({
       ...prev,
-      productCodes: codes,
+      productCodes: codes
     }));
   };
+
+  const handleMediaGroups = (values: Key[]) => {
+    const groups = values.map((key) => key.toString())
+    setDraftQuery((prev) => ({
+      ...prev,
+      mediaGroups: groups
+    }))
+  }
 
   const handleDateRange = (value: RangeValue<CalendarDate> | null) => {
     setDateRange(value);
@@ -98,20 +106,6 @@ export function Filter() {
       dateFrom: value?.start.toString(),
       dateTo: value?.end.toString(),
     }));
-  };
-
-  const handleMediaGroups = (value: string) => {
-    setDraftQuery((prev) => {
-      const currentGroups = prev?.mediaGroups ?? [];
-      const newGroups = currentGroups.includes(value)
-        ? currentGroups.filter((item) => item !== value)
-        : [...currentGroups, value];
-
-      return {
-        ...prev,
-        mediaGroups: newGroups,
-      };
-    });
   };
 
   const handleApply = () => {
@@ -150,12 +144,12 @@ export function Filter() {
   };
 
   return (
-    <div>
+    <div className={styles.filterDiv}>
       <div className={styles.selectorsDiv}>
         <ComboBox
           className={styles.dropdown}
           selectionMode="multiple"
-          placeholder="Type to search..."
+          placeholder="Search languages..."
           aria-label="languages"
           value={draftQuery?.targetLanguages ?? []}
           onChange={handleLanguageFilter}
@@ -170,7 +164,7 @@ export function Filter() {
         <ComboBox
           className={styles.dropdown}
           selectionMode="multiple"
-          placeholder="Type to search..."
+          placeholder="Search products..."
           aria-label="product codes"
           value={draftQuery?.productCodes ?? []}
           onChange={handleProductFilter}
@@ -182,26 +176,28 @@ export function Filter() {
           ))}
         </ComboBox>
 
+        <ComboBox
+          className={styles.dropdown}
+          selectionMode="multiple"
+          placeholder="Search media groups..."
+          aria-label="media groups"
+          value={draftQuery?.mediaGroups ?? []}
+          onChange={handleMediaGroups}
+        >
+          {Object.entries(groupDisplayNames).map((item) => {
+            return (
+              <ComboBoxItem key={item[0]} id={item[0]}>
+                {item[1]}
+              </ComboBoxItem>
+            )
+          })}
+        </ComboBox>
+
         <DateRangePicker
           aria-label="date range"
           value={dateRange}
           onChange={handleDateRange}
         />
-
-        {Object.entries(groupDisplayNames).map(([key, label]) => (
-          <button
-            className={
-              draftQuery?.mediaGroups?.includes(key)
-                ? styles.filterButtonSelected
-                : styles.filterButton
-            }
-            key={key}
-            type="button"
-            onClick={() => handleMediaGroups(key)}
-          >
-            {label}
-          </button>
-        ))}
       </div>
 
       <div className={styles.buttonsDiv}>
