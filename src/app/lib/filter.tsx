@@ -1,53 +1,226 @@
 "use client";
 
-import styles from "@/app/lib/filter.module.css"
+import styles from "@/app/lib/filter.module.css";
+import { useRouter, usePathname, useSearchParams } from "next/navigation";
+import { useState, useEffect } from "react";
 import { ComboBox, ComboBoxItem } from "../ui/components/Dropdown/ComboBox";
 import { DateRangePicker } from "../ui/components/DateRangePicker/DateRangePicker";
 import { supportedLanguageEnum, groupDisplayNames, productCodeEnum } from "./enums";
 import { ProductQuery } from "./types";
-import { useState } from "react";
-import { Label } from "../ui/components/Dropdown/Form";
+import { parseDate, type CalendarDate } from "@internationalized/date";
+import type { RangeValue, Key } from "react-aria-components";
+import { buildQuery } from "./functions";
+import ISO6391 from "iso-639-1";
 
 export function Filter() {
-    const [query, setQuery] = useState<ProductQuery | null>(null)
-    
-    const handleFilter = () => {
-        // accept a value from any input and write to query variable
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
+  const [draftQuery, setDraftQuery] = useState<ProductQuery>(() => ({
+    targetLanguages: searchParams.getAll("targetLanguages"),
+    productCodes: searchParams.getAll("productCodes"),
+    mediaGroups: searchParams.getAll("mediaGroups"),
+    dateFrom: searchParams.get("dateFrom") ?? undefined,
+    dateTo: searchParams.get("dateTo") ?? undefined,
+  }));
+
+  const [dateRange, setDateRange] = useState<RangeValue<CalendarDate> | null>(() => {
+    const from = searchParams.get("dateFrom");
+    const to = searchParams.get("dateTo");
+    if (from && to) {
+      return { start: parseDate(from), end: parseDate(to) };
     }
-    return (
-        <div className={styles.filterDiv}>
-            <ComboBox
-            className={styles.dropdown}
-                selectionMode="multiple"
-                placeholder="languages..."
-                aria-label="languages"
-            >
-                {supportedLanguageEnum.map((language) => {
-                    return (
-                        <ComboBoxItem key={language}>{language}</ComboBoxItem>
-                    )
-                })}
-            </ComboBox>
-            <ComboBox
-            className={styles.dropdown}
-                selectionMode="multiple"
-                placeholder="product codes..."
-                aria-label="product codes"
-            >
-                {productCodeEnum.map((code) => {
-                    return (
-                        <ComboBoxItem key={code}>{code}</ComboBoxItem>
-                    )
-                })}
-            </ComboBox>
-            <DateRangePicker aria-label="date range" />
-            {Object.entries(groupDisplayNames).map((item) => {
-                return (
-                    <button className={styles.filterButton} key={item[0]}>
-                        {item[1]}
-                    </button>
-                )
-            })}
-        </div>
-    )
+    return null;
+  });
+
+  // Set default dates in the browser only, then sync them to the URL once
+  useEffect(() => {
+    const fromUrl = searchParams.get("dateFrom");
+    const toUrl = searchParams.get("dateTo");
+
+    if (fromUrl && toUrl) {
+      setDateRange({ start: parseDate(fromUrl), end: parseDate(toUrl) });
+      setDraftQuery((prev) => ({
+        ...prev,
+        dateFrom: fromUrl,
+        dateTo: toUrl,
+      }));
+      return;
+    }
+
+    const today = new Date();
+    const dateFrom = `${today.getFullYear()}-01-01`;
+    const dateTo = today.toISOString().slice(0, 10);
+
+    setDateRange({
+      start: parseDate(dateFrom),
+      end: parseDate(dateTo),
+    });
+
+    setDraftQuery((prev) => ({
+      ...prev,
+      dateFrom,
+      dateTo,
+    }));
+
+    const qs = buildQuery({
+      targetLanguages: searchParams.getAll("targetLanguages"),
+      productCodes: searchParams.getAll("productCodes"),
+      mediaGroups: searchParams.getAll("mediaGroups"),
+      dateFrom,
+      dateTo,
+    });
+
+    router.replace(qs ? `${pathname}?${qs}` : pathname);
+  }, [searchParams, pathname, router]);
+
+  const handleLanguageFilter = (values: Key[]) => {
+    const languages = values.map((key) => key.toString());
+    setDraftQuery((prev) => ({
+      ...prev,
+      targetLanguages: languages,
+    }));
+  };
+
+  const handleProductFilter = (values: Key[]) => {
+    const codes = values.map((key) => key.toString());
+    setDraftQuery((prev) => ({
+      ...prev,
+      productCodes: codes,
+    }));
+  };
+
+  const handleDateRange = (value: RangeValue<CalendarDate> | null) => {
+    setDateRange(value);
+    setDraftQuery((prev) => ({
+      ...prev,
+      dateFrom: value?.start.toString(),
+      dateTo: value?.end.toString(),
+    }));
+  };
+
+  const handleMediaGroups = (value: string) => {
+    setDraftQuery((prev) => {
+      const currentGroups = prev?.mediaGroups ?? [];
+      const newGroups = currentGroups.includes(value)
+        ? currentGroups.filter((item) => item !== value)
+        : [...currentGroups, value];
+
+      return {
+        ...prev,
+        mediaGroups: newGroups,
+      };
+    });
+  };
+
+  const handleApply = () => {
+    const filters = {
+      targetLanguages: draftQuery?.targetLanguages,
+      productCodes: draftQuery?.productCodes,
+      dateFrom: draftQuery?.dateFrom,
+      dateTo: draftQuery?.dateTo,
+      mediaGroups: draftQuery?.mediaGroups,
+    };
+
+    const query = buildQuery(filters);
+    router.push(query ? `${pathname}?${query}` : pathname);
+  };
+
+  const handleClear = () => {
+    const today = new Date();
+    const dateFrom = `${today.getFullYear()}-01-01`;
+    const dateTo = today.toISOString().slice(0, 10);
+
+    setDraftQuery({
+      targetLanguages: [],
+      productCodes: [],
+      mediaGroups: [],
+      dateFrom,
+      dateTo,
+    });
+
+    setDateRange({
+      start: parseDate(dateFrom),
+      end: parseDate(dateTo),
+    });
+
+    const qs = buildQuery({ dateFrom, dateTo });
+    router.push(`${pathname}?${qs}`);
+  };
+
+  return (
+    <div>
+      <div className={styles.selectorsDiv}>
+        <ComboBox
+          className={styles.dropdown}
+          selectionMode="multiple"
+          placeholder="Type to search..."
+          aria-label="languages"
+          value={draftQuery?.targetLanguages ?? []}
+          onChange={handleLanguageFilter}
+        >
+          {supportedLanguageEnum.map((language) => (
+            <ComboBoxItem key={language} id={ISO6391.getCode(language)}>
+              {language}
+            </ComboBoxItem>
+          ))}
+        </ComboBox>
+
+        <ComboBox
+          className={styles.dropdown}
+          selectionMode="multiple"
+          placeholder="Type to search..."
+          aria-label="product codes"
+          value={draftQuery?.productCodes ?? []}
+          onChange={handleProductFilter}
+        >
+          {productCodeEnum.map((code) => (
+            <ComboBoxItem key={code} id={code}>
+              {code}
+            </ComboBoxItem>
+          ))}
+        </ComboBox>
+
+        <DateRangePicker
+          aria-label="date range"
+          value={dateRange}
+          onChange={handleDateRange}
+        />
+
+        {Object.entries(groupDisplayNames).map(([key, label]) => (
+          <button
+            className={
+              draftQuery?.mediaGroups?.includes(key)
+                ? styles.filterButtonSelected
+                : styles.filterButton
+            }
+            key={key}
+            type="button"
+            onClick={() => handleMediaGroups(key)}
+          >
+            {label}
+          </button>
+        ))}
+      </div>
+
+      <div className={styles.buttonsDiv}>
+        <button
+          type="button"
+          className={styles.clearButton}
+          onClick={handleClear}
+        >
+          Reset
+        </button>
+
+        <button
+          type="button"
+          className={styles.applyButton}
+          onClick={handleApply}
+        >
+          Apply
+        </button>
+      </div>
+    </div>
+  );
 }

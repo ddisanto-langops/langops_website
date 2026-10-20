@@ -9,6 +9,7 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "iso-639-1": "^3.1.6",
     "lucide-react": "^1.55.0",
     "next": "16.4.0",
     "react": "^19.3.0",

@@ -12,8 +12,6 @@ export async function apiRequest(endpoint: string, options: RequestInit) {
         }
     )
 
-    if (!res.ok) throw new Error(`LangOps API error: ${res.status} ${res.statusText}`)
-
     return res.json()
 }
 

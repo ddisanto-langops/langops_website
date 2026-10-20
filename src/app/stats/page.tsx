@@ -1,19 +1,26 @@
-import { Suspense } from "react";
 import { NavBar } from "../ui/nav";
-import { Wordcount } from "./components/wordcount";
+import { DisplayWordCount } from "./components/wordcount";
 import { Products } from "./components/products";
 import { Filter } from "../lib/filter";
+import { Suspense } from "react";
 
-export default async function StatsPage() {
+interface StatsPageProps {
+    searchParams: Promise<{ [key: string]: string | undefined}>
+}
+
+export default async function StatsPage({ searchParams }: StatsPageProps) {
+    
     return (
         <div>
             <NavBar />
-            <Filter />
             <Suspense>
-                <Wordcount />
+                <Filter />
             </Suspense>
             <Suspense>
-                <Products />
+                <DisplayWordCount params={searchParams} />
+            </Suspense>
+            <Suspense>
+                <Products params={searchParams} />
             </Suspense>
         </div>
     )

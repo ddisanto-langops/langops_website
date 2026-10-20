@@ -1,4 +1,4 @@
-.filterDiv {
+.selectorsDiv {
     justify-self: center;
     display: flex;
     flex-direction: row;
@@ -14,10 +14,56 @@
     border-radius: 6px;
     padding: 5px;
     border: 1px solid white;
+    cursor: pointer;
 }
 
 .filterButton:hover {
+    background-image: linear-gradient(to right, rgb(20, 124, 243), #24aceb);
     color: coral;
     border: 1px solid coral;
+}
+
+.filterButtonSelected {
+    background-image: linear-gradient(to right, rgb(20, 124, 243), #24aceb);
+    color: coral;
+    border-radius: 6px;
+    padding: 5px;
+    border: 1px solid coral;
     cursor: pointer;
+}
+
+
+.buttonsDiv {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    gap: 25px;
+}
+
+.clearButton {
+    background-color: hsl(0, 75%, 61%);
+    font-weight: 600;
+    border-radius: 10px;
+    color: white;
+    padding: 10px;
+    border: 1px solid transparent;
+    cursor: pointer;
+}
+
+.clearButton:hover {
+    background-color: hsl(0, 74%, 41%);
+}
+
+.applyButton {
+    background-color: hsl(138, 61%, 45%);
+    font-weight: 600;
+    border-radius: 10px;
+    color: white;
+    padding: 10px;
+    border: 1px solid transparent;
+    cursor: pointer;
+}
+
+.applyButton:hover {
+    background-color: hsl(150, 92%, 35%);
 }

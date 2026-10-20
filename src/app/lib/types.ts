@@ -9,3 +9,7 @@ export interface ProductQuery {
     offset?: number | undefined
     status?: string[] | undefined
 }
+
+export interface Wordcount {
+    totalWords: string
+}
