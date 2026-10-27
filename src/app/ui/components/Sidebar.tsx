@@ -5,7 +5,7 @@ export function Sidebar() {
     return (
         <div className={styles.sidebar}>
             <Link href={"/stats"}>Translation Statistics</Link>
-            <a>View & Search Products</a>
+            <Link href={"/products"}>View & Search Products</Link>
             <a>Label IDML Files</a>
             <a>Manage Failed Products</a>
             <a>View API Docs</a>

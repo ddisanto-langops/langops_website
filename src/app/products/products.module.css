@@ -1,0 +1,7 @@
+.tableDiv {
+    display: flex;
+    flex-direction: column;
+    justify-self: center;
+    justify-content: center;
+    max-width: 90%;
+}

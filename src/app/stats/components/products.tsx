@@ -35,13 +35,17 @@ export async function Products({params}: ProductsProps) {
 
     return (
         <div className={styles.productDiv}>
-            {products.data.map((product) => {
+            {
+            products.data ?
+            products.data.map((product) => {
                 return (
                     <div className={styles.productCount} key={product.productCode}>
                         <span>{product.productCode}: {product.count}</span>
                     </div>
                 )
-            }).sort()}
+            }).sort()
+            : null
+            }
         </div>
     )
 }
