@@ -3,9 +3,9 @@
     flex-direction: column;
     justify-self: center;
     padding: 15px;
-    gap: 50px;
-    width: 60%;
-    border: 1px solid white;
+    gap: 35px;
+    width: fit-content;
+    border: 1px solid coral;
     border-radius: 10px;
     margin-bottom: 30px;
 }
@@ -15,10 +15,10 @@
     display: flex;
     flex-direction: row;
     gap: 20px;
-    height: 80px;
+    height: 40px;
     justify-content: center;
     flex-wrap: wrap;
-    align-items: flex-end;
+    align-items: center;
 }
 
 .filterButton {

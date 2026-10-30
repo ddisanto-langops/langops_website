@@ -9,10 +9,11 @@ services:
     volumes:
       - .:/app           # Bind mount: Syncs local project files into the container
       - /app/node_modules # Anonymous volume: Prevents host node_modules from overwriting container node_modules
-      - /app/.next       # Anonymous volume: Prevents caching conflicts between host and container
     environment:
       - NODE_ENV=development
-      - WATCHPACK_POLLING=true # CRITICAL FOR HOT-RELOADING IN DOCKER
+      - WATCHPACK_POLLING=1000
+      - CHOKIDAR_USEPOLLING=true
+      - NEXT_TURBOPACK_POLLING=true
       - BASEPATH=${BASEPATH}
       - TrelloKey=${TrelloKey}
       - TrelloToken=${TrelloToken}
