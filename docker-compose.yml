@@ -13,9 +13,15 @@ services:
     environment:
       - NODE_ENV=development
       - WATCHPACK_POLLING=true # CRITICAL FOR HOT-RELOADING IN DOCKER
-    
-    env_file:
-      - /etc/langops-website/secrets.env
+      - BASEPATH=${BASEPATH}
+      - TrelloKey=${TrelloKey}
+      - TrelloToken=${TrelloToken}
+      - TrelloBoardId=${TrelloBoardId}
+      - TrelloSecret=${TrelloSecret}
+      - crowdinToken=${crowdinToken}
+      - CF_ACCESS_CLIENT_ID=${CF_ACCESS_CLIENT_ID}
+      - CF_ACCESS_CLIENT_SECRET=${CF_ACCESS_CLIENT_SECRET}
+
     
     networks:
       - shared-network
