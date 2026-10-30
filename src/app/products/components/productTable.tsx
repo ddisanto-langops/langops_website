@@ -1,25 +1,12 @@
-import { GetProductFilters, PaginatedProductResponse } from "@/app/lib/types";
-import { apiRequest } from "@/app/lib/langops-api";
+import { PaginatedProductResponse } from "@/app/lib/types"
 import styles from "@/app/products/products.module.css"
-import { UrlSearchProps } from "@/app/lib/types";
-import { toArray } from "@/app/lib/functions"
-import { buildQuery } from "@/app/lib/functions";
 import ISO6391 from 'iso-639-1'
 
-export async function ProductTable({ searchParams }: UrlSearchProps) {
-    const params = await searchParams
-    const filters: GetProductFilters = {
-            targetLanguages: toArray(params.targetLanguages),
-            productCodes: toArray(params.productCodes),
-            mediaGroups: toArray(params.mediaGroups),
-            status: toArray(params.status),
-            search: params.search,
-            dateFrom: params.dateFrom,
-            dateTo: params.dateTo
-    }
-    const query = buildQuery(filters)
-    const endpoint = `products?${query}`
-    const products: PaginatedProductResponse = await apiRequest(endpoint, { method: 'GET' })
+interface TableProps {
+    products: PaginatedProductResponse
+}
+
+export async function ProductTable({ products }: TableProps) {
 
     return (
         <div className={styles.tableDiv}>

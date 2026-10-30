@@ -1,12 +1,10 @@
-import { NavBar } from "../ui/nav";
-import { DisplayWordCount } from "./components/wordcount";
-import { Products } from "./components/products";
-import { Filter } from "../lib/filter";
-import { Suspense } from "react";
 import { UrlSearchProps } from "../lib/types";
+import { NavBar } from "../ui/nav";
+import { Filter } from "../lib/filter";
+import { StatsPageData } from "./StatsPageData";
+import { Suspense } from "react";
 
-export default async function StatsPage({ searchParams }: UrlSearchProps) {
-    
+export default function StatsPage({ searchParams }: UrlSearchProps) {
     return (
         <div>
             <NavBar />
@@ -14,10 +12,7 @@ export default async function StatsPage({ searchParams }: UrlSearchProps) {
                 <Filter />
             </Suspense>
             <Suspense>
-                <DisplayWordCount params={searchParams} />
-            </Suspense>
-            <Suspense>
-                <Products searchParams={searchParams}/>
+                <StatsPageData searchParams={searchParams} />
             </Suspense>
         </div>
     )

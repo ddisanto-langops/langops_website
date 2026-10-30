@@ -9,7 +9,7 @@ import { SearchField } from "@/app/ui/components/SearchField/SearchField"
 import { supportedLanguageEnum, groupDisplayNames, productCodeEnum, statusEnum } from "./enums";
 import { GetProductFilters } from "./types";
 import { parseDate, type CalendarDate } from "@internationalized/date";
-import { type RangeValue, type Key, PreviewTrigger } from "react-aria-components";
+import { type RangeValue, type Key } from "react-aria-components";
 import { buildQuery } from "./functions";
 import ISO6391 from "iso-639-1";
 
@@ -218,6 +218,8 @@ export function Filter() {
             )
           })}
         </ComboBox>
+      </div>
+      <div className={styles.selectorsDiv}>
 
          <ComboBox
           isDisabled={disabled}

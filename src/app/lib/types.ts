@@ -118,6 +118,16 @@ export interface UrlSearchProps {
  * ---------------------------------------------- 
 */
 
+export interface ProductCountRepsonse {
+    totalProducts: number
+    data: [
+        {
+            productCode: string
+            count: number
+        }
+    ]
+}
+
 export interface PaginatedProductResponse {
     total: number
     offset: number
