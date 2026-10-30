@@ -5,10 +5,11 @@ import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { useState, useEffect } from "react";
 import { ComboBox, ComboBoxItem } from "../ui/components/Dropdown/ComboBox";
 import { DateRangePicker } from "../ui/components/DateRangePicker/DateRangePicker";
-import { supportedLanguageEnum, groupDisplayNames, productCodeEnum } from "./enums";
-import { ProductQuery } from "./types";
+import { SearchField } from "@/app/ui/components/SearchField/SearchField"
+import { supportedLanguageEnum, groupDisplayNames, productCodeEnum, statusEnum } from "./enums";
+import { GetProductFilters } from "./types";
 import { parseDate, type CalendarDate } from "@internationalized/date";
-import type { RangeValue, Key } from "react-aria-components";
+import { type RangeValue, type Key, PreviewTrigger } from "react-aria-components";
 import { buildQuery } from "./functions";
 import ISO6391 from "iso-639-1";
 
@@ -17,10 +18,15 @@ export function Filter() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
-  const [draftQuery, setDraftQuery] = useState<ProductQuery>(() => ({
+  // list of pages where certain filters are unavailable
+  const restrictFilters = ['/stats']
+  const disabled = restrictFilters.includes(pathname)
+
+  const [draftQuery, setDraftQuery] = useState<GetProductFilters>(() => ({
     targetLanguages: searchParams.getAll("targetLanguages"),
     productCodes: searchParams.getAll("productCodes"),
     mediaGroups: searchParams.getAll("mediaGroups"),
+    status: searchParams.getAll("status"),
     dateFrom: searchParams.get("dateFrom") ?? undefined,
     dateTo: searchParams.get("dateTo") ?? undefined,
   }));
@@ -68,6 +74,7 @@ export function Filter() {
       targetLanguages: searchParams.getAll("targetLanguages"),
       productCodes: searchParams.getAll("productCodes"),
       mediaGroups: searchParams.getAll("mediaGroups"),
+      status: searchParams.getAll("status"),
       dateFrom,
       dateTo,
     });
@@ -97,7 +104,15 @@ export function Filter() {
       ...prev,
       mediaGroups: groups
     }))
-  }
+  };
+
+  const handleStatusFilter = (values: Key[]) => {
+    const statuses = values.map((key) => key.toString());
+    setDraftQuery((prev) => ({
+      ...prev,
+      status: statuses
+    }));
+  };
 
   const handleDateRange = (value: RangeValue<CalendarDate> | null) => {
     setDateRange(value);
@@ -108,13 +123,22 @@ export function Filter() {
     }));
   };
 
+  const handleSearch = (value: string) => {
+    setDraftQuery((prev) => ({
+      ...prev,
+      search: value
+    }))
+  }
+
   const handleApply = () => {
-    const filters = {
+    const filters: GetProductFilters = {
       targetLanguages: draftQuery?.targetLanguages,
       productCodes: draftQuery?.productCodes,
       dateFrom: draftQuery?.dateFrom,
       dateTo: draftQuery?.dateTo,
       mediaGroups: draftQuery?.mediaGroups,
+      status: draftQuery?.status,
+      search: draftQuery?.search
     };
 
     const query = buildQuery(filters);
@@ -130,8 +154,10 @@ export function Filter() {
       targetLanguages: [],
       productCodes: [],
       mediaGroups: [],
+      status: [],
+      search: "",
       dateFrom,
-      dateTo,
+      dateTo
     });
 
     setDateRange({
@@ -192,6 +218,31 @@ export function Filter() {
             )
           })}
         </ComboBox>
+
+         <ComboBox
+          isDisabled={disabled}
+          className={styles.dropdown}
+          selectionMode="multiple"
+          placeholder="Search statuses..."
+          aria-label="statuses"
+          value={draftQuery?.status ?? []}
+          onChange={handleStatusFilter}
+        >
+          {statusEnum.map((status) => (
+            <ComboBoxItem key={status} id={status.toLowerCase()}>
+              {status}
+            </ComboBoxItem>
+          ))}
+        </ComboBox>
+
+        <SearchField
+          isDisabled={disabled} 
+          aria-label="search"
+          placeholder="Title or localized title..."
+          value={draftQuery?.search ?? ""}
+          onChange={handleSearch}
+        >
+        </SearchField>
 
         <DateRangePicker
           aria-label="date range"

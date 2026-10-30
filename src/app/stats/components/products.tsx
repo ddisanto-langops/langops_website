@@ -2,6 +2,8 @@ import { apiRequest } from "@/app/lib/langops-api";
 import { buildQuery } from "@/app/lib/functions";
 import styles from "@/app/stats/stats.module.css"
 import { toArray } from "@/app/lib/functions"
+import { UrlSearchProps } from "@/app/lib/types";
+import { GetProductFilters } from "@/app/lib/types";
 
 interface ProductRepsonse {
     totalProducts: number
@@ -13,20 +15,16 @@ interface ProductRepsonse {
     ]
 }
 
-interface ProductsProps {
-    params: Promise<{ [key: string]: string | string[] | undefined }>
-}
 
-
-export async function Products({params}: ProductsProps) {
-    const searchParams = await params
+export async function Products({ searchParams }: UrlSearchProps) {
+    const params = await searchParams
     
-    const filters = {
-        targetLanguages: toArray(searchParams.targetLanguages),
-        productCodes: toArray(searchParams.productCodes),
-        mediaGroups: toArray(searchParams.mediaGroups),
-        dateFrom: searchParams.dateFrom,
-        dateTo: searchParams.dateTo
+    const filters: Partial<GetProductFilters> = {
+        targetLanguages: toArray(params.targetLanguages),
+        productCodes: toArray(params.productCodes),
+        mediaGroups: toArray(params.mediaGroups),
+        dateFrom: params.dateFrom,
+        dateTo: params.dateTo
     }
     
     const qs = buildQuery(filters)

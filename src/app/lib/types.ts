@@ -107,6 +107,10 @@ export interface EditProductRequest {
 }
 
 
+export interface UrlSearchProps {
+    searchParams: Promise<{ [key: string]: string | undefined}>
+}
+
 
 /**
  * ----------------------------------------------

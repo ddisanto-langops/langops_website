@@ -3,12 +3,9 @@ import { DisplayWordCount } from "./components/wordcount";
 import { Products } from "./components/products";
 import { Filter } from "../lib/filter";
 import { Suspense } from "react";
+import { UrlSearchProps } from "../lib/types";
 
-interface StatsPageProps {
-    searchParams: Promise<{ [key: string]: string | undefined}>
-}
-
-export default async function StatsPage({ searchParams }: StatsPageProps) {
+export default async function StatsPage({ searchParams }: UrlSearchProps) {
     
     return (
         <div>
@@ -20,7 +17,7 @@ export default async function StatsPage({ searchParams }: StatsPageProps) {
                 <DisplayWordCount params={searchParams} />
             </Suspense>
             <Suspense>
-                <Products params={searchParams}/>
+                <Products searchParams={searchParams}/>
             </Suspense>
         </div>
     )
