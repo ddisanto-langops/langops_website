@@ -10,7 +10,7 @@ export async function ProductTable({ products }: TableProps) {
 
     return (
         <div className={styles.tableDiv}>
-            <table>
+            <table className={styles.productsTable}>
                 <thead>
                     <tr>
                         <th>Title</th>
@@ -19,16 +19,19 @@ export async function ProductTable({ products }: TableProps) {
                         <th>Due</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody className={styles.tableBody}>
                     {
                         products.total > 0 ?
                         products.data.map((product) => {
                             return (
-                                <tr key={product.id}>
-                                    <td>{product.trelloData.title}</td>
-                                    <td>{product.trelloData.targetLanguage ? ISO6391.getName(product.trelloData.targetLanguage) : null}</td>
-                                    <td>{product.productStatus}</td>
-                                    <td>{product.trelloData.dueDate}</td>
+                                <tr 
+                                    className={styles.tableRow} 
+                                    key={product.id}
+                                >
+                                    <td className={styles.tableCell}>{product.trelloData.title}</td>
+                                    <td className={styles.tableCell}>{product.trelloData.targetLanguage ? ISO6391.getName(product.trelloData.targetLanguage) : null}</td>
+                                    <td className={styles.tableCell}>{product.productStatus}</td>
+                                    <td className={styles.tableCell}>{product.trelloData.dueDate}</td>
                                 </tr>
                                 
                             )
