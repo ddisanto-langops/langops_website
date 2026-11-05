@@ -1,17 +1,23 @@
+"use client"
+
 import ISO6391 from 'iso-639-1'
 import { LangOpsProduct } from "@/app/lib/types";
 import { capitalize, dateTimeFormat } from '@/app/lib/functions';
 import CopyButton from '@/app/ui/components/copy-button'
 import Link from 'next/link';
-import clsx from 'clsx';
+import { restoreProduct } from '@/app/lib/server-actions';
 
 
 interface ModalDetailsProps {
   product: LangOpsProduct
 }
 
-export async function ViewOnlyModal({ product }: ModalDetailsProps) {
+export function ViewOnlyModal({ product }: ModalDetailsProps) {
   const inputStyles = "field-sizing-content rounded-md bg-sky-500/50 p-2"
+
+  const handleRestore = async (id: string) => {
+    await restoreProduct(id)
+  }
   return (
     <>
       <span className="block text-center font-bold text-white text-xl p-4">
@@ -36,7 +42,13 @@ export async function ViewOnlyModal({ product }: ModalDetailsProps) {
         product.productStatus === 'deleted' ?
         <div className='flex flex-row gap-6 justify-content-center justify-self-center'>
           <button className='bg-red-600 p-2 rounded-md cursor-pointer hover:bg-red-700'>Delete Permanently</button>
-          <button className='bg-green-600 p-2 rounded-md cursor-pointer hover:bg-green-700'>Restore</button>
+          <button
+            type='button'
+            className='bg-green-600 p-2 rounded-md cursor-pointer hover:bg-green-700'
+            onClick={() => handleRestore(product.trelloData.id)}
+          >
+            Restore
+          </button>
         </div>
         : null
       }
