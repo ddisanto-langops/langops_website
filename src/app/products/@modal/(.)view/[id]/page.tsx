@@ -1,8 +1,6 @@
 import { ModalFrame } from "@/app/products/components/modal-frame";
-import { ModalData } from "./modal-data";
 import { Suspense } from "react";
-
-// Import your sub-modals here (e.g., ProfileModal, InvoiceModal)
+import { ModalWrapper } from "./modal-wrapper";
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -15,7 +13,7 @@ export default async function InterceptedModalPage({ params }: Props) {
   return (
     <ModalFrame>
         <Suspense>
-            <ModalData params={params}/>
+            <ModalWrapper params={params}/>
         </Suspense>
     </ModalFrame>
   );

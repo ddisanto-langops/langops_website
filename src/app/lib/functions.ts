@@ -19,3 +19,14 @@ export function toArray(value: string | string[] | undefined): string[] {
   if (!value) return []
   return Array.isArray(value) ? value : [value]
 }
+
+export function capitalize(str: string) {
+    return str[0].toUpperCase() + str.slice(1);
+}
+
+export function dateTimeFormat(date: string) {
+    if (!date) return ''
+
+    const jsDate = new Date(date)
+    return new Intl.DateTimeFormat('en-US', {timeZone: "America/Chicago", dateStyle: 'full', timeStyle: 'long'}).format(jsDate)
+}
