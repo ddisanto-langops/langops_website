@@ -31,7 +31,7 @@ export function ProductTable({ products }: TableProps) {
                                 <tr 
                                     className={styles.tableRow} 
                                     key={product.id}
-                                    onClick={() => router.push(`/products/view/${product.id}`)}
+                                    onClick={() => router.push(`/products/view/${product.trelloData.id}`)}
                                 >
                                     <td className={styles.tableCell}>{product.trelloData.title}</td>
                                     <td className={styles.tableCell}>{product.trelloData.targetLanguage ? ISO6391.getName(product.trelloData.targetLanguage) : null}</td>
