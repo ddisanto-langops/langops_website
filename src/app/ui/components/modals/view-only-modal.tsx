@@ -1,5 +1,6 @@
 "use client"
 
+import { useRouter } from 'next/navigation';
 import ISO6391 from 'iso-639-1'
 import { LangOpsProduct } from "@/app/lib/types";
 import { capitalize, dateTimeFormat } from '@/app/lib/functions';
@@ -15,15 +16,21 @@ interface ModalDetailsProps {
 export function ViewOnlyModal({ product }: ModalDetailsProps) {
   const inputStyles = "field-sizing-content rounded-md bg-sky-500/50 p-2"
 
+  const router = useRouter()
+
   const handleRestore = async (id: string) => {
     await restoreProduct(id)
+  }
+
+  const handleClose = () => {
+    router.back()
   }
   return (
     <>
       <span className="block text-center font-bold text-white text-xl p-4">
         Product Details
       </span>
-      <p className='block text-center text-grey bg-blue-900/70 rounded-md p-2 m-6 w-1/3 justify-self-center'>{`This product has status "${product.productStatus}" and cannot be edited here. ` }
+      <p className='block text-center text-white bg-blue-900/70 rounded-md p-2 m-6 w-1/3 justify-self-center'>{`This product has status "${product.productStatus}" and cannot be edited here. ` }
       
         {
           product.productStatus !== 'deleted' ?
@@ -76,7 +83,7 @@ export function ViewOnlyModal({ product }: ModalDetailsProps) {
         <CopyButton buttonText='Copy Trello URL' textToCopy={product.trelloData.url} />
       </div>
           
-      <div className="text-white grid grid-cols-[0.2fr_1fr] p-4 gap-4 items-center text-right">
+      <div className="text-white grid grid-cols-[0.2fr_1fr] p-4 gap-4 items-center text-right w-[80%] justify-self-center">
         <h2>Title:</h2>
         <input 
             disabled={true} 
@@ -140,6 +147,19 @@ export function ViewOnlyModal({ product }: ModalDetailsProps) {
           className={inputStyles}
         >
         </input>
+      </div>
+      <div className='flex flex-row justify-self-center gap-10'>
+        <button
+          className='bg-zinc-400 p-2 rounded-md text-white hover:bg-zinc-600 cursor-pointer'
+          onClick={handleClose}
+        >
+          Close
+        </button>
+        <button
+          className='bg-red-600 p-2 rounded-md text-white hover:bg-red-800 cursor-pointer'
+        >
+          Delete
+        </button>
       </div>
     </>
   

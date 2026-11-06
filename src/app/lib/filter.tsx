@@ -256,18 +256,17 @@ export function Filter() {
       <div className={styles.buttonsDiv}>
         <button
           type="button"
-          className={styles.clearButton}
-          onClick={handleClear}
-        >
-          Reset
-        </button>
-
-        <button
-          type="button"
           className={styles.applyButton}
           onClick={handleApply}
         >
           Apply
+        </button>
+        <button
+          type="button"
+          className={styles.clearButton}
+          onClick={handleClear}
+        >
+          Reset
         </button>
       </div>
     </div>

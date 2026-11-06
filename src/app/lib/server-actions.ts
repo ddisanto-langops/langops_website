@@ -7,3 +7,6 @@ export async function restoreProduct(id: string) {
     await apiRequest(`products/restore/${id}`, {method: 'PATCH'})
     revalidatePath('/products')
 }
+
+// export async function saveProduct() ...
+    // needs revalidatePath

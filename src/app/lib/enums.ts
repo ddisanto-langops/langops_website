@@ -100,6 +100,18 @@ export const supportedLanguageEnum = [
     'Hebrew',
 ]
 
+export const suppoertedISOCodes = [
+    'fr',
+    'de',
+    'es',
+    'pt',
+    'nl',
+    'it',
+    'af',
+    'fi',
+    'he'
+]
+
 
 // Abstraction for product fields display in UI
 export const friendlyFieldNames: { [key: string]: string } = {

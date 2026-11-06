@@ -1,6 +1,6 @@
 
 import { NavBar } from "@/app/ui/nav";
-import { ProductStandaloneDetails } from "./standalone-details";
+import { ModalWrapper } from "../../@modal/(.)view/[id]/modal-wrapper";
 import { Suspense } from "react";
 
 interface Props {
@@ -14,7 +14,7 @@ export default function StandaloneProductPage({ params }: Props) {
       <NavBar /> 
       <main>
        <Suspense>
-        <ProductStandaloneDetails params={params} />
+        <ModalWrapper params={params} />
        </Suspense>
       </main>
     </div>
