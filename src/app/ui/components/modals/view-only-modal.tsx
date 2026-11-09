@@ -6,6 +6,7 @@ import { LangOpsProduct } from "@/app/lib/types";
 import { capitalize, dateTimeFormat } from '@/app/lib/functions';
 import CopyButton from '@/app/ui/components/copy-button'
 import Link from 'next/link';
+import { buttonStyles } from '@/app/lib/styles';
 import { restoreProduct } from '@/app/lib/server-actions';
 
 
@@ -26,11 +27,11 @@ export function ViewOnlyModal({ product }: ModalDetailsProps) {
     router.back()
   }
   return (
-    <>
+    <div className='h-[85vh] overflow-scroll'>
       <span className="block text-center font-bold text-white text-xl p-4">
         Product Details
       </span>
-      <p className='block text-center text-white bg-blue-900/70 rounded-md p-2 m-6 w-1/3 justify-self-center'>{`This product has status "${product.productStatus}" and cannot be edited here. ` }
+      <p className='block text-center text-white bg-blue-900/70 rounded-md p-2 m-6 w-auto justify-self-center'>{`This product has status "${product.productStatus}" and cannot be edited here. ` }
       
         {
           product.productStatus !== 'deleted' ?
@@ -148,20 +149,20 @@ export function ViewOnlyModal({ product }: ModalDetailsProps) {
         >
         </input>
       </div>
-      <div className='flex flex-row justify-self-center gap-10'>
+      <div className='flex flex-row justify-self-center gap-10 m-6'>
         <button
-          className='bg-zinc-400 p-2 rounded-md text-white hover:bg-zinc-600 cursor-pointer'
+          className={`${buttonStyles} bg-zinc-400 hover:bg-zinc-600`}
           onClick={handleClose}
         >
           Close
         </button>
         <button
-          className='bg-red-600 p-2 rounded-md text-white hover:bg-red-800 cursor-pointer'
+          className={`${buttonStyles} bg-red-600 hover:bg-red-800`}
         >
           Delete
         </button>
       </div>
-    </>
+    </div>
   
   )
  

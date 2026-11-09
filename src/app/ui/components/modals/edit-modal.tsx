@@ -62,18 +62,6 @@ export function EditModal({ product }: ModalDetailsProps) {
             Edit Product
         </span>
         <div className="flex flex-row justify-self-center gap-6 m-6">
-            {modalData.trelloData.articleUrl && (
-                <CopyButton buttonText='Copy article URL' textToCopy={modalData.trelloData.articleUrl} />
-            )}
-            {modalData.trelloData.editorUrl && (
-                <CopyButton buttonText='Copy editor URL' textToCopy={modalData.trelloData.editorUrl} />
-            )}
-            {modalData.crowdinData?.crowdinUrl && (
-                <CopyButton buttonText='Copy Crowdin URL' textToCopy={modalData.crowdinData.crowdinUrl} />
-            )}
-            {modalData.youtubeData?.youTubeUrl && (
-                <CopyButton buttonText='Copy YouTube URL' textToCopy={modalData.youtubeData.youTubeUrl} />
-            )}
             <CopyButton buttonText='Copy Trello URL' textToCopy={modalData.trelloData.url} />
         </div>
             
@@ -167,9 +155,9 @@ export function EditModal({ product }: ModalDetailsProps) {
             />
         </div>
         <div className='flex flex-row p-4 justify-self-center gap-6'>
-            <button className='bg-green-500 p-2 rounded-md cursor-pointer hover:bg-green-600 text-white font-bold'>Save</button>
+            <button className='bg-green-500 p-2 rounded-md cursor-pointer hover:bg-green-600 text-white font-bold transition-colors duration-200'>Save</button>
             <button 
-                className='bg-red-500 p-2 rounded-md cursor-pointer hover:bg-red-700 text-white font-bold'
+                className='bg-red-500 p-2 rounded-md cursor-pointer hover:bg-red-700 text-white font-bold transition-colors duration-200'
                 onClick={handleCancel}
             >Cancel
             </button>

@@ -14,12 +14,6 @@ export function ModalFrame({ children }: { children: React.ReactNode }) {
         onClick={(e) => e.stopPropagation()} 
         className="relative rounded-lg p-6  w-[50%] text-white shadow-xl z-10 border-2 border-solid border-orange-400 rounded-md p-4 bg-slate-800/70"
       >
-        <button 
-          className="absolute top-4 right-4 bg-white p-2 text-black rounded-md cursor-pointer hover:bg-zinc-200"
-          onClick={() => router.back()}
-        >
-          ✕
-        </button>
         <div className="mt-2">
           {children}
         </div>

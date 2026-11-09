@@ -1,6 +1,6 @@
 "use client";
 
-import styles from "@/app/ui/nav.module.css"
+import { buttonStyles } from "@/app/lib/styles";
 
 interface MenuButtonProps {
     menuOpen: boolean
@@ -12,7 +12,7 @@ export function MenuButton({ menuOpen, handleButtonClick }: MenuButtonProps) {
     return (
         <div>
             <button
-                className={styles.menuButton}
+                className={`${buttonStyles} bg-sky-500 hover:bg-sky-700`}
                 type="button"
                 onClick={handleButtonClick}
             >
