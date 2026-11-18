@@ -21,7 +21,7 @@ export class LangOpsApiClient {
     constructor() {
         this.cfAccessClientId = process.env.CF_ACCESS_CLIENT_ID ?? ""
         this.cfAccessClientSecret = process.env.CF_ACCESS_CLIENT_SECRET ?? ""
-        this.basePath = "https://api.pcglangops.com/api/v1"
+        this.basePath = process.env.BASEPATH ?? ""
 
         if (
             !this.cfAccessClientId ||
