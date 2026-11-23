@@ -22,17 +22,6 @@ export function HomePage() {
                     <li>🔍 <Link style={{color:"coral"}} to={"/products"}>Search for and edit products</Link> relevant to your language</li>
                     <li>🔖 <Link style={{color:"coral"}} to={"/manage-idmls"}>Label individual articles</Link> from inDesign documents uploaded to Crowdin</li>
                     <li>⚠️ <Link style={{color:"coral"}} to={"/webhooks"}>Process</Link> failed products manually</li>
-                    <li>📖 Consult the PCG LangOps<span> </span>
-                        <a 
-                            href='https://api.pcglangops.com/redoc'
-                            className='homepage-link'
-                            target='_blank'
-                            rel='noopener noreferrer'
-                            style={{color: 'coral'}}
-                        >
-                        API documentation
-                        </a>  to plan automations
-                    </li>
                 </ul>
                 <p style={{textAlign: "left"}}>Note: Data on this site is refreshed in near-real time.
                     <br/>In some cases, changes may take a few moments to show up on the website.</p>
